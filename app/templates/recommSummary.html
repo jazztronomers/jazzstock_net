@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<script src="static/js/sorttable.js"></script>
+<script language="javascript">
+</script>
+
+
+<body>
+
+<h1>
+    재즈스탁 종목추천 (BETA)
+</h1>
+  <h5>
+  * 수급데이터 기반 Rulebased, 머신러닝, 딥러닝 모델로 추출한 종목들을 표시합니다. <br>
+  * 각 모델의 수익률은 산술평균과 기하평균의 조합으로 표시합니다.<br>
+  * 수익률은 추천일 익일 시초가 매수, 10거래일간 보유후 종가매도를 기준으로 표시하고 있습니다.<br>
+  * 10 거래일간 최고가, 최저가도 표시하고 있으니 익절선, 손절선 설정에 참고하시기 바랍니다. <br><br>
+  * 투자의 최종 책임은 이용자 본인에게 있습니다.<br>
+  * 현재는 매우 단순하지만 수익률이 잘 나오는 Rulebased 모델과, 검증되지 않은 머신러닝 모델을 노출하고 있습니다. <br><br><br>
+
+  * [ 2019-05- 26 ] 포맷에 변화를 주었습니다<br><br>
+  * M -> MEAN (평균수익률) , STD -> 표준편차
+  * X=1 10~29 거래일, X=2 29거래일~50거래일 즉 20거래일씩 묶음 <br>
+
+      <br>
+
+      * 자세한 설명: <a href="http://rubenchu.blog.me/221530587609">개발자 블로그</a> <br>
+
+      <br><br>
+
+  </h5>
+    <table id="recommSummary" class="sortable">
+        <tr>
+
+            {% for eachcol in column %}
+
+                {% if eachcol !='MID' %}
+                    <th>{{eachcol}}</th>
+                {% endif %}
+            {% endfor %}
+        </tr>
+
+        {% for value in sampledata.result %}
+
+
+        <tr>
+            {% for eachcol in column %}
+
+                {% if eachcol=='MNAME' %}
+                    <td class="MNAME">
+                            <a href="{{ '/recommList?mid='+ value['MID']}}" >
+                                {{ value['MNAME'] }}
+                            </a>
+                    </td>
+
+
+                {% elif eachcol=='DETAIL' %}
+
+                    <td class="SUMMARY">{{value[eachcol] }}</td>
+
+                {% elif eachcol=='MID' %}
+
+                {% elif eachcol in ('DETAIL','CNT','TAG') %}
+
+                    <td class="SUMMARY">{{value[eachcol] }}</td>
+
+                {% elif eachcol in ('M1','M2','M3','M4','M5','M6','STD1','STD2','STD3','STD4','STD5','STD6') %}
+
+                    {% if value[eachcol] != None and value[eachcol]>=0.25 %}
+                    <td class="profita" style="background-color: #f72525;">
+                    {% elif value[eachcol] != None and value[eachcol]>=0.15 %}
+                    <td class="profitb" style="background-color: #ff6247;">
+                    {% elif value[eachcol] != None and value[eachcol]>=0.1 %}
+                    <td class="profitc" style="background-color: #ff8d7a;">
+                    {% elif value[eachcol] != None and value[eachcol]>=0.05 %}
+                    <td class="profitd" style="background-color: #ffab9e">
+
+                    {% elif value[eachcol] != None and value[eachcol]>=0.03 %}
+                    <td class="profite" style="background-color: #ffe2dd;">
+                    {% elif value[eachcol] != None and value[eachcol]>=0.02 %}
+                    <td class="profite" style="background-color: #ffefed;">
+                    {% elif value[eachcol] != None and value[eachcol]>=0.01 %}
+                    <td class="profite" style="background-color: #fff5f4;">
+
+                    {% elif value[eachcol] != None and value[eachcol]>=-0.01 %}
+                    <td class="profite" style="background-color: #ffffff;">
+
+                    {% elif value[eachcol] != None and value[eachcol]>=-0.02 %}
+                    <td class="profite" style="background-color: #e5f0ff;">
+                    {% elif value[eachcol] != None and value[eachcol]>=-0.03 %}
+                    <td class="profite" style="background-color: #c2dafc;">
+                    {% elif value[eachcol] != None and value[eachcol]>=-0.05 %}
+                    <td class="profite" style="background-color: #a0c7ff;">
+
+                    {% elif value[eachcol] != None and value[eachcol]>=-0.1 %}
+                    <td class="profite" style="background-color: #75aeff;">
+                    {% elif value[eachcol] != None and value[eachcol]>=-0.15 %}
+                    <td class="profite" style="background-color: #5199ff;">
+                    {% elif value[eachcol] != None and value[eachcol]>=-0.25 %}
+                    <td class="profite" style="background-color: #247bf7;">
+                    {% elif value[eachcol] != None and value[eachcol]<-0.25 %}
+                    <td class="profite" style="background-color: #104693;">
+                    {% else %}
+                    <td class="profite" style="background-color: #ffffff;">
+
+
+
+                    {% endif %}
+                    {{ "%.2f"|format(value[eachcol]*100) if (value[eachcol] != None and value[eachcol]<10 and value[eachcol]>-10) else '-'}}</td>
+
+
+
+
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+
+
+
+    </table>
+</div>
+</body>
+{% endblock %}

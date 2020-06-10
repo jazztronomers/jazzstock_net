@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main_mobile.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% if stockinfo != None and sampledata != None  %}
+<script>
+function stockSndTableToggle() {
+    var element = document.getElementsByClassName("addRow")
+
+    for(i = 0 ; i < element.length ; i++) {
+        var elementStyle = element[i].style.display;
+        console.log(elementStyle);
+        if(elementStyle == "none"){
+            element[i].style.display = "block";
+         } else{
+            element[i].style.display = "none";
+         }
+    }
+}
+
+
+
+</script>
+<body>
+
+<div class="jumbo">
+    <h3>{{stockname[0]}} ({{stockname[1]}})</h3>
+  <label><input type="radio" name="chartType" value="merge" checked=true onclick="myFunction()"><span>Merged</span></label>&nbsp;&nbsp;
+  <label><input type="radio" name="chartType" value="ins" onclick="myFunction()"><span>Ins</span></label>&nbsp;&nbsp;
+  <label><input type="radio" name="chartType" value="forwin" onclick="myFunction()"><span>Foreigner</span></label>
+
+
+</div>
+<div id="chart" class="sndChart" style="height: 800px"></div>
+<script type="text/javascript" src="static/js/echarts.min.js"></script>
+<script type="text/javascript" src="static/js/sndChart_mobile.js"></script>
+<script>
+
+var flag = "merge"
+
+function myFunction() {
+    flag = document.querySelector('input[name="chartType"]:checked').value;
+    console.log(flag)
+    search({{ sampledata.result|tojson }},flag)
+}
+
+
+window.onload = search({{ sampledata.result|tojson }},flag);
+
+
+</script>
+
+
+</body>
+
+{% else %}
+<script language="javascript">
+function noSuchStock() {
+    alert("해당 종목 데이터가 없습니다.");
+    return;
+}
+</script>
+<body onload="noSuchStock()">
+</body>
+{% endif %}
+
+</html>

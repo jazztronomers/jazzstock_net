@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<title>Jazzstock</title>
+
+
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main_mobile.css') }}">
+
+<script type="text/javascript" charset="utf8" src="/static/js/datatables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+<meta property="og:title" content="Jazzstock" />
+<meta property="og:type" content="article" />
+<meta property="og:description" content="수급분석, 수급차트, 창구분석, 거래원분석" />
+<meta property="og:site_name" content="Jazzstock" />
+<meta property="og:image" content="http://jazzstock.net/static/images/logo800.jpg" />
+<meta name="naver-site-verification" content="b3c1a9a88d2cb99599c37bef02c0ac29aaf2cfd0"/>
+<meta name="description" content="수급분석, 수급차트, 창구분석, 거래원분석" />
+<title>Jazzstock</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-132476295-1"></script>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!--GOOGLE ANALYTICS -->
+<script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-132476295-1');
+</script>
+
+
+
+<script type="text/javascript" src="static/js/jazzstock_mobile.js"></script>
+<script type="text/javascript" src="static/js/echarts.min.js"></script>
+<script type="text/javascript" src="static/js/sndChart_mobile.js"></script>
+<script src="static/js/sorttable.js"></script>
+
+
+<body>
+
+<style>
+.jazzstockhead { width: 320px; height: 100px; }
+@media(min-width: 360px) { .jazzstockhead { width: 340px; height: 60px; } }
+@media(min-width: 375px) { .jazzstockhead { width: 350px; height: 60px; } }
+@media(min-width: 500px) { .jazzstockhead { width: 468px; height: 60px; } }
+@media(min-width: 800px) { .jazzstockhead { width: 728px; height: 90px; } }
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 2020HEAD -->
+<ins class="adsbygoogle jazzstockhead"
+     style="display:inline-block"
+     data-ad-client="ca-pub-7952244387820356"
+     data-ad-slot="4979248724"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+    <div>
+          <h2><a href="/info">Jazzstock PC</a></h2>
+          <!--<h2><a href="/wide">Jazzstock WIDE</a></h2> -->
+          <div class="textSearch">
+            <input id="search" type="text" placeholder="종목명 / 종목코드" onkeypress="clickPress(event,document.getElementById('search').value,'chartS')">
+            <input type="button" onclick="getChartData(document.getElementById('search').value,'chartS')" value="SEARCH">
+          </div>
+          <p>
+              <a href="#" onclick="foldSearchingOption()">개인설정</a>&nbsp;
+              <a href="#" onclick="description()">사용법</a><br>
+              <a href="#" onclick="removeall()">검색결과 지우기</a>
+
+          <div id='searchingOption' style="display: none">
+              <hr>
+
+              <p>
+                  테이블A:<select id="jazzstock_table_a1">
+                  <option value="0">기관</option><option value="1">외인</option>
+                  <option value="2">연기금</option><option value="3">사모펀드</option>
+                  <option value="4">투신</option><option value="5">금융</option>
+                  <option value="6">기타법인</option><option value="7">개인</option>
+                  <option value="8">보험</option><option value="9">은행</option>
+                </select><select id="jazzstock_table_a2">
+                  <option value="0">기관</option><option value="1">외인</option>
+                  <option value="2">연기금</option><option value="3">사모펀드</option>
+                  <option value="4">투신</option><option value="5">금융</option>
+                  <option value="6">기타법인</option><option value="7">개인</option>
+                  <option value="8">보험</option><option value="9">은행</option>
+                </select><br>
+                  테이블B:<select id="jazzstock_table_b1">
+                  <option value="0">기관</option><option value="1">외인</option>
+                  <option value="2">연기금</option><option value="3">사모펀드</option>
+                  <option value="4">투신</option><option value="5">금융</option>
+                  <option value="6">기타법인</option><option value="7">개인</option>
+                  <option value="8">보험</option><option value="9">은행</option>
+                </select><select id="jazzstock_table_b2">
+                  <option value="0">기관</option><option value="1">외인</option>
+                  <option value="2">연기금</option><option value="3">사모펀드</option>
+                  <option value="4">투신</option><option value="5">금융</option>
+                  <option value="6">기타법인</option><option value="7">개인</option>
+                  <option value="8">보험</option><option value="9">은행</option>
+                </select><br>
+                  테이블C:<select id="jazzstock_table_c1">
+                  <option value="0">기관</option><option value="1">외인</option>
+                  <option value="2">연기금</option><option value="3">사모펀드</option>
+                  <option value="4">투신</option><option value="5">금융</option>
+                  <option value="6">기타법인</option><option value="7">개인</option>
+                  <option value="8">보험</option><option value="9">은행</option>
+                </select><select id="jazzstock_table_c2">
+                  <option value="0">기관</option><option value="1">외인</option>
+                  <option value="2">연기금</option><option value="3">사모펀드</option>
+                  <option value="4">투신</option><option value="5">금융</option>
+                  <option value="6">기타법인</option><option value="7">개인</option>
+                  <option value="8">보험</option><option value="9">은행</option>
+                </select><br>
+                  테이블D:<select id="jazzstock_table_d1">
+                  <option value="0">기관</option><option value="1">외인</option>
+                  <option value="2">연기금</option><option value="3">사모펀드</option>
+                  <option value="4">투신</option><option value="5">금융</option>
+                  <option value="6">기타법인</option><option value="7">개인</option>
+                  <option value="8">보험</option><option value="9">은행</option>
+                </select><select id="jazzstock_table_d2">
+                  <option value="0">기관</option><option value="1">외인</option>
+                  <option value="2">연기금</option><option value="3">사모펀드</option>
+                  <option value="4">투신</option><option value="5">금융</option>
+                  <option value="6">기타법인</option><option value="7">개인</option>
+                  <option value="8">보험</option><option value="9">은행</option>
+                </select><br>
+
+
+              </p>
+
+
+
+              <p>
+                  조회기간:
+                       <input type="checkbox" name='interval' value="1" ><span>1</span>
+                       <input type="checkbox" name='interval' value="3"><span>3</span>
+                       <input type="checkbox" name='interval' value="5"><span>5</span>
+                       <input type="checkbox" name='interval' value="20"><span>20</span>
+                       <input type="checkbox" name='interval' value="60"><span>60</span>
+                       <input type="checkbox" name='interval' value="120"><span>120</span>
+                       <input type="checkbox" name='interval' value="240"><span>240</span>
+
+              </p>
+
+              <p>
+                  정렬기준:
+                       <input type="radio" name='orderby' value="1" ><span>1</span>
+                       <input type="radio" name='orderby' value="3" ><span>3</span>
+                       <input type="radio" name='orderby' value="5" ><span>5</span>
+                       <input type="radio" name='orderby' value="20"><span>20</span>
+                       <input type="radio" name='orderby' value="60"><span>60</span>
+                       <input type="radio" name='orderby' value="120"><span>120</span>
+                       <input type="radio" name='orderby' value="240"><span>240</span>
+              </p>
+
+
+
+              <p><a href="#" onclick="setStorage(); location.reload();">설정값 저장 및 새로고침</a></p>
+              <p><b>* 설정값은 다음 방문시에도 적용됩니다 :)</b></p>
+              <hr>
+
+              <p><b>테이블?</b></p>
+              <p>위에서 부터 A, B, C, D 테이블입니다</p>
+              <p>왼쪽 주체기준으로 정렬되며, 우측은 참고주체입니다</p>
+        <p><u>개인설정 탭에서 저장한 값은 다음방문시에도 적용됩니다</u></p>
+              <p>개인설정 화면이 아닌, 테이블 상단에 셀렉트 박스의 경우, 1회성 검색으로</p>
+              <p>우측 박스를 변경시 해당조합으로 테이블이 새롭게 생성됩니다</p>
+              <p>같은 주체를 선택하면 에러가 발생합니다, 나중에 수정하겠습니다.</p>
+              <br>
+
+              <p><b>조회기간이란?</b></p>
+              <p>수익률, 수급지표들이 선택하신 거래일기준 누적값으로 추출됩니다</p>
+              <p>Maximum 3개까지 지원합니다</p>
+
+              <br>
+
+              <p><b>정렬?</b></p>
+              <p>출력된 데이터가 선택하신 기준일자로 내림차순 정렬됩니다</p>
+              <p>현재는 기관, 외인, 사모펀드, 연기금 네개의 테이블을 제공하고있습니다</p>
+              <p>따라서 5를 선택한 경우, 기관테이블은 I5내림차순으로 정렬됩니다</p>
+
+              <br>
+
+
+        </div>
+        <div id='description' style="display: none">
+
+
+              <p><a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
+              <p><b>더 자세히?</b></p>
+              <p><a href="rubenchu.blog.me" >개발자블로그</a></p>
+              <p><a href="https://open.kakao.com/o/ge5OuYhb" >https://open.kakao.com/o/ge5OuYhb</a></p>
+              <p>입장코드 : jazz</p>
+
+
+    </div>
+    <table id="relatedS" class="related" style="width:100%"></table>
+    <table id="infoS" class="infoTable" style="width:100%"></table>
+    <table id="finanS" class="finanTable" style="width:100%"></table>
+    <div id="chartS" class="sndChart" style="height: 1px"></div>
+    <br>
+    <hr>
+
+
+
+    <div>
+        <div class="row">
+          <div class="cont">
+            <h4>
+                <select id="selectAA">
+                  <option value="0">기관</option>
+                  <option value="1">외인</option>
+                  <option value="2">연기금</option>
+                  <option value="3">사모펀드</option>
+                  <option value="4">투신</option>
+                  <option value="5">금융</option>
+                  <option value="6">기타법인</option>
+                  <option value="7">개인</option>
+                  <option value="8">보험</option>
+                  <option value="9">은행</option>
+                </select><select id="selectAB" onchange="changeTable('A')">
+                  <option value="0">기관</option>
+                  <option value="1">외인</option>
+                  <option value="2">연기금</option>
+                  <option value="3">사모펀드</option>
+                  <option value="4">투신</option>
+                  <option value="5">금융</option>
+                  <option value="6">기타법인</option>
+                  <option value="7">개인</option>
+                  <option value="8">보험</option>
+                  <option value="9">은행</option>
+                </select>
+            </h4>
+              <table id="dataA" class="display" style="width:100%">
+                <tr><td class="loading"><div class="signal"></div></td></tr>
+              </table>
+              <table id="relatedA" class="related" style="width:100%"></table>
+              <table id="infoA" class="infoTable" style="width:100%"></table>
+              <table id="finanA" class="finanTable" style="width:100%"></table>
+              <br>
+              <div id="chartA" class="sndChart" style="height: 1px"></div>
+          </div>
+        </div>
+
+
+
+    <hr>
+        <div class="row">
+          <div class="cont">
+            <h4>
+                <select id="selectBA">
+                  <option value="0">기관</option>
+                  <option value="1">외인</option>
+                  <option value="2">연기금</option>
+                  <option value="3">사모펀드</option>
+                  <option value="4">투신</option>
+                  <option value="5">금융</option>
+                  <option value="6">기타법인</option>
+                  <option value="7">개인</option>
+                  <option value="8">보험</option>
+                  <option value="9">은행</option>
+                </select><select id="selectBB" onchange="changeTable('B')">
+                  <option value="0">기관</option>
+                  <option value="1">외인</option>
+                  <option value="2">연기금</option>
+                  <option value="3">사모펀드</option>
+                  <option value="4">투신</option>
+                  <option value="5">금융</option>
+                  <option value="6">기타법인</option>
+                  <option value="7">개인</option>
+                  <option value="8">보험</option>
+                  <option value="9">은행</option>
+                </select>
+            </h4>
+              <table id="dataB" class="display" style="width:100%">
+                <tr><td class="loading"><div class="signal"></div></td></tr>
+              </table>
+            <table id="relatedB" class="related" style="width:100%"></table>
+            <table id="infoB" class="infoTable" style="width:100%"></table>
+            <table id="finanB" class="finanTable" style="width:100%"></table>
+            <br>
+            <div id="chartB" class="sndChart" style="height: 1px"></div>
+          </div>
+        </div>
+
+
+    <div class="adsense_test">
+
+<style>
+.jazzstockmid { width: 320px; height: 100px; }
+@media(min-width: 360px) { .jazzstockmid { width: 340px; height: 60px; } }
+@media(min-width: 375px) { .jazzstockmid { width: 350px; height: 60px; } }
+@media(min-width: 500px) { .jazzstockmid { width: 468px; height: 60px; } }
+@media(min-width: 800px) { .jazzstockmid { width: 728px; height: 90px; } }
+</style>
+
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 2020MID -->
+<ins class="adsbygoogle jazzstockmid"
+     style="display:inline-block"
+     data-ad-client="ca-pub-7952244387820356"
+     data-ad-slot="2353085386"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    </div>
+
+    <hr>
+        <div class="row">
+          <div class="cont">
+            <h4><select id="selectCA")>
+                  <option value="0">기관</option>
+                  <option value="1">외인</option>
+                  <option value="2">연기금</option>
+                  <option value="3">사모펀드</option>
+                  <option value="4">투신</option>
+                  <option value="5">금융</option>
+                  <option value="6">기타법인</option>
+                  <option value="7">개인</option>
+                  <option value="8">보험</option>
+                  <option value="9">은행</option>
+                </select><select id="selectCB" onchange="changeTable('C')">
+                  <option value="0">기관</option>
+                  <option value="1">외인</option>
+                  <option value="2">연기금</option>
+                  <option value="3">사모펀드</option>
+                  <option value="4">투신</option>
+                  <option value="5">금융</option>
+                  <option value="6">기타법인</option>
+                  <option value="7">개인</option>
+                  <option value="8">보험</option>
+                  <option value="9">은행</option>
+                </select>
+            </h4>
+              <table id="dataC" class="display" style="width:100%">
+                <tr><td class="loading"><div class="signal"></div></td></tr>
+              </table>
+            <table id="relatedC" class="related" style="width:100%"></table>
+            <table id="infoC" class="infoTable" style="width:100%"></table>
+            <table id="finanC" class="finanTable" style="width:100%"></table>
+            <br>
+            <div id="chartC" class="sndChart" style="height: 1px"></div>
+          </div>
+        </div>
+
+    <hr>
+
+        <div class="row">
+          <div class="cont">
+            <h4><select id="selectDA">
+                  <option value="0">기관</option>
+                  <option value="1">외인</option>
+                  <option value="2">연기금</option>
+                  <option value="3">사모펀드</option>
+                  <option value="4">투신</option>
+                  <option value="5">금융</option>
+                  <option value="6">기타법인</option>
+                  <option value="7">개인</option>
+                  <option value="8">보험</option>
+                  <option value="9">은행</option>
+                </select><select id="selectDB" onchange="changeTable('D')">
+                  <option value="0">기관</option>
+                  <option value="1">외인</option>
+                  <option value="2">연기금</option>
+                  <option value="3">사모펀드</option>
+                  <option value="4">투신</option>
+                  <option value="5">금융</option>
+                  <option value="6">기타법인</option>
+                  <option value="7">개인</option>
+                  <option value="8">보험</option>
+                  <option value="9">은행</option>
+                </select>
+            </h4>
+              <table id="dataD" class="display" style="width:100%">
+                <tr><td class="loading"><div class="signal"></div></td></tr>
+              </table>
+
+            <table id="relatedD" class="related" style="width:100%"></table>
+          <table id="infoD" class="infoTable" style="width:100%"></table>
+          <table id="finanD" class="finanTable" style="width:100%"></table>
+          <br>
+          <div id="chartD" class="sndChart" style="height: 1px"></div>
+          </div>
+        </div>
+
+    <hr>
+    </div>
+    <div class>
+      <p>문의 : jazztronomers@gmail.com </p>
+      <p>후원 : 우리은행 1002-455-318806</p>
+    </div>
+
+
+    </div>
+
+    <div class="adsense">
+
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- 2020FOOT -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-7952244387820356"
+             data-ad-slot="3694087211"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+
+
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- 2020TAIL -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-7952244387820356"
+             data-ad-slot="7413840373"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+
+    </div>
+</body>
