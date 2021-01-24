@@ -1,4 +1,4 @@
-from common import connector_db as db
+from jazzstock_net.app.common import connector_db as db
 from datetime import datetime as dt
 import numpy as np
 

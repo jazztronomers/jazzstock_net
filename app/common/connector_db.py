@@ -1,5 +1,5 @@
 import mysql.connector as mc
-import config.config as cs
+import jazzstock_net.app.config.config as cs
 import pandas as pd
 import time
 
