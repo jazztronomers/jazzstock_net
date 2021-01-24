@@ -1,4 +1,4 @@
-function search(data,flag,chartId) {
+function search(data, flag, chartId) {
 
 
 if(data.length ==0) {
@@ -94,7 +94,11 @@ var sy = new Array;
 var ht = new Array;
 var ct = new Array;
 
+
+
+console.log(' * CHART RENDERING...' , data[0].STOCKCODE, data.length)
 for(var i = 0; i <data.length; i++){
+
     data_array.push([data[i].OPEN, data[i].CLOSE, data[i].LOW, data[i].HIGH, data[i].VOLUME, data[i].DATE]);
     volumes.push(data[i].VOLUME);
     shortbalance.push(data[i].SBAL)
@@ -203,6 +207,8 @@ var dataMA120 = calculateMA(120, data_array);
 var labelFont = 'bold 12px Sans-serif';
 var upColor = '#0008ff';
 var downColor = '#ec0000';
+
+
 
 var myChart = echarts.init(document.getElementById(chartId));
 

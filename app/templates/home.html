@@ -6,13 +6,18 @@
 
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main_mobile.css') }}">
-
 <script type="text/javascript" charset="utf8" src="/static/js/datatables.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
+
+<!--JAZZSTOCK JS -->
+<script type="text/javascript" src="static/js/jazzstock_mobile.js"></script>
+<script type="text/javascript" src="static/js/echarts.min.js"></script>
+<script type="text/javascript" src="static/js/sndChart_mobile.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+
+<!--META -->
 <meta property="og:title" content="Jazzstock" />
 <meta property="og:type" content="article" />
 <meta property="og:description" content="수급분석, 수급차트, 창구분석, 거래원분석" />
@@ -34,35 +39,38 @@
 
 
 
-<script type="text/javascript" src="static/js/jazzstock_mobile.js"></script>
-<script type="text/javascript" src="static/js/echarts.min.js"></script>
-<script type="text/javascript" src="static/js/sndChart_mobile.js"></script>
-<script src="static/js/sorttable.js"></script>
+
+
+<!--<script>-->
+<!--// Get the element with id="defaultOpen" and click on it-->
+<!--document.getElementById("defaultOpen").click();-->
+<!--</script>-->
 
 
 <body>
 
-<style>
-.jazzstockhead { width: 320px; height: 100px; }
-@media(min-width: 360px) { .jazzstockhead { width: 340px; height: 60px; } }
-@media(min-width: 375px) { .jazzstockhead { width: 350px; height: 60px; } }
-@media(min-width: 500px) { .jazzstockhead { width: 468px; height: 60px; } }
-@media(min-width: 800px) { .jazzstockhead { width: 728px; height: 90px; } }
-</style>
+    <style>
+    .jazzstockhead { width: 320px; height: 100px; }
+    @media(min-width: 360px) { .jazzstockhead { width: 340px; height: 60px; } }
+    @media(min-width: 375px) { .jazzstockhead { width: 350px; height: 60px; } }
+    @media(min-width: 500px) { .jazzstockhead { width: 468px; height: 60px; } }
+    @media(min-width: 800px) { .jazzstockhead { width: 728px; height: 90px; } }
+    </style>
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- 2020HEAD -->
-<ins class="adsbygoogle jazzstockhead"
-     style="display:inline-block"
-     data-ad-client="ca-pub-7952244387820356"
-     data-ad-slot="4979248724"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- 2020HEAD -->
+    <ins class="adsbygoogle jazzstockhead"
+         style="display:inline-block"
+         data-ad-client="ca-pub-7952244387820356"
+         data-ad-slot="4979248724"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
 
 
     <div>
-          <h2><a href="/info">Jazzstock PC</a></h2>
+          <h2>Jazzstock PC</h2>
+          <h2><div id="loginstatus">{{login_status}}</div></h2>
           <!--<h2><a href="/wide">Jazzstock WIDE</a></h2> -->
           <div class="textSearch">
             <input id="search" type="text" placeholder="종목명 / 종목코드" onkeypress="clickPress(event,document.getElementById('search').value,'chartS')">
@@ -72,6 +80,8 @@
               <a href="#" onclick="foldSearchingOption()">개인설정</a>&nbsp;
               <a href="#" onclick="description()">사용법</a><br>
               <a href="#" onclick="removeall()">검색결과 지우기</a>
+              <!-- -->
+              <br><a href="#" onclick="addTabToQueue(this.value)">검색결과 지우기</a>
 
           <div id='searchingOption' style="display: none">
               <hr>
@@ -187,245 +197,223 @@
               <br>
 
 
-        </div>
-        <div id='description' style="display: none">
+    </div>
+
+    <div id='description' style="display: none">
 
 
-              <p><a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
-              <p><b>더 자세히?</b></p>
-              <p><a href="rubenchu.blog.me" >개발자블로그</a></p>
-              <p><a href="https://open.kakao.com/o/ge5OuYhb" >https://open.kakao.com/o/ge5OuYhb</a></p>
-              <p>입장코드 : jazz</p>
+                  <p><a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
+                  <p><b>더 자세히?</b></p>
+                  <p><a href="https://blog.naver.com/rubenchu" >개발자블로그</a></p>
+                  <p><a href="https://open.kakao.com/o/ge5OuYhb" >https://open.kakao.com/o/ge5OuYhb</a></p>
+                  <p>입장코드 : jazz</p>
 
 
     </div>
-    <table id="relatedS" class="related" style="width:100%"></table>
-    <table id="infoS" class="infoTable" style="width:100%"></table>
-    <table id="finanS" class="finanTable" style="width:100%"></table>
-    <div id="chartS" class="sndChart" style="height: 1px"></div>
-    <br>
-    <hr>
-
-
 
     <div>
-        <div class="row">
-          <div class="cont">
-            <h4>
-                <select id="selectAA">
-                  <option value="0">기관</option>
-                  <option value="1">외인</option>
-                  <option value="2">연기금</option>
-                  <option value="3">사모펀드</option>
-                  <option value="4">투신</option>
-                  <option value="5">금융</option>
-                  <option value="6">기타법인</option>
-                  <option value="7">개인</option>
-                  <option value="8">보험</option>
-                  <option value="9">은행</option>
-                </select><select id="selectAB" onchange="changeTable('A')">
-                  <option value="0">기관</option>
-                  <option value="1">외인</option>
-                  <option value="2">연기금</option>
-                  <option value="3">사모펀드</option>
-                  <option value="4">투신</option>
-                  <option value="5">금융</option>
-                  <option value="6">기타법인</option>
-                  <option value="7">개인</option>
-                  <option value="8">보험</option>
-                  <option value="9">은행</option>
-                </select>
-            </h4>
-              <table id="dataA" class="display" style="width:100%">
-                <tr><td class="loading"><div class="signal"></div></td></tr>
-              </table>
-              <table id="relatedA" class="related" style="width:100%"></table>
-              <table id="infoA" class="infoTable" style="width:100%"></table>
-              <table id="finanA" class="finanTable" style="width:100%"></table>
-              <br>
-              <div id="chartA" class="sndChart" style="height: 1px"></div>
-          </div>
+        <div>
+            <button class="tablink" onclick="openPage('main', this, 'red')" id="defaultOpen">Main</button>
+        </div>
+        <div id="tabMenu">
+<!--            <button class="tablink" onclick="openPage('tabACont', this, 'green')" id="tabA"> a</button>-->
+<!--            <button class="tablink" onclick="openPage('tabBCont', this, 'green')" id="tabB"> b</button>-->
+<!--            <button class="tablink" onclick="openPage('tabCCont', this, 'green')" id="tabC"> c</button>-->
         </div>
 
+    </div>
 
 
-    <hr>
+
+
+    <div id="main" class="tabcontent">
         <div class="row">
-          <div class="cont">
-            <h4>
-                <select id="selectBA">
-                  <option value="0">기관</option>
-                  <option value="1">외인</option>
-                  <option value="2">연기금</option>
-                  <option value="3">사모펀드</option>
-                  <option value="4">투신</option>
-                  <option value="5">금융</option>
-                  <option value="6">기타법인</option>
-                  <option value="7">개인</option>
-                  <option value="8">보험</option>
-                  <option value="9">은행</option>
-                </select><select id="selectBB" onchange="changeTable('B')">
-                  <option value="0">기관</option>
-                  <option value="1">외인</option>
-                  <option value="2">연기금</option>
-                  <option value="3">사모펀드</option>
-                  <option value="4">투신</option>
-                  <option value="5">금융</option>
-                  <option value="6">기타법인</option>
-                  <option value="7">개인</option>
-                  <option value="8">보험</option>
-                  <option value="9">은행</option>
-                </select>
-            </h4>
-              <table id="dataB" class="display" style="width:100%">
-                <tr><td class="loading"><div class="signal"></div></td></tr>
-              </table>
-            <table id="relatedB" class="related" style="width:100%"></table>
-            <table id="infoB" class="infoTable" style="width:100%"></table>
-            <table id="finanB" class="finanTable" style="width:100%"></table>
+            <div class="cont">
+            <table id="relatedS" class="related" style="width:100%"></table>
+            <table id="infoS" class="infoTable" style="width:100%"></table>
+            <table id="finanS" class="finanTable" style="width:100%"></table>
+            <div id="chartS" class="sndChart" style="height: 1px"></div>
             <br>
-            <div id="chartB" class="sndChart" style="height: 1px"></div>
-          </div>
+            <hr>
+            </div>
         </div>
 
 
-    <div class="adsense_test">
-
-<style>
-.jazzstockmid { width: 320px; height: 100px; }
-@media(min-width: 360px) { .jazzstockmid { width: 340px; height: 60px; } }
-@media(min-width: 375px) { .jazzstockmid { width: 350px; height: 60px; } }
-@media(min-width: 500px) { .jazzstockmid { width: 468px; height: 60px; } }
-@media(min-width: 800px) { .jazzstockmid { width: 728px; height: 90px; } }
-</style>
-
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- 2020MID -->
-<ins class="adsbygoogle jazzstockmid"
-     style="display:inline-block"
-     data-ad-client="ca-pub-7952244387820356"
-     data-ad-slot="2353085386"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
-    </div>
-
-    <hr>
-        <div class="row">
-          <div class="cont">
-            <h4><select id="selectCA")>
-                  <option value="0">기관</option>
-                  <option value="1">외인</option>
-                  <option value="2">연기금</option>
-                  <option value="3">사모펀드</option>
-                  <option value="4">투신</option>
-                  <option value="5">금융</option>
-                  <option value="6">기타법인</option>
-                  <option value="7">개인</option>
-                  <option value="8">보험</option>
-                  <option value="9">은행</option>
-                </select><select id="selectCB" onchange="changeTable('C')">
-                  <option value="0">기관</option>
-                  <option value="1">외인</option>
-                  <option value="2">연기금</option>
-                  <option value="3">사모펀드</option>
-                  <option value="4">투신</option>
-                  <option value="5">금융</option>
-                  <option value="6">기타법인</option>
-                  <option value="7">개인</option>
-                  <option value="8">보험</option>
-                  <option value="9">은행</option>
-                </select>
-            </h4>
-              <table id="dataC" class="display" style="width:100%">
-                <tr><td class="loading"><div class="signal"></div></td></tr>
-              </table>
-            <table id="relatedC" class="related" style="width:100%"></table>
-            <table id="infoC" class="infoTable" style="width:100%"></table>
-            <table id="finanC" class="finanTable" style="width:100%"></table>
-            <br>
-            <div id="chartC" class="sndChart" style="height: 1px"></div>
-          </div>
-        </div>
-
-    <hr>
 
         <div class="row">
-          <div class="cont">
-            <h4><select id="selectDA">
-                  <option value="0">기관</option>
-                  <option value="1">외인</option>
-                  <option value="2">연기금</option>
-                  <option value="3">사모펀드</option>
-                  <option value="4">투신</option>
-                  <option value="5">금융</option>
-                  <option value="6">기타법인</option>
-                  <option value="7">개인</option>
-                  <option value="8">보험</option>
-                  <option value="9">은행</option>
-                </select><select id="selectDB" onchange="changeTable('D')">
-                  <option value="0">기관</option>
-                  <option value="1">외인</option>
-                  <option value="2">연기금</option>
-                  <option value="3">사모펀드</option>
-                  <option value="4">투신</option>
-                  <option value="5">금융</option>
-                  <option value="6">기타법인</option>
-                  <option value="7">개인</option>
-                  <option value="8">보험</option>
-                  <option value="9">은행</option>
-                </select>
-            </h4>
-              <table id="dataD" class="display" style="width:100%">
-                <tr><td class="loading"><div class="signal"></div></td></tr>
-              </table>
-
-            <table id="relatedD" class="related" style="width:100%"></table>
-          <table id="infoD" class="infoTable" style="width:100%"></table>
-          <table id="finanD" class="finanTable" style="width:100%"></table>
-          <br>
-          <div id="chartD" class="sndChart" style="height: 1px"></div>
-          </div>
+            <div class="cont">
+                <h4>
+                    <select id="selectAA">
+                      <option value="0">기관</option>
+                      <option value="1">외인</option>
+                      <option value="2">연기금</option>
+                      <option value="3">사모펀드</option>
+                      <option value="4">투신</option>
+                      <option value="5">금융</option>
+                      <option value="6">기타법인</option>
+                      <option value="7">개인</option>
+                      <option value="8">보험</option>
+                      <option value="9">은행</option>
+                    </select><select id="selectAB" onchange="changeTable('A')">
+                      <option value="0">기관</option>
+                      <option value="1">외인</option>
+                      <option value="2">연기금</option>
+                      <option value="3">사모펀드</option>
+                      <option value="4">투신</option>
+                      <option value="5">금융</option>
+                      <option value="6">기타법인</option>
+                      <option value="7">개인</option>
+                      <option value="8">보험</option>
+                      <option value="9">은행</option>
+                    </select>
+                </h4>
+                <table id="dataA" class="display" style="width:100%">
+                    <tr><td class="loading"><div class="signal"></div></td></tr>
+                </table>
+<!--                <table id="relatedA" class="related" style="width:100%"></table>-->
+<!--                <table id="infoA" class="infoTable" style="width:100%"></table>-->
+<!--                <table id="finanA" class="finanTable" style="width:100%"></table>-->
+<!--                <div id="chartA" class="sndChart" style="height: 1px"></div>-->
+            </div>
         </div>
 
-    <hr>
+
+
+
+
+
+<!--        <div class="adsense_test">-->
+
+<!--            <style>-->
+<!--            .jazzstockmid { width: 320px; height: 100px; }-->
+<!--            @media(min-width: 360px) { .jazzstockmid { width: 340px; height: 60px; } }-->
+<!--            @media(min-width: 375px) { .jazzstockmid { width: 350px; height: 60px; } }-->
+<!--            @media(min-width: 500px) { .jazzstockmid { width: 468px; height: 60px; } }-->
+<!--            @media(min-width: 800px) { .jazzstockmid { width: 728px; height: 90px; } }-->
+<!--            </style>-->
+
+
+<!--            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+<!--            &lt;!&ndash; 2020MID &ndash;&gt;-->
+<!--            <ins class="adsbygoogle jazzstockmid"-->
+<!--                 style="display:inline-block"-->
+<!--                 data-ad-client="ca-pub-7952244387820356"-->
+<!--                 data-ad-slot="2353085386"></ins>-->
+<!--            <script>-->
+<!--                 (adsbygoogle = window.adsbygoogle || []).push({});-->
+<!--            </script>-->
+
+<!--        </div>-->
+<!--        <hr>-->
+<!--        <div class="row">-->
+<!--            <div class="cont">-->
+<!--                <h4><select id="selectDA")>-->
+<!--                      <option value="0">기관</option>-->
+<!--                      <option value="1">외인</option>-->
+<!--                      <option value="2">연기금</option>-->
+<!--                      <option value="3">사모펀드</option>-->
+<!--                      <option value="4">투신</option>-->
+<!--                      <option value="5">금융</option>-->
+<!--                      <option value="6">기타법인</option>-->
+<!--                      <option value="7">개인</option>-->
+<!--                      <option value="8">보험</option>-->
+<!--                      <option value="9">은행</option>-->
+<!--                    </select><select id="selectDB" onchange="changeTable('D')">-->
+<!--                      <option value="0">기관</option>-->
+<!--                      <option value="1">외인</option>-->
+<!--                      <option value="2">연기금</option>-->
+<!--                      <option value="3">사모펀드</option>-->
+<!--                      <option value="4">투신</option>-->
+<!--                      <option value="5">금융</option>-->
+<!--                      <option value="6">기타법인</option>-->
+<!--                      <option value="7">개인</option>-->
+<!--                      <option value="8">보험</option>-->
+<!--                      <option value="9">은행</option>-->
+<!--                    </select>-->
+<!--                </h4>-->
+<!--                <table id="dataD" class="display" style="width:100%">-->
+<!--                    <tr><td class="loading"><div class="signal"></div></td></tr>-->
+<!--                </table>-->
+<!--                <table id="relatedD" class="related" style="width:100%"></table>-->
+<!--                <table id="infoD" class="infoTable" style="width:100%"></table>-->
+<!--                <table id="finanD" class="finanTable" style="width:100%"></table>-->
+<!--                <br>-->
+<!--                <div id="chartD" class="sndChart" style="height: 1px"></div>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
-    <div class>
-      <p>문의 : jazztronomers@gmail.com </p>
-      <p>후원 : 우리은행 1002-455-318806</p>
+
+    <div id="tabConts">
     </div>
+
+    <br><hr>
+
+    <div id="footer">
+        <p>문의 : jazztronomers@gmail.com </p>
+        <p>후원 : 우리은행 1002-455-318806</p>
+    </div>
+
+
+    <button class="open-button" onclick="openForm()">LOGIN</button>
+
+    <div class="form-popup" id="myForm">
+      <form id ="login" action="/login" method="post" class="form-container">
+        <h1>Login</h1>
+
+        <label for="id"><b>Email</b></label>
+        <input type="text" placeholder="Enter Email" name="id" id="id" required>
+
+        <label for="pw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="pw" id="pw" required>
+
+        <button type="submit" class="btn">Login</button>
+        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+      </form>
+    </div>
+
+<!--    <div>-->
+<!--         <p>This is the main content. To display a lightbox click-->
+<!--             <a href="javascript:void(0)" onclick="document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'">-->
+<!--                 here-->
+<!--             </a>-->
+<!--         </p>-->
+<!--         <div id="light" class="white_content">This is the lightbox content.-->
+<!--             <a href="javascript:void(0)" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">-->
+<!--                 Close-->
+<!--             </a>-->
+<!--         </div>-->
+<!--         <div id="fade" class="black_overlay"></div>-->
+<!--    </div>-->
 
 
     </div>
 
     <div class="adsense">
 
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- 2020FOOT -->
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-7952244387820356"
-             data-ad-slot="3694087211"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- 2020FOOT -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-7952244387820356"
+                 data-ad-slot="3694087211"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
 
 
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- 2020TAIL -->
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-7952244387820356"
-             data-ad-slot="7413840373"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- 2020TAIL -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-7952244387820356"
+                 data-ad-slot="7413840373"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
 
-    </div>
+        </div>
 </body>

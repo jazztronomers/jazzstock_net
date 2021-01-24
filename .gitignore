@@ -1,2 +1,8 @@
 *.log
 constant.py
+.ipynb_checkpoints
+__pycache__
+*.pyc
+log/*.log
+app/config/config.py
+
