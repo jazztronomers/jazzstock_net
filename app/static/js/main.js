@@ -483,7 +483,7 @@ function render_table(tableId, response){
             { width: 70, targets: 0 },
 
             // FAV
-            { width: 15, targets: 1},
+            { width: 18, targets: 1},
 
             // MC
             { width: 25, targets: 2, render: $.fn.dataTable.render.number(',', '.', 1, '')},
@@ -513,7 +513,7 @@ function render_table(tableId, response){
             { width: 30, targets: [41,42,43] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
 
             // CATEGORY
-            { width: 140, targets: [44] },
+            { width: 200, targets: [44] },
 
             { width: 60, targets: [45] },
 
