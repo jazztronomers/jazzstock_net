@@ -135,7 +135,7 @@ def getEmailConfirmationCode():
 
         send_mail(from_mail='jazztronomers@gmail.com',
                   to_mail=email,
-                  app_pw='xikpzqcgegkzuyvx',
+                  app_pw='configurable하게 수정하도록',
                   code=confirmation_code)
 
         return jsonify({'result':True})
