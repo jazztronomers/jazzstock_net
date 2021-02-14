@@ -1,6 +1,9 @@
 from jazzstock_net.app.common import connector_db as db
 from datetime import datetime as dt
 import numpy as np
+import pandas as pd
+
+pd.options.display.max_rows = 2500
 
 class DataAccessObjectStock:
 
@@ -128,8 +131,6 @@ class DataAccessObjectStock:
             ''' % (date, order, by, limit)
 
         fullquery = queryhead + querycont + querytail + queryend
-
-        # print(fullquery)
         df = db.selectpd(fullquery)
         rtdf = df[df.columns[2:]].round(4)
         if method == 'dataframe':
@@ -145,10 +146,12 @@ class DataAccessObjectStock:
         rtdf = self.sndRank(target, interval, order, by, method='dataframe', limit=limit, usercode=usercode)
 
         t2 = dt.now()
-        float_columns = ['P1', 'P5', 'P20', 'P60', 'P120', 'P240','I1', 'I5', 'I20', 'I60', 'I120','I240', 'F1', 'F5', 'F20', 'F60', 'F120', 'F240']
+        float_columns = ['P1', 'P5', 'P20', 'P60', 'P120', 'P240', 'I1', 'I5', 'I20', 'I60', 'I120','I240', 'F1', 'F5', 'F20', 'F60', 'F120', 'F240']
+
 
         rtdf[float_columns] = rtdf[float_columns] * 100
         rtdf[float_columns] = rtdf[float_columns].round(3)
+        rtdf = rtdf.fillna(0)
         html = (
                 rtdf.style
                 .hide_index()
