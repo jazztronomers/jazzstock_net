@@ -16,7 +16,7 @@ h1 {
 
 h2 {
   font-size: 2em;
-  margin-top: 20px;
+  margin-top: 10px;
   text-align: center;
   letter-spacing: -2px;
 }
@@ -36,6 +36,15 @@ h5 {
 p {
     font-size: 0.8em;
     text-align: center;
+}
+
+#function_default {
+    font-size: 0.8em;
+    text-align: center;
+
+}
+#function_expanded {
+    font-size: 0.8em;
 }
 
 
@@ -129,6 +138,11 @@ table.DTFC_Cloned {
     height: 1500px;
 }
 
+input[type=checkbox] {
+    height: 11px;
+	width: 11px
+}
+/*
 input[type=text] {
   width: 80%;
   box-sizing: border-box;
@@ -155,6 +169,7 @@ input[type="button"] {
     -moz-appearance: none;
     appearance: none;
 }
+*/
 
 .adsense {
     margin:0 0;

@@ -5,14 +5,17 @@
 
 
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/main_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 <script type="text/javascript" charset="utf8" src="/static/js/datatables.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.22/sorting/natural.js"></script>
 
 <!--JAZZSTOCK JS -->
-<script type="text/javascript" src="static/js/jazzstock_mobile.js"></script>
+
+<script type="text/javascript" src="static/js/open.js"></script>
+<script type="text/javascript" src="static/js/main.js"></script>
 <script type="text/javascript" src="static/js/echarts.min.js"></script>
-<script type="text/javascript" src="static/js/sndChart_mobile.js"></script>
+<script type="text/javascript" src="static/js/sndChart.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
@@ -36,17 +39,6 @@
       gtag('js', new Date());
       gtag('config', 'UA-132476295-1');
 </script>
-
-
-
-
-
-<!--<script>-->
-<!--// Get the element with id="defaultOpen" and click on it-->
-<!--document.getElementById("defaultOpen").click();-->
-<!--</script>-->
-
-
 <body>
 
     <style>
@@ -65,183 +57,119 @@
          data-ad-slot="4979248724"></ins>
     <script>
          (adsbygoogle = window.adsbygoogle || []).push({});
+         var session = {{ session | tojson | safe }}
     </script>
 
 
-    <div>
-          <h2>Jazzstock PC</h2>
-          <h2><div id="loginstatus">{{login_status}}</div></h2>
-          <!--<h2><a href="/wide">Jazzstock WIDE</a></h2> -->
-          <div class="textSearch">
-            <input id="search" type="text" placeholder="종목명 / 종목코드" onkeypress="clickPress(event,document.getElementById('search').value,'chartS')">
-            <input type="button" onclick="getChartData(document.getElementById('search').value,'chartS')" value="SEARCH">
-          </div>
-          <p>
-              <a href="#" onclick="foldSearchingOption()">개인설정</a>&nbsp;
-              <a href="#" onclick="description()">사용법</a><br>
-              <a href="#" onclick="removeall()">검색결과 지우기</a>
-              <!-- -->
-              <br><a href="#" onclick="addTabToQueue(this.value)">검색결과 지우기</a>
-
-          <div id='searchingOption' style="display: none">
-              <hr>
-
-              <p>
-                  테이블A:<select id="jazzstock_table_a1">
-                  <option value="0">기관</option><option value="1">외인</option>
-                  <option value="2">연기금</option><option value="3">사모펀드</option>
-                  <option value="4">투신</option><option value="5">금융</option>
-                  <option value="6">기타법인</option><option value="7">개인</option>
-                  <option value="8">보험</option><option value="9">은행</option>
-                </select><select id="jazzstock_table_a2">
-                  <option value="0">기관</option><option value="1">외인</option>
-                  <option value="2">연기금</option><option value="3">사모펀드</option>
-                  <option value="4">투신</option><option value="5">금융</option>
-                  <option value="6">기타법인</option><option value="7">개인</option>
-                  <option value="8">보험</option><option value="9">은행</option>
-                </select><br>
-                  테이블B:<select id="jazzstock_table_b1">
-                  <option value="0">기관</option><option value="1">외인</option>
-                  <option value="2">연기금</option><option value="3">사모펀드</option>
-                  <option value="4">투신</option><option value="5">금융</option>
-                  <option value="6">기타법인</option><option value="7">개인</option>
-                  <option value="8">보험</option><option value="9">은행</option>
-                </select><select id="jazzstock_table_b2">
-                  <option value="0">기관</option><option value="1">외인</option>
-                  <option value="2">연기금</option><option value="3">사모펀드</option>
-                  <option value="4">투신</option><option value="5">금융</option>
-                  <option value="6">기타법인</option><option value="7">개인</option>
-                  <option value="8">보험</option><option value="9">은행</option>
-                </select><br>
-                  테이블C:<select id="jazzstock_table_c1">
-                  <option value="0">기관</option><option value="1">외인</option>
-                  <option value="2">연기금</option><option value="3">사모펀드</option>
-                  <option value="4">투신</option><option value="5">금융</option>
-                  <option value="6">기타법인</option><option value="7">개인</option>
-                  <option value="8">보험</option><option value="9">은행</option>
-                </select><select id="jazzstock_table_c2">
-                  <option value="0">기관</option><option value="1">외인</option>
-                  <option value="2">연기금</option><option value="3">사모펀드</option>
-                  <option value="4">투신</option><option value="5">금융</option>
-                  <option value="6">기타법인</option><option value="7">개인</option>
-                  <option value="8">보험</option><option value="9">은행</option>
-                </select><br>
-                  테이블D:<select id="jazzstock_table_d1">
-                  <option value="0">기관</option><option value="1">외인</option>
-                  <option value="2">연기금</option><option value="3">사모펀드</option>
-                  <option value="4">투신</option><option value="5">금융</option>
-                  <option value="6">기타법인</option><option value="7">개인</option>
-                  <option value="8">보험</option><option value="9">은행</option>
-                </select><select id="jazzstock_table_d2">
-                  <option value="0">기관</option><option value="1">외인</option>
-                  <option value="2">연기금</option><option value="3">사모펀드</option>
-                  <option value="4">투신</option><option value="5">금융</option>
-                  <option value="6">기타법인</option><option value="7">개인</option>
-                  <option value="8">보험</option><option value="9">은행</option>
-                </select><br>
-
-
-              </p>
-
-
-
-              <p>
-                  조회기간:
-                       <input type="checkbox" name='interval' value="1" ><span>1</span>
-                       <input type="checkbox" name='interval' value="3"><span>3</span>
-                       <input type="checkbox" name='interval' value="5"><span>5</span>
-                       <input type="checkbox" name='interval' value="20"><span>20</span>
-                       <input type="checkbox" name='interval' value="60"><span>60</span>
-                       <input type="checkbox" name='interval' value="120"><span>120</span>
-                       <input type="checkbox" name='interval' value="240"><span>240</span>
-
-              </p>
-
-              <p>
-                  정렬기준:
-                       <input type="radio" name='orderby' value="1" ><span>1</span>
-                       <input type="radio" name='orderby' value="3" ><span>3</span>
-                       <input type="radio" name='orderby' value="5" ><span>5</span>
-                       <input type="radio" name='orderby' value="20"><span>20</span>
-                       <input type="radio" name='orderby' value="60"><span>60</span>
-                       <input type="radio" name='orderby' value="120"><span>120</span>
-                       <input type="radio" name='orderby' value="240"><span>240</span>
-              </p>
-
-
-
-              <p><a href="#" onclick="setStorage(); location.reload();">설정값 저장 및 새로고침</a></p>
-              <p><b>* 설정값은 다음 방문시에도 적용됩니다 :)</b></p>
-              <hr>
-
-              <p><b>테이블?</b></p>
-              <p>위에서 부터 A, B, C, D 테이블입니다</p>
-              <p>왼쪽 주체기준으로 정렬되며, 우측은 참고주체입니다</p>
-        <p><u>개인설정 탭에서 저장한 값은 다음방문시에도 적용됩니다</u></p>
-              <p>개인설정 화면이 아닌, 테이블 상단에 셀렉트 박스의 경우, 1회성 검색으로</p>
-              <p>우측 박스를 변경시 해당조합으로 테이블이 새롭게 생성됩니다</p>
-              <p>같은 주체를 선택하면 에러가 발생합니다, 나중에 수정하겠습니다.</p>
-              <br>
-
-              <p><b>조회기간이란?</b></p>
-              <p>수익률, 수급지표들이 선택하신 거래일기준 누적값으로 추출됩니다</p>
-              <p>Maximum 3개까지 지원합니다</p>
-
-              <br>
-
-              <p><b>정렬?</b></p>
-              <p>출력된 데이터가 선택하신 기준일자로 내림차순 정렬됩니다</p>
-              <p>현재는 기관, 외인, 사모펀드, 연기금 네개의 테이블을 제공하고있습니다</p>
-              <p>따라서 5를 선택한 경우, 기관테이블은 I5내림차순으로 정렬됩니다</p>
-
-              <br>
-
-
+    <div id="header">
+        <h2>Jazzstock</h2>
     </div>
-
-    <div id='description' style="display: none">
-
-
-                  <p><a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
-                  <p><b>더 자세히?</b></p>
-                  <p><a href="https://blog.naver.com/rubenchu" >개발자블로그</a></p>
-                  <p><a href="https://open.kakao.com/o/ge5OuYhb" >https://open.kakao.com/o/ge5OuYhb</a></p>
-                  <p>입장코드 : jazz</p>
-
-
-    </div>
-
-    <div>
-        <div>
-            <button class="tablink" onclick="openPage('main', this, 'red')" id="defaultOpen">Main</button>
-        </div>
-        <div id="tabMenu">
-<!--            <button class="tablink" onclick="openPage('tabACont', this, 'green')" id="tabA"> a</button>-->
-<!--            <button class="tablink" onclick="openPage('tabBCont', this, 'green')" id="tabB"> b</button>-->
-<!--            <button class="tablink" onclick="openPage('tabCCont', this, 'green')" id="tabC"> c</button>-->
-        </div>
-
-    </div>
+    <div id="menu">
+        <div id="function_default">
+            <div id="menu_loggedin">
+                <div id="notloggedin">
+                    <a href="/register">회원가입</a>
+                    <a href="#" onclick="openForm()">로그인</a>
+                    <a href="#" onclick="description()">사용방법</a>
+                </div>
+                <div id="loggedin" style="display: none">
+                    <a href="#">프로필수정(개발중)</a>
+                    <a href="#" onclick="logout()">로그아웃</a>
+                    <a href="#" onclick="description()">사용방법</a>
+                </div>
+            </div>
+            <div id="menu_user_class">
+                <div id="only_admin" style="display: none">
+                    <a href="#" onclick="foldSearchingOption()">개인설정</a>
+                    <a href="#" onclick="clearStorage()">로컬스토리지 지우기</a>
+                    <a href="#" onclick="getFavorite()">getFavorite</a>
+                    <label for="filter_mc_max">Test A</label>
+                        <input type="text" id="filter_mc_max">
+                        <a href="#" onclick="setBuiltinFilter('filter_mc_max', 'mc_max');">SET MCMAX</a><br>
 
 
-
-
-    <div id="main" class="tabcontent">
-        <div class="row">
-            <div class="cont">
-            <table id="relatedS" class="related" style="width:100%"></table>
-            <table id="infoS" class="infoTable" style="width:100%"></table>
-            <table id="finanS" class="finanTable" style="width:100%"></table>
-            <div id="chartS" class="sndChart" style="height: 1px"></div>
-            <br>
-            <hr>
+                    <label for="filter_i5_min">Test B</label>
+                        <input type="text" id="filter_i5_min">
+                        <a href="#" onclick="setBuiltinFilter('filter_i5_min', 'i5_min');">SET MCMAX</a><br>
+                    <br>
+                </div>
+                <div id="only_member" style="display: none">
+                        <a href="#" onclick="hideColumn()">테이블 확장</a><br>
+                </div>
             </div>
         </div>
+        <div id="function_expanded">
+            <div id="only_supporter" style="display: none">
+                    <hr>
+                    <a href="#" onclick="setFavorite()">즐겨찾기 업데이트</a> - 아래 테이블에 FAV체크한 종목을 즐겨찾기종목으로 저장합니다.<br><br>
+                    <br>
+                    <div id='customFilter'>
+
+                        <label for="filter_a">Filter Keyword A:</label>
+                        <input type="text" id="filter_a" placeholder="종목 카테고리를 입력하세요">
+                        <a href="#" onclick="setCustomFilter('filter_a');">필터적용</a><br>
+
+                        <label for="filter_b">Filter Keyword B:</label>
+                        <input type="text" id="filter_b" placeholder="ex) 반도체">
+                        <a href="#" onclick="setCustomFilter('filter_b');">필터적용</a><br>
+
+                        <label for="filter_c">Filter Keyword C:</label>
+                        <input type="text" id="filter_c" placeholder="ex) 2차전지">
+                        <a href="#" onclick="setCustomFilter('filter_c');">필터적용</a><br>
+
+                        <label for="filter_c">Filter Keyword D:</label>
+                        <input type="text" id="filter_d" placeholder="ex) 삼성">
+                        <a href="#" onclick="setCustomFilter('filter_e');">필터적용</a><br>
+
+                        <label for="filter_c">Filter Keyword E:</label>
+                        <input type="text" id="filter_e" placeholder="ex) LUMUMDMU">
+                        <a href="#" onclick="setCustomFilter('filter_e');">필터적용</a><br>
+                    </div>
+                    <div id='builtinFilter' style="display: none">
+                        <label for="filter_mc">Filter MarketCap:</label>
+                        <input type="text" id="mc_min" class="filter_gauge_min" placeholder="시가총액 최소값"><input type="text" id="mc_max"placeholder="시가총액 최대값"><br>
+                        <input type="text" id="i5_min" class="filter_gauge_min" style="display:none"><input type="text" id="i5_max" style="display:none">
+                    </div>
+            </div>
 
 
 
+        </div>
+        <div class="form-popup" id="myForm">
+                <form id ="login" class="form-container">
+                <h1>Login</h1>
+
+                <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter Email" name="email" id="email" required>
+
+                <label for="pw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="pw" id="pw" required>
+
+                <input type="button"  class="btn" onclick='login();' value="Login">
+                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+                </form>
+        </div>
+        <div id='description' style="display: none">
+            <p><a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
+            <p><b>2021년2월14일 회원가입 및 개인화기능 추가개발하였습니다</b></p>
+            <p><b>사용법 가이드문서 현행화는 차차 진행하겠습니다.</b></p>
+            <p><a href="https://blog.naver.com/rubenchu" >개발자블로그</a></p>
+            <p><a href="https://open.kakao.com/o/ge5OuYhb" >https://open.kakao.com/o/ge5OuYhb</a></p>
+            <p>입장코드 : jazz</p>
+        </div>
+    </div>
+    <div id="tab_bar">
+        <div>
+            <button class="tablink" onclick="openPage('main', this, 'red')" id="defaultOpen">Main</button>
+            <button class="tablink" onclick="getRealtime()">Realtime</button>
+        </div>
+        <div id="tabMenu">
+        </div>
+        <hr>
+    </div>
+    <div id="main" class="tabcontent" style="display:block">
         <div class="row">
-            <div class="cont">
+            <div class="card">
                 <h4>
                     <select id="selectAA">
                       <option value="0">기관</option>
@@ -270,20 +198,60 @@
                 <table id="dataA" class="display" style="width:100%">
                     <tr><td class="loading"><div class="signal"></div></td></tr>
                 </table>
-<!--                <table id="relatedA" class="related" style="width:100%"></table>-->
-<!--                <table id="infoA" class="infoTable" style="width:100%"></table>-->
-<!--                <table id="finanA" class="finanTable" style="width:100%"></table>-->
-<!--                <div id="chartA" class="sndChart" style="height: 1px"></div>-->
             </div>
         </div>
+    </div>
+    <div id="tabConts"></div>
+    <div id="realtime"></div>
 
 
 
+    <div id="footer">
+        <div id="footer_mine">
+            <br><hr>
+            <p>문의 : jazztronomers@gmail.com </p>
+            <p>후원 : 우리은행 1002-455-318806</p>
+        </div>
+        <div id="footer_adsense">
+            <div class="adsense">
+
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- 2020FOOT -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-7952244387820356"
+                     data-ad-slot="3694087211"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+
+
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- 2020TAIL -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-7952244387820356"
+                     data-ad-slot="7413840373"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+
+        </div>
+    </div>
+
+
+
+    </div>
+
+</body>
 
 
 
 <!--        <div class="adsense_test">-->
-
 <!--            <style>-->
 <!--            .jazzstockmid { width: 320px; height: 100px; }-->
 <!--            @media(min-width: 360px) { .jazzstockmid { width: 340px; height: 60px; } }-->
@@ -291,8 +259,6 @@
 <!--            @media(min-width: 500px) { .jazzstockmid { width: 468px; height: 60px; } }-->
 <!--            @media(min-width: 800px) { .jazzstockmid { width: 728px; height: 90px; } }-->
 <!--            </style>-->
-
-
 <!--            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
 <!--            &lt;!&ndash; 2020MID &ndash;&gt;-->
 <!--            <ins class="adsbygoogle jazzstockmid"-->
@@ -302,118 +268,4 @@
 <!--            <script>-->
 <!--                 (adsbygoogle = window.adsbygoogle || []).push({});-->
 <!--            </script>-->
-
 <!--        </div>-->
-<!--        <hr>-->
-<!--        <div class="row">-->
-<!--            <div class="cont">-->
-<!--                <h4><select id="selectDA")>-->
-<!--                      <option value="0">기관</option>-->
-<!--                      <option value="1">외인</option>-->
-<!--                      <option value="2">연기금</option>-->
-<!--                      <option value="3">사모펀드</option>-->
-<!--                      <option value="4">투신</option>-->
-<!--                      <option value="5">금융</option>-->
-<!--                      <option value="6">기타법인</option>-->
-<!--                      <option value="7">개인</option>-->
-<!--                      <option value="8">보험</option>-->
-<!--                      <option value="9">은행</option>-->
-<!--                    </select><select id="selectDB" onchange="changeTable('D')">-->
-<!--                      <option value="0">기관</option>-->
-<!--                      <option value="1">외인</option>-->
-<!--                      <option value="2">연기금</option>-->
-<!--                      <option value="3">사모펀드</option>-->
-<!--                      <option value="4">투신</option>-->
-<!--                      <option value="5">금융</option>-->
-<!--                      <option value="6">기타법인</option>-->
-<!--                      <option value="7">개인</option>-->
-<!--                      <option value="8">보험</option>-->
-<!--                      <option value="9">은행</option>-->
-<!--                    </select>-->
-<!--                </h4>-->
-<!--                <table id="dataD" class="display" style="width:100%">-->
-<!--                    <tr><td class="loading"><div class="signal"></div></td></tr>-->
-<!--                </table>-->
-<!--                <table id="relatedD" class="related" style="width:100%"></table>-->
-<!--                <table id="infoD" class="infoTable" style="width:100%"></table>-->
-<!--                <table id="finanD" class="finanTable" style="width:100%"></table>-->
-<!--                <br>-->
-<!--                <div id="chartD" class="sndChart" style="height: 1px"></div>-->
-<!--            </div>-->
-<!--        </div>-->
-    </div>
-
-    <div id="tabConts">
-    </div>
-
-    <br><hr>
-
-    <div id="footer">
-        <p>문의 : jazztronomers@gmail.com </p>
-        <p>후원 : 우리은행 1002-455-318806</p>
-    </div>
-
-
-    <button class="open-button" onclick="openForm()">LOGIN</button>
-
-    <div class="form-popup" id="myForm">
-      <form id ="login" action="/login" method="post" class="form-container">
-        <h1>Login</h1>
-
-        <label for="id"><b>Email</b></label>
-        <input type="text" placeholder="Enter Email" name="id" id="id" required>
-
-        <label for="pw"><b>Password</b></label>
-        <input type="password" placeholder="Enter Password" name="pw" id="pw" required>
-
-        <button type="submit" class="btn">Login</button>
-        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-      </form>
-    </div>
-
-<!--    <div>-->
-<!--         <p>This is the main content. To display a lightbox click-->
-<!--             <a href="javascript:void(0)" onclick="document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'">-->
-<!--                 here-->
-<!--             </a>-->
-<!--         </p>-->
-<!--         <div id="light" class="white_content">This is the lightbox content.-->
-<!--             <a href="javascript:void(0)" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">-->
-<!--                 Close-->
-<!--             </a>-->
-<!--         </div>-->
-<!--         <div id="fade" class="black_overlay"></div>-->
-<!--    </div>-->
-
-
-    </div>
-
-    <div class="adsense">
-
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <!-- 2020FOOT -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-7952244387820356"
-                 data-ad-slot="3694087211"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-
-
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <!-- 2020TAIL -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-7952244387820356"
-                 data-ad-slot="7413840373"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-
-        </div>
-</body>

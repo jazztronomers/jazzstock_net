@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+
+<script type="text/javascript" src="static/js/open.js"></script>
+<script type="text/javascript" src="static/js/register.js"></script>
+
+
+
+</head>
+  <body>
+
+  <form class="form-inline">
+    <div class="container">
+      <h1>Register</h1>
+      <p>
+        회원가입 페이지의 미관은 포기하였습니다.<br>
+        하지만 비밀번호만큼은 화면단에서 암호화되어 서버로 전송됩니다, 안심하셔도 좋습니다.<br>
+        닉네임, 비밀번호 수정페이지는 개발필요합니다, 고로 당분간 변경이 어렵습니다 :) <br>
+      </p>
+      <hr>
+
+      <label for="email"><b>Email</b></label>
+        <input type="text" placeholder="이메일 입력" name="email" id="email" onkeyup='validateEmailFormat()'>
+        <input type="button" id="button_mail" style="display:inline" onclick='sendConfirmationCodeByEmail()' value="인증코드받기" disabled>
+        <input type="text" placeholder="인증코드 입력" name="emailconfirmationcode" id="emailconfirmationcode">
+        <input type="button" id="button_confirmation" style="display:inline" onclick='checkConfirmationCodeMatches();' value="인증코드확인" disabled>
+        <span id='confirmationTimer'></span>
+        <br>
+
+      <label for="username"><b>Username</b></label>
+        <input type="text" placeholder="닉네임 입력" name="username" id="username">
+        <input type="button" id="button_check_username_dup" style="display:inline" onclick='checkDupUsername();' value="중복체크" disabled>
+        <br>
+
+      <label for="pw"><b>Password</b></label>
+        <input type="password" placeholder="비밀번호 입력" name="pw" id="pw">
+        <br>
+
+      <label for="pw_confirmation"><b>Repeat Password</b></label>
+        <input type="password" placeholder="비밀번호 확인" name="pw_confirmation" id="pw_confirmation" onkeyup='checkPasswordMatches()'>
+        <span id='confirmation_password_same'></span><br>
+      <hr>
+      <input type="button" id="button_register" style="display:inline" onclick='doRegister();' value="회원가입">
+    </div>
+
+  </form>
+
+  </body>
+</html>

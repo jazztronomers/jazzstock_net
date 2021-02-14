@@ -234,6 +234,8 @@ var myChart = echarts.init(document.getElementById(chartId));
             },
             text: data[0].STOCKNAME + '('  + data[0].STOCKCODE + ')'
         },
+
+        // 창구선택창
         legend: {
             top: width*0.9,
             left:'8%',
@@ -322,7 +324,7 @@ var myChart = echarts.init(document.getElementById(chartId));
             {
                 left: '8%',
                 right: '12%',
-                width: width*0.8,
+                width: width,
                 top: width*0.08,
                 height: width*0.24,
                 show: true
@@ -330,14 +332,14 @@ var myChart = echarts.init(document.getElementById(chartId));
             {
                 left: '8%',
                 right: '12%',
-                width: width*0.8,
+                width: width,
                 top: width*0.32,
                 height: width*0.06,
                 show: true
             },{
                 left: '8%',
                 right: '12%',
-                width: width*0.8,
+                width: width,
                 top: width*0.44,
                 height: width*0.06,
                 show: true
@@ -346,7 +348,7 @@ var myChart = echarts.init(document.getElementById(chartId));
             , {
                 left: '8%',
                 right: '12%',
-                width: width*0.8,
+                width: width,
                 top: width*0.5,
                 height: width*0.4,
                 show: true

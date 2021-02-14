@@ -4,71 +4,87 @@ import numpy as np
 
 class DataAccessObjectStock:
 
-    def sndRankRaw(self, target, interval, order, by, chartid):
+    def sndRank(self, target, interval, order, by, method='json', limit=50, usercode=0):
 
         t1 = dt.now()
         date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 0")
+
+
+        '''
+        IFNULL(P1,  'null') AS 
+        IFNULL(P5,  'null') AS 
+        IFNULL(P20, 'null') AS 
+        IFNULL(P60, 'null') AS 
+        IFNULL(P120, 'null') AS 
+        IFNULL(P240, 'null') AS
+         
+        IFNULL(I1,  'null') AS 
+        IFNULL(I5,  'null') AS 
+        IFNULL(I20, 'null') AS 
+        IFNULL(I60, 'null') AS 
+        IFNULL(F1,  'null') AS 
+        IFNULL(F5,  'null') AS 
+        IFNULL(F20, 'null') AS 
+        IFNULL(F60, 'null') AS 
+        '''
+
         queryhead = '''
 
                     SELECT CASE WHEN B.MARKET = '0' THEN '' ELSE '*' END AS MARKET
                         , A.DATE
-                        , CONCAT("<a href='#' onclick=\\"getChartData('", B.STOCKCODE, "','');\\">",B.STOCKNAME,'</a>') AS STOCKNAME     
-                        , FORMAT(MC,1) AS MC
-                        , FORMAT(ABS(CLOSE),0) AS CLOSE,
+                        , CONCAT(B.STOCKCODE, '_', B.STOCKNAME) AS  STOCKNAME
+                        , "N" AS FAV
+                        , MC
+                        , CLOSE
+                        , P1
+                        , P5
+                        , P20
+                        , P60
+                        , P120
+                        , P240
+                        , I1
+                        , I5
+                        , I20
+                        , I60
+                        , I120
+                        , I240
+                        , F1
+                        , F5
+                        , F20
+                        , F60
+                        , F120
+                        , F240
                     '''
 
-        toselect = ['P']
+        querycont = '''
+                , IR, FR, PR, YR, SR, TR
 
-        for each in target:
-            toselect.append(each)
+                , CONCAT(DIR_L4, DIR_L3, DIR_L2, DIR_L1) AS PATTERN
+                , DAYS_L4 AS L4ED 
+                , DAYS_L3 AS L3ED
+                , DAYS_L2 AS L2ED
+                , DAYS_L1 AS L1ED
+                
+                , BBW_L1 AS L4BW
+                , BBW_L2 AS L3BW
+                , BBW_L3 AS L2BW
+                , BBW_L4 AS L1BW
+                
+                , BBP_L1 AS L4BP
+                , BBP_L2 AS L3BP
+                , BBP_L3 AS L2BP
+                , BBP_L4 AS L1BP
 
-        querycont = ''
-        for eachcolumn in toselect:
-            for eachinterval in interval:
-                querycont = querycont + "round(" + str(eachcolumn) + str(eachinterval) + ',3) AS ' + str(
-                    eachcolumn) + str(eachinterval) + ', '
-
-        rankdic = {
-
-            'I': 'I',
-            'F': 'F',
-            'YG': 'Y',
-            'S': 'S',
-            'OC': 'OC',
-
-            'FN': 'FN',
-            'T': 'T',
-            'PS': 'P',
-            'IS': 'IS',
-            'BK': 'BK'
-        }
-
-        # order = order.replace('Y','YG')
-        # order = order.replace('O', 'OC')
-        # order = order.replace('I', 'YG')
-
-        # ======================================================
-        querycont = querycont + '''
-                IR, FR, PR, YR, SR, TR
-                # , SRT3 AS SH3
-                # , SBDD AS SBAL
-                # , SBDFD1 AS SBDF
-                , BBP, BBW
                 , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS cPER
                 , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS cPBR
                 , ROE
-
-
-                , CONCAT(DIR_L4, DIR_L3, DIR_L2, DIR_L1) AS PATTERN
-                , DAYS_L1, DAYS_L2, DAYS_L3, DAYS_L4
-                , BBW_L1, BBW_L2, BBW_L3, BBW_L4
-                , BBP_L1, BBP_L2, BBP_L3, BBP_L4
-
+                , CATEGORY
+                , LEFT(IFNULL(H.TIMESTAMP, '1970-01-01'), 10) AS FAV_DATE 
 
 
             '''
         # ======================================================
-        querytail = '''
+        querytail = f'''
 
                 FROM jazzdb.T_STOCK_SND_ANALYSIS_RESULT_TEMP A
                 JOIN jazzdb.T_STOCK_CODE_MGMT B USING (STOCKCODE)
@@ -85,7 +101,18 @@ class DataAccessObjectStock:
 
                 )F ON (A.STOCKCODE = F.STOCKCODE)
 
+
+				LEFT JOIN (
+					SELECT STOCKCODE, GROUP_CONCAT(CATEGORY) AS CATEGORY FROM jazzdb.T_STOCK_CATEGORY_ROBO GROUP BY 1
+                )G ON (A.STOCKCODE = G.STOCKCODE)
                 LEFT JOIN jazzdb.T_STOCK_BB I ON (A.STOCKCODE = I.STOCKCODE AND A.DATE = I.DATE)
+                LEFT JOIN (
+					SELECT STOCKCODE, TIMESTAMP
+					FROM jazzstockuser.T_USER_STOCK_FAVORITE
+                    WHERE 1=1
+                    AND USERCODE = '{usercode}'
+                    AND DELYN = 0
+                )  H ON (A.STOCKCODE = H.STOCKCODE)
                 LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
                 #=========================================================================
                 WHERE 1=1'''
@@ -95,356 +122,47 @@ class DataAccessObjectStock:
                 AND A.DATE = "%s"
                 AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
                 ORDER BY %s %s
-                LIMIT 50
+                LIMIT %s
 
 
-            ''' % (date, order, by)
+            ''' % (date, order, by, limit)
 
         fullquery = queryhead + querycont + querytail + queryend
 
-        t2 = dt.now()
+        # print(fullquery)
         df = db.selectpd(fullquery)
-        t3 = dt.now()
-
         rtdf = df[df.columns[2:]].round(4)
-
-        def color_negative_red(val):
-            """
-            Takes a scalar and returns a string with
-            the css property `'color: red'` for negative
-            strings, black otherwise.
-            """
-
-            if (val > 30):
-                color = '#ff3300'
-            elif (val > 20):
-                color = '#ff3d0d'
-            elif (val > 10):
-                color = '#ffad99'
-            elif (val > 8):
-                color = '#ffb8a6'
-            elif (val > 6):
-                color = '#ffc2b2'
-            elif (val > 4):
-                color = '#ffccbf'
-            elif (val > 2):
-                color = '#ffd6cc'
-            elif (val > 1):
-                color = '#ffe0d9'
-            elif (val > 0.5):
-                color = '#ffebe6'
-            elif (val > -0.5):
-                color = '#ffffff'
-            elif (val > -1):
-                color = '#e6f0fa'
-            elif (val > -2):
-                color = '#d9e8f7'
-            elif (val > -4):
-                color = '#cce0f5'
-            elif (val > -6):
-                color = '#bfd9f2'
-            elif (val > -8):
-                color = '#b2d1f0'
-            elif (val > -10):
-                color = '#3385d6'
-            elif (val > -20):
-                color = '#1a75d1'
-            elif (val > -30):
-                color = '#0066cc'
-            else:
-                color = '#1a47a3'
-            return 'background-color: %s' % color
-
-        #            return 'background-color: yellow'
-
-        float_columns = rtdf.select_dtypes(include=[np.float64]).columns
-        rtdf[float_columns[:-3]] = rtdf[float_columns[:-3]] * 100
-        rtdf[float_columns[:-3]] = rtdf[float_columns[:-3]].round(3)
-        html = (
-            rtdf.style
-                .hide_index()
-                .applymap(color_negative_red, subset=float_columns)
-                .set_precision(2)
-                .highlight_null('grey')
-                .render()
-        )
-
-        t4 = dt.now()
-
-        '''
-            SELECT CASE WHEN B.MARKET = '0' THEN '' ELSE '*' END AS MARKET
-            , A.DATE
-            , CONCAT("<a href='#' onclick=\"getChartData('", B.STOCKCODE, "','chartA'); return false;\">",B.STOCKNAME,'</a>') AS STOCKNAME     
-            , FORMAT(MC,1) AS MC
-            , FORMAT(ABS(CLOSE),0) AS CLOSE,
-            P1, P5, P20, I1, I5, I20, F1, F5, F20, IR
-            # , SRT3 AS SH3
-            # , SBDD AS SBAL
-            # , SBDFD1 AS SBDF
-            , BBP, BBW
-            , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS cPER
-            , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS cPBR
-            , ROE
-
-            FROM jazzdb.T_STOCK_SND_ANALYSIS_RESULT_TEMP A
-            JOIN jazzdb.T_STOCK_CODE_MGMT B USING (STOCKCODE)
-            LEFT JOIN jazzdb.T_STOCK_SND_ANALYSIS_LONGTERM D USING (STOCKCODE,DATE)
-            #=========================================================================
-            # LEFT JOIN jazzdb.T_STOCK_SHORT_ANALYSIS E USING (STOCKCODE, DATE)
-            LEFT JOIN (
-
-                        SELECT STOCKCODE, EPSC, BPS, ROE
-                        FROM jazzdb.T_STOCK_FINAN E
-                        WHERE 1=1
-                        AND DATE = '2009'
-                        AND TYPE = 'C'
-
-            )F ON (A.STOCKCODE = F.STOCKCODE)
-
-            LEFT JOIN jazzdb.T_STOCK_BB I ON (A.STOCKCODE = I.STOCKCODE AND A.DATE = I.DATE)
-            LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
-            #=========================================================================
-            WHERE 1=1
-
-            AND (I1>0 OR F1>0) 
-            AND DATE = "%s"
-            AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
-            ORDER BY I1 DESC
-
-
-        ''' % (date)
-
-        print(fullquery)
-
-        print("*", t2 - t1, 'QUERY CONCAT')
-        print("*", t3 - t2, 'QUERY EXECUTION')
-        print("*", t4 - t3, 'HTML RENDERING')
-
-        return html
-
+        if method == 'dataframe':
+            return rtdf
+        elif method =='json':
+            return rtdf.to_json(orient='split')
 
 
     # 수급테이블
-    def sndRank(self, target, interval, order, by, chartid, limit=50):
+    def sndRankHtml(self, target, interval, order, by, limit=50, usercode=0):
 
         t1 = dt.now()
-        date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 0")
-
-
-        queryhead = '''
-
-                SELECT CASE WHEN B.MARKET = '0' THEN '' ELSE '*' END AS MARKET
-                    , A.DATE
-                    , CONCAT("<a href='#' onclick=\\"getChartData('", B.STOCKCODE, "','');\\">",B.STOCKNAME,'</a>') AS STOCKNAME     
-                    , FORMAT(MC,1) AS MC
-                    , FORMAT(ABS(CLOSE),0) AS CLOSE,
-                '''
-
-        toselect = ['P']
-
-        for each in target:
-            toselect.append(each)
-
-        querycont = ''
-        for eachcolumn in toselect:
-            for eachinterval in interval:
-                querycont = querycont + "round(" + str(eachcolumn) + str(eachinterval) + ',3) AS '+ str(eachcolumn) + str(eachinterval) + ', '
-
-
-        rankdic = {
-
-            'I':'I',
-            'F':'F',
-            'YG':'Y',
-            'S':'S',
-            'OC':'OC',
-            
-            'FN':'FN',
-            'T':'T',
-            'PS': 'P',
-            'IS': 'IS',
-            'BK': 'BK'
-        }
-
-
-
-
-        # order = order.replace('Y','YG')
-        # order = order.replace('O', 'OC')
-        # order = order.replace('I', 'YG')
-
-        #======================================================
-        querycont = querycont +'''
-            IR, FR, PR, YR, SR, TR
-            # , SRT3 AS SH3
-            # , SBDD AS SBAL
-            # , SBDFD1 AS SBDF
-            , BBP, BBW
-            , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS cPER
-            , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS cPBR
-            , ROE
-            
-            
-            , CONCAT(DIR_L4, DIR_L3, DIR_L2, DIR_L1) AS PATTERN
-            , DAYS_L1, DAYS_L2, DAYS_L3, DAYS_L4
-            , BBW_L1, BBW_L2, BBW_L3, BBW_L4
-            , BBP_L1, BBP_L2, BBP_L3, BBP_L4
-            
-            
-        
-        '''
-        #======================================================
-        querytail = '''
-
-            FROM jazzdb.T_STOCK_SND_ANALYSIS_RESULT_TEMP A
-            JOIN jazzdb.T_STOCK_CODE_MGMT B USING (STOCKCODE)
-            LEFT JOIN jazzdb.T_STOCK_SND_ANALYSIS_LONGTERM D USING (STOCKCODE,DATE)
-            LEFT JOIN jazzdb.T_STOCK_BB_EVENT E ON (A.STOCKCODE = E.STOCKCODE AND A.DATE = E.DATE)
-            #=========================================================================
-            LEFT JOIN (
-
-                        SELECT STOCKCODE, EPSC, BPS, ROE
-                        FROM jazzdb.T_STOCK_FINAN E
-                        WHERE 1=1
-                        AND DATE = '2009'
-                        AND TYPE = 'C'
-
-            )F ON (A.STOCKCODE = F.STOCKCODE)
-            
-            LEFT JOIN jazzdb.T_STOCK_BB I ON (A.STOCKCODE = I.STOCKCODE AND A.DATE = I.DATE)
-            LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
-            #=========================================================================
-            WHERE 1=1'''
-
-
-
-
-
-        queryend = '''
-             
-            AND A.DATE = "%s"
-            AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
-            ORDER BY %s %s
-            LIMIT %s
-            
-
-        ''' % (date, order, by, limit)
-
-        fullquery = queryhead + querycont + querytail + queryend
+        rtdf = self.sndRank(target, interval, order, by, method='dataframe', limit=limit, usercode=usercode)
 
         t2 = dt.now()
-        df = db.selectpd(fullquery)
-        t3 = dt.now()
+        float_columns = ['P1', 'P5', 'P20', 'P60', 'P120', 'P240','I1', 'I5', 'I20', 'I60', 'I120','I240', 'F1', 'F5', 'F20', 'F60', 'F120', 'F240']
 
-
-
-        rtdf = df[df.columns[2:]].round(4)
-
-        def color_negative_red(val):
-            """
-            Takes a scalar and returns a string with
-            the css property `'color: red'` for negative
-            strings, black otherwise.
-            """
-
-
-            if (val > 30): color = '#ff3300'
-            elif (val > 20): color = '#ff3d0d'
-            elif (val > 10): color = '#ffad99'
-            elif (val > 8): color = '#ffb8a6'
-            elif (val > 6): color = '#ffc2b2'
-            elif (val > 4): color = '#ffccbf'
-            elif (val > 2): color = '#ffd6cc'
-            elif (val > 1): color = '#ffe0d9'
-            elif (val > 0.5): color = '#ffebe6'
-            elif (val > -0.5): color = '#ffffff'
-            elif (val > -1): color = '#e6f0fa'
-            elif (val > -2): color = '#d9e8f7'
-            elif (val > -4): color = '#cce0f5'
-            elif (val > -6): color = '#bfd9f2'
-            elif (val > -8): color = '#b2d1f0'
-            elif (val > -10): color = '#3385d6'
-            elif (val > -20): color = '#1a75d1'
-            elif (val > -30): color = '#0066cc'
-            else: color = '#1a47a3'
-            return 'background-color: %s' % color
-
-#            return 'background-color: yellow'
-
-
-        float_columns = rtdf.select_dtypes(include=[np.float64]).columns
-        rtdf[float_columns[:-3]] = rtdf[float_columns[:-3]] * 100
-        rtdf[float_columns[:-3]] = rtdf[float_columns[:-3]].round(3)
+        rtdf[float_columns] = rtdf[float_columns] * 100
+        rtdf[float_columns] = rtdf[float_columns].round(3)
         html = (
                 rtdf.style
                 .hide_index()
-                .applymap(color_negative_red,subset=float_columns)
-                .set_precision(2)
-                .highlight_null('grey')
                 .render()
         )
 
-        t4 = dt.now()
-
-
-
-        '''
-            SELECT CASE WHEN B.MARKET = '0' THEN '' ELSE '*' END AS MARKET
-            , A.DATE
-            , CONCAT("<a href='#' onclick=\"getChartData('", B.STOCKCODE, "','chartA'); return false;\">",B.STOCKNAME,'</a>') AS STOCKNAME     
-            , FORMAT(MC,1) AS MC
-            , FORMAT(ABS(CLOSE),0) AS CLOSE,
-            P1, P5, P20, I1, I5, I20, F1, F5, F20, IR
-            # , SRT3 AS SH3
-            # , SBDD AS SBAL
-            # , SBDFD1 AS SBDF
-            , BBP, BBW
-            , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS cPER
-            , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS cPBR
-            , ROE
-        
-            FROM jazzdb.T_STOCK_SND_ANALYSIS_RESULT_TEMP A
-            JOIN jazzdb.T_STOCK_CODE_MGMT B USING (STOCKCODE)
-            LEFT JOIN jazzdb.T_STOCK_SND_ANALYSIS_LONGTERM D USING (STOCKCODE,DATE)
-            #=========================================================================
-            # LEFT JOIN jazzdb.T_STOCK_SHORT_ANALYSIS E USING (STOCKCODE, DATE)
-            LEFT JOIN (
-
-                        SELECT STOCKCODE, EPSC, BPS, ROE
-                        FROM jazzdb.T_STOCK_FINAN E
-                        WHERE 1=1
-                        AND DATE = '2009'
-                        AND TYPE = 'C'
-
-            )F ON (A.STOCKCODE = F.STOCKCODE)
-            
-            LEFT JOIN jazzdb.T_STOCK_BB I ON (A.STOCKCODE = I.STOCKCODE AND A.DATE = I.DATE)
-            LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
-            #=========================================================================
-            WHERE 1=1
-            
-            AND (I1>0 OR F1>0) 
-            AND DATE = "%s"
-            AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
-            ORDER BY I1 DESC
-             
-        
-        '''%(date)
-
-        print(fullquery)
-
-        print("*", t2-t1, 'QUERY CONCAT')
-        print("*", t3-t2, 'QUERY EXECUTION')
-        print("*", t4-t3, 'HTML RENDERING')
-
-
+        t3 = dt.now()
         return html
 
     # 수급차트
     def sndChart(self, code):
 
         query = '''
-                            SELECT A.STOCKCODE
+                            SELECT A.STOCKCODE, A.STOCKNAME
                                , CAST(A.DATE AS char) AS DATE, B.ADJRATIO 
                                , CNT
                                , FORMAT(ABS(B.CLOSE),0) AS FMTCLOSE
@@ -689,3 +407,44 @@ class DataAccessObjectStock:
 
 
         return html
+
+
+
+    def smar_realtime(self, date, seq):
+
+        # check current date YN
+        # if(str(dt.now().date()) == date):
+        if True:
+
+            query = f'''
+            SELECT STOCKCODE, TIME, VSMAR20, PSMAR20, TIMESTAMP, SEQ
+            FROM
+            (
+                SELECT STOCKCODE, 
+                        CAST(TIME AS CHAR) AS TIME, 
+                        ROW_NUMBER() OVER (PARTITION BY STOCKCODE, DATE, TIME ORDER BY TIMESTAMP DESC) AS RN,
+                        VSMAR20, 
+                        PSMAR20, 
+                        CAST(TIMESTAMP AS CHAR) AS TIMESTAMP,
+                        SEQ
+                FROM jazzdb.T_STOCK_MIN_05_SMAR_REALTIME 
+                WHERE 1=1
+                AND DATE = '{date}'
+                AND SEQ >  {seq}
+                AND TIMESTAMP > 0
+            ) A
+            WHERE 1=1
+            # AND STOCKCODE = '297890'
+            AND RN = 1
+            ORDER BY SEQ
+            '''
+
+
+
+            df = db.selectpd(query)
+            print(df)
+            return {'result': [x for x in df.to_dict("index").values()]}
+
+        else:
+
+            return {'result': 'Market closed'}
