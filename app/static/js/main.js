@@ -459,8 +459,8 @@ function render_table(tableId, response){
     // stateSave:true,
     sScrollX:"100%",
     autoWidth:true,
-    aLengthMenu: [ 10, 20, 30, 40, 50, 100 ],
-    iDisplayLength: 20,
+    aLengthMenu: [ 15, 25, 35, 50, 100 ],
+    iDisplayLength: 25,
     columns: [
             { name:"STOCKNAME"},
             { name:"FAV", orderDataType: "dom-checkbox" },
