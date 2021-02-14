@@ -84,7 +84,7 @@ class DataAccessObjectStock:
 
             '''
         # ======================================================
-        querytail = f'''
+        querytail = '''
 
                 FROM jazzdb.T_STOCK_SND_ANALYSIS_RESULT_TEMP A
                 JOIN jazzdb.T_STOCK_CODE_MGMT B USING (STOCKCODE)
@@ -110,12 +110,12 @@ class DataAccessObjectStock:
 					SELECT STOCKCODE, TIMESTAMP
 					FROM jazzstockuser.T_USER_STOCK_FAVORITE
                     WHERE 1=1
-                    AND USERCODE = '{usercode}'
+                    AND USERCODE = '%s'
                     AND DELYN = 0
                 )  H ON (A.STOCKCODE = H.STOCKCODE)
                 LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
                 #=========================================================================
-                WHERE 1=1'''
+                WHERE 1=1'''%(usercode)
 
         queryend = '''
 
@@ -416,7 +416,7 @@ class DataAccessObjectStock:
         # if(str(dt.now().date()) == date):
         if True:
 
-            query = f'''
+            query = '''
             SELECT STOCKCODE, TIME, VSMAR20, PSMAR20, TIMESTAMP, SEQ
             FROM
             (
@@ -429,15 +429,15 @@ class DataAccessObjectStock:
                         SEQ
                 FROM jazzdb.T_STOCK_MIN_05_SMAR_REALTIME 
                 WHERE 1=1
-                AND DATE = '{date}'
-                AND SEQ >  {seq}
+                AND DATE = '%s'
+                AND SEQ > %s
                 AND TIMESTAMP > 0
             ) A
             WHERE 1=1
             # AND STOCKCODE = '297890'
             AND RN = 1
             ORDER BY SEQ
-            '''
+            '''%(date, seq)
 
 
 

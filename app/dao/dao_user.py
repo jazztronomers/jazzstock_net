@@ -30,7 +30,7 @@ class DataAccessObjectUser:
         print(' * REGISTER', id, username)
 
 
-        ret = db.selectSingleValue(F"SELECT USERCODE FROM jazzstockuser.T_USER_INFO WHERE EMAIL='{email}'")
+        ret = db.selectSingleValue("SELECT USERCODE FROM jazzstockuser.T_USER_INFO WHERE EMAIL='%s'"%(email))
         if ret is not None and len(ret) > 0:
 
             return {'result': False,
@@ -40,16 +40,17 @@ class DataAccessObjectUser:
             now = datetime.now()
 
             # 회원추가
-            db.insert(f"INSERT INTO `jazzstockuser`.`T_USER_INFO` (`EMAIL`, `PASSWORD`, `USERNAME`, `TIMESTAMP`) VALUES ('{email}', '{pw_encoded}', '{username}', '{now}');")
-            usercode = db.selectSingleValue(f"SELECT USERCODE FROM jazzstockuser.T_USER_INFO WHERE EMAIL = '{email}'")
+            # db.insert(f"INSERT INTO `jazzstockuser`.`T_USER_INFO` (`EMAIL`, `PASSWORD`, `USERNAME`, `TIMESTAMP`) VALUES ('{email}', '{pw_encoded}', '{username}', '{now}');")
+            db.insert("INSERT INTO `jazzstockuser`.`T_USER_INFO` (`EMAIL`, `PASSWORD`, `USERNAME`, `TIMESTAMP`) VALUES ('%s', '%s', '%s', '%s');"%(email, pw_encoded, username, now))
+            usercode = db.selectSingleValue("SELECT USERCODE FROM jazzstockuser.T_USER_INFO WHERE EMAIL = '%s'"%(email))
 
             now = datetime.now()
             today = str(now.date())
             expiration_date = str((now + timedelta(days=free_period)).date())
 
             # 도네이션정보 데이터생성 - 초기화
-            db.insert(f"INSERT INTO `jazzstockuser`.`T_USER_DONATION` (`USERCODE`, `DONATE_DATE`, `EXPIRATION_DATE`) VALUES ('{usercode}', '{today}', '{expiration_date}');")
-
+            # db.insert(f"INSERT INTO `jazzstockuser`.`T_USER_DONATION` (`USERCODE`, `DONATE_DATE`, `EXPIRATION_DATE`) VALUES ('{usercode}', '{today}', '{expiration_date}');")
+            db.insert("INSERT INTO `jazzstockuser`.`T_USER_DONATION` (`USERCODE`, `DONATE_DATE`, `EXPIRATION_DATE`) VALUES ('%s', '%s', '%s');"%(usercode, today, expiration_date))
 
             return {'result': True,
                     'message':'Success'}
@@ -59,14 +60,14 @@ class DataAccessObjectUser:
 
     def login(self, email, pw):
         pw_encoded = sha256(pw.encode('utf-8')).hexdigest()
-        response = db.selectpd(f'''
+        response = db.selectpd('''
                                 SELECT USERCODE, EMAIL, USERNAME, EXPIRATION_DATE
                                 FROM jazzstockuser.T_USER_INFO
                                 JOIN jazzstockuser.T_USER_DONATION USING (USERCODE)
                                 WHERE 1=1
-                                AND EMAIL = "{email}" 
-                                AND PASSWORD = "{pw_encoded}"
-                                ''')
+                                AND EMAIL = "%s" 
+                                AND PASSWORD = "%s"
+                                '''%(email, pw_encoded))
 
 
         if response is not None and len(response) > 0:
@@ -122,14 +123,14 @@ class DataAccessObjectUser:
         else:
             DELYN = '(0)'
 
-        query = F'''SELECT STOCKCODE, LEFT(TIMESTAMP,10) AS FAV_DATE
+        query = '''SELECT STOCKCODE, LEFT(TIMESTAMP,10) AS FAV_DATE
                     FROM jazzstockuser.T_USER_STOCK_FAVORITE
                     JOIN jazzdb.T_STOCK_CODE_MGMT USING (STOCKCODE)
                     WHERE 1=1 
-                    AND USERCODE="{usercode}"
-                    AND DELYN IN {DELYN}
+                    AND USERCODE="%s"
+                    AND DELYN IN %s
                     ORDER BY TIMESTAMP DESC 
-                '''
+                '''%(usercode, DELYN)
 
         df = db.selectpd(query)
         if len(df)>0:
@@ -152,12 +153,12 @@ class DataAccessObjectUser:
                 if stockcode not in [x[0] for x in stockcode_favdate_list_old] and stockcode != '':
 
                     now = datetime.now()
-                    query = f'''INSERT INTO jazzstockuser.T_USER_STOCK_FAVORITE (USERCODE, STOCKCODE, GRP, TIMESTAMP, DELYN) VALUES({usercode}, "{stockcode}", "A", "{now}", 0) ON DUPLICATE KEY UPDATE DELYN = 0, TIMESTAMP = "{now}"'''
+                    query = '''INSERT INTO jazzstockuser.T_USER_STOCK_FAVORITE (USERCODE, STOCKCODE, GRP, TIMESTAMP, DELYN) VALUES(%s, "%s", "A", "%s", 0) ON DUPLICATE KEY UPDATE DELYN = 0, TIMESTAMP = "%s"'''%(usercode, stockcode, now, now)
                     db.insert(query)
 
         for stockcode, fav_date in stockcode_favdate_list_old:
             if stockcode not in stockcodes_new or len(stockcodes_new) == 0:
-                query = f'''UPDATE `jazzstockuser`.`T_USER_STOCK_FAVORITE` SET `TIMESTAMP_LAST` = '{fav_date}', `TIMESTAMP` = '{datetime.now()}', `DELYN` = '1' WHERE (`USERCODE` = {usercode}) and (`STOCKCODE` = '{stockcode}') and (`DELYN` = '0');'''
+                query = '''UPDATE `jazzstockuser`.`T_USER_STOCK_FAVORITE` SET `TIMESTAMP_LAST` = '{%s}', `TIMESTAMP` = '{%s}', `DELYN` = '1' WHERE (`USERCODE` = {%s}) and (`STOCKCODE` = '{%s}') and (`DELYN` = '0');'''%(fav_date, datetime.now(), usercode, stockcode)
                 db.insert(query)
 
 
@@ -185,29 +186,29 @@ class DataAccessObjectUser:
 
 
 
-    def get_viewed(self):
+#     def get_viewed(self):
 
-        query = F'SELECT STOCKCODE FROM jazzstockuser.T_USER_STOCK_VIEWED WHERE 1=1 AND USERCODE="{self.usercode}" ORDER BY TIMESTAMP DESC LIMIT 100'
-        df = db.selectpd(query)
+#         query = F'SELECT STOCKCODE FROM jazzstockuser.T_USER_STOCK_VIEWED WHERE 1=1 AND USERCODE="{self.usercode}" ORDER BY TIMESTAMP DESC LIMIT 100'
+#         df = db.selectpd(query)
 
 
-        if len(df)>0:
-            ret = {'result': df.STOCKCODE.values.tolist(),
-                   'message': 'interested stockcodes',
-                   'id': None,
-                   'name': None}
-        else:
-            ret = {'result': None,
-                   'message': 'There is no registered interested item',
-                   'id': None,
-                   'name': None}
+#         if len(df)>0:
+#             ret = {'result': df.STOCKCODE.values.tolist(),
+#                    'message': 'interested stockcodes',
+#                    'id': None,
+#                    'name': None}
+#         else:
+#             ret = {'result': None,
+#                    'message': 'There is no registered interested item',
+#                    'id': None,
+#                    'name': None}
 
-    def set_viewed(self):
-        pass
+#     def set_viewed(self):
+#         pass
 
     def check_dup(self, username):
 
-        query = F"SELECT COUNT(*) FROM jazzstockuser.T_USER_INFO WHERE USERNAME = '{username}'"
+        query = "SELECT COUNT(*) FROM jazzstockuser.T_USER_INFO WHERE USERNAME = '%s'"%(username)
         count = db.selectSingleValue(query)
 
         if count == 0:
@@ -218,7 +219,7 @@ class DataAccessObjectUser:
     def check_curr_pw(self, usercode, curr_pw):
 
         curr_pw_input = sha256(curr_pw.encode('utf-8')).hexdigest()
-        query = F"SELECT PASSWORD FROM jazzstockuser.T_USER_INFO WHERE USERCODE = '{usercode}'"
+        query = "SELECT PASSWORD FROM jazzstockuser.T_USER_INFO WHERE USERCODE = '%s'"%(username)
         curr_pw_db = db.selectSingleValue(query)
 
         if curr_pw_input == curr_pw_db:
