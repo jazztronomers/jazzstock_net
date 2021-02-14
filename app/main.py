@@ -1,6 +1,7 @@
 from jazzstock_net.app.dao.dao_stock import DataAccessObjectStock
 from jazzstock_net.app.dao.dao_user import DataAccessObjectUser
 from jazzstock_net.app.common.mail import send_mail
+import jazzstock_net.app.config.config as cf
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for
 import random
@@ -135,7 +136,7 @@ def getEmailConfirmationCode():
 
         send_mail(from_mail='jazztronomers@gmail.com',
                   to_mail=email,
-                  app_pw='configurable하게 수정하도록',
+                  app_pw=cf.MAIL_APP_PW,
                   code=confirmation_code)
 
         return jsonify({'result':True})
