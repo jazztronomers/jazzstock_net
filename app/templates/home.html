@@ -73,9 +73,10 @@
                     <a href="#" onclick="description()">사용방법</a>
                 </div>
                 <div id="loggedin" style="display: none">
-                    <a href="#">프로필수정(개발중)</a>
+                    <a href="#" onclick="profile()">프로필수정</a>
                     <a href="#" onclick="logout()">로그아웃</a>
                     <a href="#" onclick="description()">사용방법</a>
+                    <a href="#" onclick="openExpandFunction()">회원기능열기</a>
                 </div>
             </div>
             <div id="menu_user_class">
@@ -94,14 +95,15 @@
                     <br>
                 </div>
                 <div id="only_member" style="display: none">
-                        <a href="#" onclick="hideColumn()">테이블 확장</a><br>
                 </div>
             </div>
         </div>
-        <div id="function_expanded">
+        <div id="function_expanded" style="display: none">
             <div id="only_supporter" style="display: none">
                     <hr>
-                    <a href="#" onclick="setFavorite()">즐겨찾기 업데이트</a> - 아래 테이블에 FAV체크한 종목을 즐겨찾기종목으로 저장합니다.<br><br>
+                    <b>회원전용기능, 화면배치 구상중..</b><br><br>
+                    <a href="#" onclick="hideColumn()">테이블 확장</a> - 수익률, 수급 컬럼을 확장합니다. (60거래일, 120거래일)<br>
+                    <a href="#" onclick="setFavorite()">즐겨찾기 업데이트</a> - FAV컬럼체크한 종목들을 즐겨찾기종목으로 저장합니다.<br><br>
                     <br>
                     <div id='customFilter'>
 
@@ -170,8 +172,8 @@
     <div id="main" class="tabcontent" style="display:block">
         <div class="row">
             <div class="card">
-                <h4>
-                    <select id="selectAA">
+                <p>
+                <select id="selectAA">
                       <option value="0">기관</option>
                       <option value="1">외인</option>
                       <option value="2">연기금</option>
@@ -182,7 +184,8 @@
                       <option value="7">개인</option>
                       <option value="8">보험</option>
                       <option value="9">은행</option>
-                    </select><select id="selectAB" onchange="changeTable('A')">
+                </select>
+                <select id="selectAB">
                       <option value="0">기관</option>
                       <option value="1">외인</option>
                       <option value="2">연기금</option>
@@ -193,8 +196,9 @@
                       <option value="7">개인</option>
                       <option value="8">보험</option>
                       <option value="9">은행</option>
-                    </select>
-                </h4>
+                </select> 사용X
+                </p>
+
                 <table id="dataA" class="display" style="width:100%">
                     <tr><td class="loading"><div class="signal"></div></td></tr>
                 </table>

@@ -180,7 +180,7 @@ function setFavorite(){
             {
 
                 response = req.responseText
-                alert("체크된 종목들로 즐겨찾기리스트가 업데이트되었습니다")
+                alert("즐겨찾기리스트가 업데이트되었습니다.")
                 console.log(response)
             }
         }
@@ -228,7 +228,9 @@ function getFavorite(){
 }
 
 
-
+function profile(){
+    alert("아직 개발중입니다 ㅠ")
+}
 
 function conditionalFormatting(row, data, stockcode_favorite){
 
@@ -1092,6 +1094,21 @@ function description(){
 
 
 }
+
+
+function openExpandFunction(){
+
+    var content = document.getElementById('function_expanded');
+
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+
+
+}
+
 
 
 function sleep(milliseconds) {
