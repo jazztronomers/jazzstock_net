@@ -70,12 +70,12 @@
                 <div id="notloggedin">
                     <a href="/register">회원가입</a>
                     <a href="#" onclick="openForm()">로그인</a>
-                    <a href="#" onclick="description()">사용방법</a>
+                    <a href="#" onclick="description()">공지사항</a>
                 </div>
                 <div id="loggedin" style="display: none">
                     <a href="#" onclick="profile()">프로필수정</a>
                     <a href="#" onclick="logout()">로그아웃</a>
-                    <a href="#" onclick="description()">사용방법</a>
+                    <a href="#" onclick="description()">공지사항/a>
                     <a href="#" onclick="openExpandFunction()">회원기능열기</a>
                 </div>
             </div>
@@ -152,12 +152,26 @@
                 </form>
         </div>
         <div id='description' style="display: none">
-            <p><a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
-            <p><b>2021년2월14일 회원가입 및 개인화기능 추가개발하였습니다</b></p>
-            <p><b>사용법 가이드문서 현행화는 차차 진행하겠습니다.</b></p>
-            <p><a href="https://blog.naver.com/rubenchu" >개발자블로그</a></p>
+            <hr><br>
+            <p><b>2021년2월14일</b><p>
+            <p>2주년을 맞이하여 <b>회원가입 및 개인화기능 추가하였습니다!</b></p><br>
+
+            <p><u>회원가입후 로그인을 하시면</u></p>
+            <p>기존 특정컬럼으로 정렬된 상위 50종목만 보여주던것과 달리 <b>전종목데이터</b>를 표시후</p>
+            <p>사용자가 직접 분석관점대로 수급데이터를 정렬을 해볼 수 있도록 개선하였습니다</p>
+            <p>아무래도 전종목 데이터이다보니, 테이블을 받아오는데 길게는 10초까지 소요될 수 있으며</p>
+            <p>트래픽비용이 이전보다 훨씬 많이 발생하게 되어, 향후에는 <b>후원자전용 기능</b>으로 변경될 예정입니다.</p>
+            <p>일반회원의 경우, 기존에 제공하던 수준의 데이터는 그대로 받아보실 수 있도록 하겠습니다.</b></p><br>
+
+            <p><u>트래픽이 얼마나 발생할지 예측이 어려워서<br>2월말~3월초정도까지를 서비스 안정화기간으로 잡고있습니다.</u></p>
+            <p>해당기간동안에는 모든 가입회원에 대해서 후원자전용 기능, 즉 전종목데이터를 테스트로 제공할 예정입니다.</p>
+            <p>자세한 공지사항은 카톡방을 통해 전해드리겠습니다.</p>
             <p><a href="https://open.kakao.com/o/ge5OuYhb" >https://open.kakao.com/o/ge5OuYhb</a></p>
             <p>입장코드 : jazz</p>
+            <p><a href="https://blog.naver.com/rubenchu" >개발자블로그</a></p><br>
+            <p><b>컬럼에 대한 설명.jpg</b></p>
+            <p><a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
+            <p>(신규컬럼이 포함된  버전은 차차 업데이트 하겠습니다  ㅎㅎ..)</p>
         </div>
     </div>
     <div id="tab_bar">
