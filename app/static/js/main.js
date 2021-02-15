@@ -252,7 +252,7 @@ function conditionalFormatting(row, data, stockcode_favorite){
     }
 
 
-    for (var i = 4; i < 22; i++){
+    for (var i = 4; i < 34; i++){
         for (color in profit_map){
 
 
@@ -263,7 +263,7 @@ function conditionalFormatting(row, data, stockcode_favorite){
         }
     }
 
-    for (var i = 22; i < 28; i++){
+    for (var i = 34; i < 40; i++){
         for (color in rank_map){
 
             if (data[i] >= rank_map[color][1] && data[i] < rank_map[color][0]){
@@ -273,8 +273,7 @@ function conditionalFormatting(row, data, stockcode_favorite){
         }
     }
 
-
-    for (var i = 33; i < 37; i++){
+    for (var i = 49; i < 53; i++){
         for (color in bbw_map){
 
             if (data[i] >= bbw_map[color][1] && data[i] < bbw_map[color][0]){
@@ -285,7 +284,7 @@ function conditionalFormatting(row, data, stockcode_favorite){
     }
 
 
-    for (var i = 37; i < 41; i++){
+    for (var i = 45; i < 49; i++){
         for (color in bbp_map){
 
             if (data[i] >= bbp_map[color][1] && data[i] < bbp_map[color][0]){
@@ -469,53 +468,72 @@ function render_table(tableId, response){
             null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null
+            null, null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null
         ],
     columnDefs: [
 
             // { type: 'natural', targets: '_all'},
 
             { orderSequence: [ "desc", "asc"],
-              targets: [ 2,3,4,5,6,7,8,9,10,11,12,13,14,15, 16, 17, 18, 19, 20, 21 ] },
+              targets: [ 2,3,
+                            4,  5,  6,  7,  8,  9,
+                            10, 11, 12, 13, 14, 15,
+                            16, 17, 18, 19, 20, 21,
+                                    22,23,24,25,26,27,
+                                    28,29,30,31,32,33] },
             // STOCKNAME
 
 
             { width: 70, targets: 0 },
 
             // FAV
-            { width: 18, targets: 1},
+            { width: 20, targets: 1},
 
             // MC
-            { width: 25, targets: 2, render: $.fn.dataTable.render.number(',', '.', 1, '')},
+            { width: 30, targets: 2, render: $.fn.dataTable.render.number(',', '.', 1, '')},
 
             // CLOSE
-            { width: 40, targets: 3, render: $.fn.dataTable.render.number( ',', '.', 0, '')},
+            { width: 45, targets: 3, render: $.fn.dataTable.render.number( ',', '.', 0, '')},
+
+//Index(['STOCKNAME', 'FAV', 'MC', 'CLOSE',
+//        'P1', 'P5', 'P20', 'P60', 'P120', 'P240',
+//        'I1', 'I5', 'I20', 'I60', 'I120', 'I240',
+//        'F1', 'F5', 'F20', 'F60', 'F120', 'F240',
+//       'YG1', 'YG5', 'YG20', 'YG60', 'YG120', 'YG240',
+//       'S1', 'S5', 'S20', 'S60', 'S120', 'S240',
+//       'IR', 'FR', 'PR', 'YR', 'SR','TR',
+//        'PATTERN',
+//      'L4ED', 'L3ED', 'L2ED', 'L1ED',
+//      'L4BW', 'L3BW', 'L2BW', 'L1BW',
+//      'L4BP', 'L3BP', 'L2BP', 'L1BP', 'cPER', 'cPBR', 'ROE',
+//       'CATEGORY', 'FAV_DATE'],
 
             // P I F
-            { width: 30, targets: [4,5,6,7,8,9, 10,11,12,13,14,15, 16,17,18,19,20,21] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+            { width: 30, targets: [4,5,6,7,8,9,  10,11,12,13,14,15,  16,17,18,19,20,21,  22,23,24,25,26,27, 28,29,30,31,32,33] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
 
             // RANK
-            { width: 30, targets: [22, 23, 24, 25, 26, 27] },
+            { width: 30, targets: [34, 35, 36, 37, 38, 39] },
 
             // EVENT PATTERN
-            { width: 90, targets: 28 },
+            { width: 90, targets: 40 },
 
             // DAYS EVENT
-            { width: 30, targets: [29, 30, 31, 32] , render: $.fn.dataTable.render.number(',', '.', 0, '')},
+            { width: 30, targets: [41,42,43,44] , render: $.fn.dataTable.render.number(',', '.', 0, '')},
 
             // BBP EVENT
-            { width: 30, targets: [33, 34, 35, 36] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+            { width: 30, targets: [45,46,47,48] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
 
             // BBW EVENT
-            { width: 30, targets: [37, 38, 39, 40] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+            { width: 30, targets: [49,50,51,52] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
 
             // FINAN
-            { width: 30, targets: [41,42,43] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+            { width: 30, targets: [53,54,55] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
 
             // CATEGORY
-            { width: 200, targets: [44] },
+            { width: 200, targets: [56] },
 
-            { width: 60, targets: [45] },
+            { width: 60, targets: [57] },
 
 
 
@@ -1225,7 +1243,9 @@ function getChartData(stockcode, stockname){
 
 function hideColumn(){
     table = $('#dataA').DataTable();
-    var column_idx_to_hide = [8, 9, 14, 15, 20, 21];
+    var column_idx_to_hide = [8, 9, 14, 15, 20, 21,
+                                    22,23,24,25,26,27,
+                                    28,29,30,31,32,33];
     for (idx in column_idx_to_hide){
         var column = table.column(column_idx_to_hide[idx]);
         column.visible( ! column.visible() );

@@ -39,24 +39,11 @@ class DataAccessObjectStock:
                         , "N" AS FAV
                         , MC
                         , CLOSE
-                        , P1
-                        , P5
-                        , P20
-                        , P60
-                        , P120
-                        , P240
-                        , I1
-                        , I5
-                        , I20
-                        , I60
-                        , I120
-                        , I240
-                        , F1
-                        , F5
-                        , F20
-                        , F60
-                        , F120
-                        , F240
+                        , P1, P5, P20, P60, P120, P240
+                        , I1, I5, I20, I60, I120, I240
+                        , F1, F5, F20, F60, F120, F240
+                        , YG1, YG5, YG20, YG60, YG120, YG240
+                        , S1, S5, S20, S60, S120, S240
                     '''
 
         querycont = '''
@@ -146,12 +133,19 @@ class DataAccessObjectStock:
         rtdf = self.sndRank(target, interval, order, by, method='dataframe', limit=limit, usercode=usercode)
 
         t2 = dt.now()
-        float_columns = ['P1', 'P5', 'P20', 'P60', 'P120', 'P240', 'I1', 'I5', 'I20', 'I60', 'I120','I240', 'F1', 'F5', 'F20', 'F60', 'F120', 'F240']
+        float_columns = ['P1', 'P5', 'P20', 'P60', 'P120', 'P240',
+                         'I1', 'I5', 'I20', 'I60', 'I120','I240',
+                         'F1', 'F5', 'F20', 'F60', 'F120', 'F240'
+
+            , 'YG1', 'YG5', 'YG20', 'YG60', 'YG120', 'YG240'
+            , 'S1', 'S5', 'S20', 'S60', 'S120', 'S240'
+                         ]
 
 
         rtdf[float_columns] = rtdf[float_columns] * 100
         rtdf[float_columns] = rtdf[float_columns].round(3)
         rtdf = rtdf.fillna(0)
+
         html = (
                 rtdf.style
                 .hide_index()
