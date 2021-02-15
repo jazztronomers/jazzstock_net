@@ -111,6 +111,7 @@ class DataAccessObjectStock:
 
                 AND A.DATE = "%s"
                 AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
+                AND  J.MC > 0.62  # 2021-02-15기준 2000종목
                 ORDER BY %s %s
                 LIMIT %s
 
