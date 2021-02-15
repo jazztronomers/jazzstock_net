@@ -11,7 +11,7 @@ def send_mail(from_mail, to_mail, app_pw, code):
     s.login(from_mail, app_pw)
     msg = MIMEText(content)
     msg['Subject'] = title
-    s.sendmail(from_mail, to_mail, msg.as_string())
+    s.sendmail(from_mail.strip(), to_mail.strip(), msg.as_string())
     s.quit()
 
 
