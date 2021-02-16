@@ -158,7 +158,7 @@ class DataAccessObjectUser:
 
         for stockcode, fav_date in stockcode_favdate_list_old:
             if stockcode not in stockcodes_new or len(stockcodes_new) == 0:
-                query = '''UPDATE `jazzstockuser`.`T_USER_STOCK_FAVORITE` SET `TIMESTAMP_LAST` = '{%s}', `TIMESTAMP` = '{%s}', `DELYN` = '1' WHERE (`USERCODE` = {%s}) and (`STOCKCODE` = '{%s}') and (`DELYN` = '0');'''%(fav_date, datetime.now(), usercode, stockcode)
+                query = '''UPDATE `jazzstockuser`.`T_USER_STOCK_FAVORITE` SET `TIMESTAMP_LAST` = '%s', `TIMESTAMP` = '%s', `DELYN` = '1' WHERE (`USERCODE` = %s) and (`STOCKCODE` = '%s') and (`DELYN` = '0');'''%(fav_date, datetime.now(), usercode, stockcode)
                 db.insert(query)
 
 
