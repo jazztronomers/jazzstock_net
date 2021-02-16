@@ -121,11 +121,11 @@
                         <input type="text" id="filter_c" placeholder="ex) 2차전지">
                         <a href="#" onclick="setCustomFilter('filter_c');">필터적용</a><br>
 
-                        <label for="filter_c">Filter Keyword D:</label>
+                        <label for="filter_d">Filter Keyword D:</label>
                         <input type="text" id="filter_d" placeholder="ex) 삼성">
-                        <a href="#" onclick="setCustomFilter('filter_e');">필터적용</a><br>
+                        <a href="#" onclick="setCustomFilter('filter_d');">필터적용</a><br>
 
-                        <label for="filter_c">Filter Keyword E:</label>
+                        <label for="filter_e">Filter Keyword E:</label>
                         <input type="text" id="filter_e" placeholder="ex) LUMUMDMU">
                         <a href="#" onclick="setCustomFilter('filter_e');">필터적용</a><br>
                     </div>
@@ -178,19 +178,20 @@
     </div>
     <div id="tab_bar">
         <div>
-            <button class="tablink" onclick="openPage('main', this, 'red')" id="defaultOpen">Main</button>
+            <button class="tablink" onclick="openPage('full', this, 'red')" id="defaultOpen">Full</button>
+            <button class="tablink" onclick="openPage('top100', this, 'red'); renderSecond();">Top100</button>
             <button class="tablink" onclick="getRealtime()">Realtime</button>
         </div>
         <div id="tabMenu">
         </div>
         <hr>
     </div>
-    <div id="main" class="tabcontent" style="display:block">
+    <div id="full" class="tabcontent" style="display:block">
         <div class="row">
             <div class="card">
                 <p>
                 <select id="selectAA">
-                      <option value="0">기관</option>
+                      <option value="0">기관A</option>
                       <option value="1">외인</option>
                       <option value="2">연기금</option>
                       <option value="3">사모펀드</option>
@@ -202,7 +203,7 @@
                       <option value="9">은행</option>
                 </select>
                 <select id="selectAB">
-                      <option value="0">기관</option>
+                      <option value="0">기관A</option>
                       <option value="1">외인</option>
                       <option value="2">연기금</option>
                       <option value="3">사모펀드</option>
@@ -216,6 +217,42 @@
                 </p>
 
                 <table id="dataA" class="display" style="width:100%">
+                    <tr><td class="loading"><div class="signal"></div></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="top100" class="tabcontent" style="display:none">
+        <div class="row">
+            <div class="card">
+                <p>
+                <select id="selectBA">
+                      <option value="0">기관B</option>
+                      <option value="1">외인</option>
+                      <option value="2">연기금</option>
+                      <option value="3">사모펀드</option>
+                      <option value="4">투신</option>
+                      <option value="5">금융</option>
+                      <option value="6">기타법인</option>
+                      <option value="7">개인</option>
+                      <option value="8">보험</option>
+                      <option value="9">은행</option>
+                </select>
+                <select id="selectBB">
+                      <option value="0">기관B</option>
+                      <option value="1">외인</option>
+                      <option value="2">연기금</option>
+                      <option value="3">사모펀드</option>
+                      <option value="4">투신</option>
+                      <option value="5">금융</option>
+                      <option value="6">기타법인</option>
+                      <option value="7">개인</option>
+                      <option value="8">보험</option>
+                      <option value="9">은행</option>
+                </select> 사용X
+                </p>
+
+                <table id="dataB" class="display" style="width:100%">
                     <tr><td class="loading"><div class="signal"></div></td></tr>
                 </table>
             </div>
