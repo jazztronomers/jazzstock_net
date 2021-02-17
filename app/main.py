@@ -101,7 +101,11 @@ def renderingRegisterPage():
 
 @application.route('/profile', methods=['GET'])
 def renderingProfilePage():
-    return render_template('profile.html')
+
+    if session.get('loggedin') == True:
+        return render_template('profile.html')
+    else:
+        return redirect(url_for("home"),code=302)  #
 
 @application.route('/getUserInfo', methods=['POST'])
 def getUserInfo():
