@@ -295,7 +295,7 @@ def ajax_getTable():
 
         # 후원자
         else:
-            limit = 200
+            limit = 3000
             usercode = sess['usercode']
 
     htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow, method='dataframe', limit=limit, usercode=usercode)
