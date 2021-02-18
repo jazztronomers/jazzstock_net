@@ -78,7 +78,9 @@ bbp_map['B4'] = [0.00, -1.00, B[4]]
 
 const array_filter = ["filter_a",
                "filter_b",
-               "filter_c"]
+               "filter_c",
+               "filter_d",
+               "filter_e"]
 
 
 var stockcode_favorite = []
@@ -115,20 +117,31 @@ $.fn.dataTable.ext.search.push(
 
 $(document).ready(function(){
 
-    getTable(m_table.get('A')[0],m_table.get('A')[1],'dataA','chartA',q_interval, q_orderby, true);
+    getTable('dataA',  ['P','I','F','YG','S'], [1,5,20,60,120, 240], ["I1","F1"], 'DESC', 100, true);
+    // getTable(tableId, targets, intervals, order, by, init=false)
+
     array_filter.forEach(function (filter_id, index) {
 
         filter_value = localStorage.getItem("jazzstock_" + filter_id)
         document.getElementById(filter_id).value=filter_value
 
     });
-
     getFavorite()
     getUserInfo()
     console.log(' * Document initialized', now())
 
 })
 
+
+function renderSecond(){
+
+    if(document.getElementById('dataB').childElementCount == 1){
+        getTable('dataB',  ['P','I','F','YG','S'], [1,5,20,60,120, 240], ["I1","F1"], 'ASC', 150, true);
+    }
+    else{
+        console.log("second table rendered already")
+    }
+}
 
 function changeTable(tableid){
 
@@ -137,7 +150,7 @@ function changeTable(tableid){
     var keyB = document.getElementById("select"+tableid+"B").value;
 
 
-    getTable(keyA, keyB, "data"+tableid, "chart"+tableid ,q_interval, q_orderby);
+    getTable([keyA, keyB], "data"+tableid, "chart"+tableid ,q_interval, q_orderby);
 
 }
 
@@ -252,7 +265,7 @@ function conditionalFormatting(row, data, stockcode_favorite){
     }
 
 
-    for (var i = 4; i < 22; i++){
+    for (var i = 4; i < 34; i++){
         for (color in profit_map){
 
 
@@ -263,7 +276,7 @@ function conditionalFormatting(row, data, stockcode_favorite){
         }
     }
 
-    for (var i = 22; i < 28; i++){
+    for (var i = 34; i < 40; i++){
         for (color in rank_map){
 
             if (data[i] >= rank_map[color][1] && data[i] < rank_map[color][0]){
@@ -273,8 +286,7 @@ function conditionalFormatting(row, data, stockcode_favorite){
         }
     }
 
-
-    for (var i = 33; i < 37; i++){
+    for (var i = 49; i < 53; i++){
         for (color in bbw_map){
 
             if (data[i] >= bbw_map[color][1] && data[i] < bbw_map[color][0]){
@@ -285,7 +297,7 @@ function conditionalFormatting(row, data, stockcode_favorite){
     }
 
 
-    for (var i = 37; i < 41; i++){
+    for (var i = 45; i < 49; i++){
         for (color in bbp_map){
 
             if (data[i] >= bbp_map[color][1] && data[i] < bbp_map[color][0]){
@@ -333,15 +345,15 @@ function setCustomFilter(filter_id){
         최종 target은 datatables의 search input 값
     */
 
-    console.log(" * Set Filter..", filter_id)
     filter_value = document.getElementById(filter_id).value
+    console.log(" * Set Filter..", filter_id, filter_value)
     setStorage("jazzstock_"+filter_id, filter_value)
-    doSearching(filter_value)
+    doSearching(filter_value, 'dataA')
 }
 
-function doSearching(keywords){
+function doSearching(keywords, tableId){
 
-    var dataTable = $('#dataA').dataTable();
+    var dataTable = $('#' + tableId).dataTable();
     var input = $(".dataTables_filter input")
     input.val(keywords)
 
@@ -350,10 +362,7 @@ function doSearching(keywords){
        filter = (filter!=='') ? filter+'|'+keywords[i] : keywords[i];
     }
 
-    console.log(filter)
-
     dataTable.fnFilter(filter, null, true, false, true, true);
-    console.log(" * Or search triggerd manually ...", keywords)
 
 }
 
@@ -387,273 +396,141 @@ function clearStorage(){
 }
 
 
-function getTable(keyA, keyB, tableId, chartId, interval, orderby,init=false)
+function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=false)
 {
-
-
-    var storage_table = localStorage.getItem("jazzstock_" + 'table')
-    if (storage_table==null){
-
-        if(init==false){
-            clearTable(keyA, keyB, tableId,chartId)
-        }
-        var req = new XMLHttpRequest()
-        req.onreadystatechange = function()
+    if(init==false){
+        clearTable(keyA, keyB, tableId,chartId)
+    }
+    var req = new XMLHttpRequest()
+    req.onreadystatechange = function()
+    {
+        if (req.readyState == 4)
         {
-            if (req.readyState == 4)
+            if (req.status != 200)
             {
-                if (req.status != 200)
-                {
-                    console.log('hello')
+                alert("테이블을 가져오는데 실패하였습니다, 다시 시도해주세요")
+            }
+            else
+            {
+                response = req.responseText
+                if (tableId == 'dataA'){
+                    render_table_full(tableId, response)
                 }
-                else
-                {
-
-                    response = req.responseText
-                    render_table(tableId, response)
+                else{
+                    render_table_full(tableId, response)
                 }
             }
         }
-
-        console.log(" * GET TABLE FROM DATABASE")
-        req.open('POST', '/ajaxTable')
-        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-        req.send('keyA="' + keyA + '&keyB="' + keyB +'"&chartId="'+chartId+'"' +'"&interval="'+interval+'"&orderby="'+orderby+'"')
     }
 
-    else{
+    console.log(" * GET TABLE FROM DATABASE")
+    req.open('POST', '/ajaxTable')
+    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+    req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit)
 
-
-        console.log(" * GET TABLE FROM LOCALSTORAGE")
-        document.getElementById(tableId).innerHTML = storage_table
-        render_table(tableId)
-    }
 }
 
 
 
 
-function render_table(tableId, response){
+function render_table_full(tableId, response){
 
     document.getElementById(tableId).innerHTML = response
-    console.log(' * Table rendering start', now())
-
-//    $('#'+tableId+" tfoot th").each( function () {
-//        var title = $('#'+tableId+" tfoot th").eq( $(this).index() ).text();
-//        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-//        console.log('@', title)
-//
-//
-//    } );
-
-    $('#'+'dataA' +' thead th').each(function () {
-       var $td = $(this);
-      $td.attr('title',  $td.text());
-    });
-
+    console.log(' * Table rendering start', tableId, now())
 
 
     // 서버사이드에서 받아온 HTML테이블객체를 DATATABLE형태로 INITIALIZE
-    $('#'+tableId,).dataTable( {
-    aaSorting: [],
-    // stateSave:true,
-    sScrollX:"100%",
-    autoWidth:true,
-    aLengthMenu: [ 15, 25, 35, 50, 100 ],
-    iDisplayLength: 25,
-    columns: [
-            { name:"STOCKNAME"},
-            { name:"FAV", orderDataType: "dom-checkbox" },
-            { name:"MC" },
-            null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null
+    $('#'+tableId).dataTable( {
+        aaSorting: [],
+        // stateSave:true,
+        sScrollX:"100%",
+        autoWidth:true,
+        aLengthMenu: [ 15, 25, 35, 50, 100 ],
+        iDisplayLength: 25,
+        columns: [
+                { name:"STOCKNAME"},
+                { name:"FAV", orderDataType: "dom-checkbox" },
+                { name:"MC" },
+                null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null
+            ],
+        columnDefs: [
+
+                // { type: 'natural', targets: '_all'},
+
+                { orderSequence: [ "desc", "asc"],
+                  targets: [ 2,3,
+                                4,  5,  6,  7,  8,  9,
+                                10, 11, 12, 13, 14, 15,
+                                16, 17, 18, 19, 20, 21,
+                                        22,23,24,25,26,27,
+                                        28,29,30,31,32,33] },
+                // STOCKNAME
+
+
+                { width: 70, targets: 0 },
+
+                // FAV
+                { width: 20, targets: 1},
+
+                // MC
+                { width: 30, targets: 2, render: $.fn.dataTable.render.number(',', '.', 1, '')},
+
+                // CLOSE
+                { width: 45, targets: 3, render: $.fn.dataTable.render.number( ',', '.', 0, '')},
+
+                // P I F
+                { width: 30, targets: [4,5,6,7,8,9,  10,11,12,13,14,15,  16,17,18,19,20,21,  22,23,24,25,26,27, 28,29,30,31,32,33] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+
+                // RANK
+                { width: 30, targets: [34, 35, 36, 37, 38, 39] },
+
+                // EVENT PATTERN
+                { width: 90, targets: 40 },
+
+                // DAYS EVENT
+                { width: 30, targets: [41,42,43,44] , render: $.fn.dataTable.render.number(',', '.', 0, '')},
+
+                // BBP EVENT
+                { width: 30, targets: [45,46,47,48] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+
+                // BBW EVENT
+                { width: 30, targets: [49,50,51,52] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+
+                // FINAN
+                { width: 30, targets: [53,54,55] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+
+                // CATEGORY
+                { width: 200, targets: [56] },
+
+                { width: 60, targets: [57] }
         ],
-    columnDefs: [
 
-            // { type: 'natural', targets: '_all'},
-
-            { orderSequence: [ "desc", "asc"],
-              targets: [ 2,3,4,5,6,7,8,9,10,11,12,13,14,15, 16, 17, 18, 19, 20, 21 ] },
-            // STOCKNAME
+        scrollCollapse: true,
+        fixedColumns : {//关键是这里了，需要第一列不滚动就设置1
+            leftColumns : 3
+        },
 
 
-            { width: 70, targets: 0 },
+        rowCallback: function( row, data ) {
 
-            // FAV
-            { width: 15, targets: 1},
+            console.log(" * Row Call back triggered")
+            conditionalFormatting(row, data, stockcode_favorite) // Conlorize + Modify inner cell value
 
-            // MC
-            { width: 25, targets: 2, render: $.fn.dataTable.render.number(',', '.', 1, '')},
+        },
 
-            // CLOSE
-            { width: 40, targets: 3, render: $.fn.dataTable.render.number( ',', '.', 0, '')},
-
-            // P I F
-            { width: 30, targets: [4,5,6,7,8,9, 10,11,12,13,14,15, 16,17,18,19,20,21] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-            // RANK
-            { width: 30, targets: [22, 23, 24, 25, 26, 27] },
-
-            // EVENT PATTERN
-            { width: 90, targets: 28 },
-
-            // DAYS EVENT
-            { width: 30, targets: [29, 30, 31, 32] , render: $.fn.dataTable.render.number(',', '.', 0, '')},
-
-            // BBP EVENT
-            { width: 30, targets: [33, 34, 35, 36] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-            // BBW EVENT
-            { width: 30, targets: [37, 38, 39, 40] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-            // FINAN
-            { width: 30, targets: [41,42,43] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-            // CATEGORY
-            { width: 140, targets: [44] },
-
-            { width: 60, targets: [45] },
-
-
-
-
-
-
-                        ],
-    scrollCollapse: true,
-    fixedColumns : {//关键是这里了，需要第一列不滚动就设置1
-        leftColumns : 3
-    },
-
-
-    rowCallback: function( row, data ) {
-
-        console.log(" * Row Call back triggered")
-        conditionalFormatting(row, data, stockcode_favorite) // Conlorize + Modify inner cell value
-
-    },
-
-//    fnDrawCallback: function( row, data ) {
-//        console.log(" * fnDraw Call back triggered")
-//
-//    },
-
-
-
-//    initComplete: function(settings){
-//
-//            console.log(" * TABLE REDER FINISH, INIT COMPLETE START")
-//            $('#'+tableId +' thead th').each(function () {
-//               var $td = $(this);
-//              $td.attr('title', $td.attr('custom-title'));
-//            });
-//
-//            /* Apply the tooltips */
-//            $('#'+tableId +' thead th[title]').tooltip(
-//            {
-//               "container": 'body'
-//            });
-//
-//  $('#dataA').on( 'click', '.filter-ck', function () {
-//    var checked = $(this).prop('checked');  // Get checkbox state
-//
-//
-//
-//    // Get row data
-//    var row = $( this ).closest( 'tr' );
-//    var data = table.row ( row ).data();
-//
-//    console.log(row)
-//    console.log(data)
-//
-//    //update the cell data with the checkbox state
-//    //update the cell data with the checkbox state
-//    if ( checked ) {
-//      data.check = 1;
-//    } else {
-//      data.check = 0;
-//    }
-//  });
-//
-//
-//
-//
-//
-////            $.fn.dataTable.ext.search.push(
-////                function( settings, data, dataIndex ) {
-////
-////                    console.log("MC SEARCH")
-////                    var min = parseInt( $('#mc_min').val(), 10 );
-////                    var max = parseInt( $('#mc_max').val(), 10 );
-////                    var age = parseFloat( data[1] ) || 0; // use data for the age column
-////
-////                    if ( ( isNaN( min ) && isNaN( max ) ) ||
-////                         ( isNaN( min ) && age <= max ) ||
-////                         ( min <= age   && isNaN( max ) ) ||
-////                         ( min <= age   && age <= max ) )
-////                    {
-////                        return true;
-////                    }
-////                    return false;
-////                }
-////            );
-////
-////            $.fn.dataTable.ext.search.push(
-////                function( settings, data, dataIndex ) {
-////
-////                    console.log("I5 SEARCH")
-////                    var min = parseInt( $('#i5_min').val(), 10 );
-////                    var max = parseInt( $('#i5_max').val(), 10 );
-////                    var age = parseFloat( data[8] ) || 0; // use data for the age column
-////
-////                    if ( ( isNaN( min ) && isNaN( max ) ) ||
-////                         ( isNaN( min ) && age <= max ) ||
-////                         ( min <= age   && isNaN( max ) ) ||
-////                         ( min <= age   && age <= max ) )
-////                    {
-////                        return true;
-////                    }
-////                    return false;
-////                }
-////            );
-//
-//
-//
-//
-//
-//        }
-
-//        initComplete: function(settings){
-//
-//                console.log(" * TABLE REDER FINISH, INIT COMPLETE START")
-//                $('#'+'dataA' +' thead th').each(function () {
-//                   var $td = $(this);
-//                  $td.attr('title',  $td.text());
-//                  console.log($td.text())
-//                });
-//
-//                /* Apply the tooltips */
-//                $('#'+'dataA' +' thead th[title]').tooltip(
-//                {
-//                   "container": 'body'
-//                });
-//
-//                console.log(" * TABLE REDER FINISH, INIT COMPLETE START")
-//
-//
-//         }
     } );
 
     console.log(' * Table rendering DONE', now())
-    hideColumn()
-    var table = $('#dataA').DataTable();
+    hideColumn(tableId)
+    var table = $('#'+tableId).DataTable();
     $('#mc_min, #mc_max').on("keyup input change propertychange", function() {
         table.draw()
     } );
-
 
 }
 
@@ -789,11 +666,8 @@ function openPage(pageName, elmnt, color) {
         tablinks[i].style.backgroundColor = "";
     }
 
-
     console.log(" * open tab... ", pageName.replace('tab','tabcontent'))
     document.getElementById(pageName.replace('tab','tabcontent')).style.display = "block";
-
-    // elmnt.style.backgroundColor = color;
 }
 
 var stockQueue = [];
@@ -1128,7 +1002,7 @@ function getChartData(stockcode, stockname){
 
     if (stockQueue.includes("stockcode")){
         openPage("tab"+stockcode, this, "yellow");
-        document.getElementById("tab"+stockcode).innerHTML=stockcode
+        document.getElementById("tab"+stockcode).innerHTML=stockname
     }
     else {
 
@@ -1223,9 +1097,11 @@ function getChartData(stockcode, stockname){
 
 }
 
-function hideColumn(){
-    table = $('#dataA').DataTable();
-    var column_idx_to_hide = [8, 9, 14, 15, 20, 21];
+function hideColumn(tableId){
+    table = $('#' + tableId).DataTable();
+    var column_idx_to_hide = [8, 9, 14, 15, 20, 21,
+                                    22,23,24,25,26,27,
+                                    28,29,30,31,32,33];
     for (idx in column_idx_to_hide){
         var column = table.column(column_idx_to_hide[idx]);
         column.visible( ! column.visible() );

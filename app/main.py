@@ -3,7 +3,8 @@ from jazzstock_net.app.dao.dao_user import DataAccessObjectUser
 from jazzstock_net.app.common.mail import send_mail
 import jazzstock_net.app.config.config as cf
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for
+from io import StringIO
+from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response
 import random
 
 
@@ -43,6 +44,9 @@ def login():
 
             return jsonify({'result':False})
 
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
 @application.route('/logout', methods=['POST'])
 def logout():
     session.clear()
@@ -66,6 +70,8 @@ def register():
         else:
             dao_user.register(email, pw, username)
             return jsonify({'result': True})
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
 @application.route('/profileForm', methods=['POST'])
 def editProfile():
@@ -86,13 +92,20 @@ def editProfile():
             dao_user.register(email, pw, username)
             return jsonify({'result': True})
 
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
 @application.route('/register', methods=['GET'])
 def renderingRegisterPage():
     return render_template('register.html')
 
 @application.route('/profile', methods=['GET'])
 def renderingProfilePage():
-    return render_template('profile.html')
+
+    if session.get('loggedin') == True:
+        return render_template('profile.html')
+    else:
+        return redirect(url_for("home"),code=302)  #
 
 @application.route('/getUserInfo', methods=['POST'])
 def getUserInfo():
@@ -110,8 +123,10 @@ def getFavorite():
         dao = DataAccessObjectUser()
         sess = session_parser()
         stockcode_favorite = dao.get_favorite(sess['usercode'])['result']
-
         return jsonify(stockcode_favorite =  stockcode_favorite)
+
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
 
 @application.route('/setFavorite', methods=['POST'])
@@ -125,6 +140,8 @@ def setFavorite():
             return jsonify(result ="favorite updated")
         else:
             return jsonify(result ="login first")
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
 @application.route('/getEmailConfirmationCode', methods=['POST'])
 def getEmailConfirmationCode():
@@ -141,6 +158,9 @@ def getEmailConfirmationCode():
 
         return jsonify({'result':True})
 
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
 @application.route('/checkEmailConfirmationCode', methods=['POST'])
 def checkConfirmationCode():
     if request.method == 'POST' and \
@@ -154,6 +174,8 @@ def checkConfirmationCode():
 
         else:
             return jsonify({'result':False})
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
 @application.route('/checkDupUsername', methods=['POST'])
 def checkDupUsername():
@@ -165,6 +187,9 @@ def checkDupUsername():
         dao_user = DataAccessObjectUser()
         response = dao_user.check_dup(username)  # BOOL
         return jsonify({'result': response})
+
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
 @application.route('/checkCurrentPassword', methods=['POST'])
 def checkCurrentPassword():
@@ -178,6 +203,8 @@ def checkCurrentPassword():
         response = dao_user.check_curr_pw(usercode, curr_pw)  # BOOL
         return jsonify({'result': response})
 
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
 def session_parser(init=False):
     '''
@@ -204,11 +231,6 @@ def session_parser(init=False):
             'expiration_date':expiration_date}
 
 
-@application.route('/getSession', methods=['POST'])
-def ajax_getSession():
-    sess = session_parser()
-    return jsonify(session=session)
-
 # ========================================================
 # STOCK
 # ========================================================
@@ -220,7 +242,6 @@ def static_from_root():
 
 @application.route('/')
 def home():
-    # messages = request.args.get('messages')  # counterpart for url_for()
     return render_template('home.html', session=session_parser(), alert_message=session.get('message'))
 
 
@@ -234,9 +255,12 @@ def ajax_getTable():
         2. SESSION정보에 따라서 불러오는 ROW수 또는 컬럼수를 조정해줘야한다.
 
     '''
-    keyA = request.form['keyA'].replace('"', '')
-    keyB = request.form['keyB'].replace('"', '')
-    orderby = request.form['orderby'].replace('"', '')
+
+    targets = request.form.get("targets").split(',')
+    intervals = [int(interval) for interval in request.form.get("intervals").split(',')]
+    orderby = "+".join(request.form.get("orderby").split(','))
+    orderhow = request.form.get("orderhow")
+    limit = request.form.get("limit")
 
     dic = {
 
@@ -266,15 +290,15 @@ def ajax_getTable():
     # 회원
     else:
         if sess['expiration_date'] < str(datetime.now().date()):
-            limit = 200
+            limit = 100
             usercode = -1
 
         # 후원자
         else:
-            limit = 5000
+            limit = 200
             usercode = sess['usercode']
 
-    htmltable = dao.sndRankHtml([dic[keyA], dic[keyB]], [1,5,20,60], dic[keyA] + orderby, 'DESC', limit=limit, usercode= usercode)
+    htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow, method='dataframe', limit=limit, usercode=usercode)
     return htmltable
 
 
@@ -323,9 +347,58 @@ def ajax_getSndRelated():
     return htmltable
 
 
-@application.route('/info')
-def info():
-    return render_template('info.html')
+@application.route('/getTableCsv', methods=['GET'])
+def getTableFullCsv():
+
+    dao = DataAccessObjectStock()
+    sess = session_parser()
+
+    filename_prefix = 'jazzstock_table_daily_full'
+    the_date = '20210216'
+
+    # 비회원
+    if sess['loggedin'] == None or sess['loggedin'] == False:
+        return jsonify({'result': False, "message": "supporters only"})
+
+    # 회원
+    else:
+        # 일반회원
+        if sess.get('expiration_date', '1970-01-01') < str(datetime.now().date()):
+            return jsonify({'result': False, "message": "supporters only"})
+
+        # 후원자
+        else:
+            output_stream = StringIO()
+            df = dao.sndRank(order='I1+F1', by='DESC', method='dataframe', limit=20, usercode=0)
+            df.to_csv(output_stream, encoding='euc-kr')
+
+            response = Response(
+                output_stream.getvalue(),
+                mimetype='text/csv',
+                content_type='text/csv',
+            )
+            response.headers["Content-Disposition"] = "attachment; filename=%s_%s.csv"%(filename_prefix, the_date)
+
+            return response
+
+@application.route('/getTradingDays', methods=['POST'])
+def getRecentTradingDays():
+    '''
+    T_DATE_INDEXED에서 TOP 240 DATE를 가져오는 함수
+    '''
+    dao = DataAccessObjectStock()
+    pass
+
+@application.route('/getRecentTradingDayAndResultCount', methods=['POST'])
+def getRecentTradingDayAndResultCount():
+    '''
+    최근거래일 총 데이터건수를 가져오는 함수
+    '''
+    dao = DataAccessObjectStock()
+    pass
+
+
+
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ pd.options.display.max_rows = 2500
 
 class DataAccessObjectStock:
 
-    def sndRank(self, target, interval, order, by, method='json', limit=50, usercode=0):
+    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0):
 
         t1 = dt.now()
         date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 0")
@@ -39,25 +39,15 @@ class DataAccessObjectStock:
                         , "N" AS FAV
                         , MC
                         , CLOSE
-                        , P1
-                        , P5
-                        , P20
-                        , P60
-                        , P120
-                        , P240
-                        , I1
-                        , I5
-                        , I20
-                        , I60
-                        , I120
-                        , I240
-                        , F1
-                        , F5
-                        , F20
-                        , F60
-                        , F120
-                        , F240
                     '''
+
+
+        querytarget =  ''
+        for target in targets:
+            for interval in intervals:
+                querytarget = querytarget + ', %s%s'%(target, interval)
+            querytarget = querytarget + '\n'
+
 
         querycont = '''
                 , IR, FR, PR, YR, SR, TR
@@ -124,13 +114,14 @@ class DataAccessObjectStock:
 
                 AND A.DATE = "%s"
                 AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
+                AND  J.MC > 0.62  # 2021-02-15기준 2000종목
                 ORDER BY %s %s
                 LIMIT %s
 
 
-            ''' % (date, order, by, limit)
+            ''' % (date, orderby, orderhow, limit)
 
-        fullquery = queryhead + querycont + querytail + queryend
+        fullquery = queryhead + querytarget + querycont + querytail + queryend
         df = db.selectpd(fullquery)
         rtdf = df[df.columns[2:]].round(4)
         if method == 'dataframe':
@@ -140,18 +131,25 @@ class DataAccessObjectStock:
 
 
     # 수급테이블
-    def sndRankHtml(self, target, interval, order, by, limit=50, usercode=0):
+    def sndRankHtml(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='dataframe', limit=50, usercode=0):
 
         t1 = dt.now()
-        rtdf = self.sndRank(target, interval, order, by, method='dataframe', limit=limit, usercode=usercode)
+        rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode)
 
         t2 = dt.now()
-        float_columns = ['P1', 'P5', 'P20', 'P60', 'P120', 'P240', 'I1', 'I5', 'I20', 'I60', 'I120','I240', 'F1', 'F5', 'F20', 'F60', 'F120', 'F240']
+        float_columns = ['P1', 'P5', 'P20', 'P60', 'P120', 'P240',
+                         'I1', 'I5', 'I20', 'I60', 'I120','I240',
+                         'F1', 'F5', 'F20', 'F60', 'F120', 'F240'
+
+            , 'YG1', 'YG5', 'YG20', 'YG60', 'YG120', 'YG240'
+            , 'S1', 'S5', 'S20', 'S60', 'S120', 'S240'
+                         ]
 
 
         rtdf[float_columns] = rtdf[float_columns] * 100
         rtdf[float_columns] = rtdf[float_columns].round(3)
         rtdf = rtdf.fillna(0)
+
         html = (
                 rtdf.style
                 .hide_index()
