@@ -51,55 +51,46 @@
     @media(min-width: 1920px) { .jazzstockhead { width: 1820px; height: 100px; } }
     </style>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- 2020HEAD -->
-    <ins class="adsbygoogle jazzstockhead"
-         style="display:inline-block"
-         data-ad-client="ca-pub-7952244387820356"
-         data-ad-slot="4979248724"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-         var session = {{ session | tojson | safe }}
-    </script>
 
 
-    <div id="header">
-        <h2>Jazzstock</h2>
-    </div>
+
     <div id="menu">
-        <div id="function_default">
-            <div id="menu_loggedin">
+        <div class="navigation_top"  id="navigation_top">
+            <a class="active" href="#"><b>Jazzstock</b></a>
+            <div class="navigation_top_right" id="menu_loggedin">
                 <div id="notloggedin">
+
+                    <a href="#" onclick="description()">공지사항</a>
                     <a href="/register">회원가입</a>
                     <a href="#" onclick="openForm()">로그인</a>
-                    <a href="#" onclick="description()">공지사항</a>
                 </div>
                 <div id="loggedin" style="display: none">
+                    <a href="#" onclick="description()">공지사항</a>
                     <a href="#" onclick="profile()">프로필수정</a>
                     <a href="#" onclick="logout()">로그아웃</a>
-                    <a href="#" onclick="description()">공지사항</a>
                     <a href="#" onclick="openExpandFunction()">회원기능열기</a>
                 </div>
             </div>
-            <div id="menu_user_class">
-                <div id="only_admin" style="display: none">
-                    <a href="#" onclick="foldSearchingOption()">개인설정</a>
-                    <a href="#" onclick="clearStorage()">로컬스토리지 지우기</a>
-                    <a href="#" onclick="getFavorite()">getFavorite</a>
-                    <label for="filter_mc_max">Test A</label>
-                        <input type="text" id="filter_mc_max">
-                        <a href="#" onclick="setBuiltinFilter('filter_mc_max', 'mc_max');">SET MCMAX</a><br>
 
-
-                    <label for="filter_i5_min">Test B</label>
-                        <input type="text" id="filter_i5_min">
-                        <a href="#" onclick="setBuiltinFilter('filter_i5_min', 'i5_min');">SET MCMAX</a><br>
-                    <br>
-                </div>
-                <div id="only_member" style="display: none">
-                </div>
-            </div>
         </div>
+
+        <div id="navigation_table"  class="scrollmenu"  >
+            <a href="#" class="tablink" onclick="openPage('full', this, 'red')" id="defaultOpen">Full</a>
+            <a href="#" class="tablink" onclick="openPage('top100', this, 'red'); renderSecond();">Top100</a>
+            <a href="#" class="tablink" onclick="getRealtime()">Realtime</a>
+        </div>
+<!--        <div class="adsense" id="adsense_top">-->
+<!--            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+<!--            &lt;!&ndash; 2020HEAD &ndash;&gt;-->
+<!--            <ins class="adsbygoogle jazzstockhead"-->
+<!--                 style="display:inline-block"-->
+<!--                 data-ad-client="ca-pub-7952244387820356"-->
+<!--                 data-ad-slot="4979248724"></ins>-->
+<!--            <script>-->
+<!--                 (adsbygoogle = window.adsbygoogle || []).push({});-->
+<!--                 var session = {{ session | tojson | safe }}-->
+<!--            </script>-->
+<!--        </div>-->
         <div id="function_expanded" style="display: none">
             <div id="only_supporter" style="display: none">
                     <hr>
@@ -176,16 +167,6 @@
             <p>(신규컬럼이 포함된  버전은 차차 업데이트 하겠습니다  ㅎㅎ..)</p>
         </div>
     </div>
-    <div id="tab_bar">
-        <div>
-            <button class="tablink" onclick="openPage('full', this, 'red')" id="defaultOpen">Full</button>
-            <button class="tablink" onclick="openPage('top100', this, 'red'); renderSecond();">Top100</button>
-            <button class="tablink" onclick="getRealtime()">Realtime</button>
-        </div>
-        <div id="tabMenu">
-        </div>
-        <hr>
-    </div>
     <div id="full" class="tabcontent" style="display:block">
         <div class="row">
             <div class="card">
@@ -221,6 +202,7 @@
                 </table>
             </div>
         </div>
+        <br>
     </div>
     <div id="top100" class="tabcontent" style="display:none">
         <div class="row">
@@ -260,13 +242,10 @@
     </div>
     <div id="tabConts"></div>
     <div id="realtime"></div>
-
-
-
-    <div id="footer">
+    <div id="footer" style="display:block">
         <div id="footer_mine">
-            <br><hr>
-            <p>문의 : jazztronomers@gmail.com </p>
+            <br><br><hr>
+            <p>문의 : jazzztronomers@gmail.com </p>
             <p>후원 : 우리은행 1002-455-318806</p>
         </div>
         <div id="footer_adsense">
@@ -297,10 +276,18 @@
 <!--                     (adsbygoogle = window.adsbygoogle || []).push({});-->
 <!--                </script>-->
 
+            </div>
         </div>
-    </div>
 
 
+        <div class="scrollmenu" id="navigation_stock">
+
+            <div class="navigation_top_right">
+
+                <a href="#" onclick="description()">공지사항</a>
+                <a href="#" onclick="openExpandFunction()">회원기능열기</a>
+            </div>
+        </div>
 
     </div>
 

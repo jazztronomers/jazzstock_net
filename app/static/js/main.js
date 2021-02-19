@@ -447,6 +447,7 @@ function render_table_full(tableId, response){
         autoWidth:true,
         aLengthMenu: [ 15, 25, 35, 50, 100 ],
         iDisplayLength: 25,
+        fixedHeader: true,
         columns: [
                 { name:"STOCKNAME"},
                 { name:"FAV", orderDataType: "dom-checkbox" },
@@ -782,8 +783,8 @@ function addTabToPage(stockcode, stockname){
 
 
 
-    var tabMenu= document.getElementById('tabMenu')
-    var tablink = document.createElement("BUTTON")
+    var tabMenu= document.getElementById('navigation_stock') // tabMenu
+    var tablink = document.createElement("a")
     tablink.setAttribute("class", "tablink");
     tablink.setAttribute("id", "tab"+stockcode);
     tablink.setAttribute("onclick", "openPage('tab"+stockcode+"', this, 'red')");
@@ -824,7 +825,7 @@ function addTabToPage(stockcode, stockname){
 
 function removeOldestTab(){
 
-    var tabMenu= document.getElementById('tabMenu')
+    var tabMenu= document.getElementById('navigation_stock')
     tabMenu.removeChild(tabMenu.getElementsByTagName('button')[0])
 
 }
@@ -914,7 +915,7 @@ function setMenu(){
     if (user_loggedin==true){
         document.getElementById('notloggedin').style.display = "none";
         document.getElementById('loggedin').style.display = "block";
-        document.getElementById('only_member').style.display = "block";
+        // document.getElementById('only_member').style.display = "block";
     }
 
     expdate = new Date(user_expiration_date).setHours(0,0,0,0)

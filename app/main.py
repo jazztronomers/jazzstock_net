@@ -284,18 +284,18 @@ def ajax_getTable():
 
     # 비회원
     if sess['loggedin'] == None or sess['loggedin'] == False:
-        limit = 50
+        limit = 25
         usercode = -1
 
     # 회원
     else:
         if sess['expiration_date'] < str(datetime.now().date()):
-            limit = 100
+            limit = 25
             usercode = -1
 
         # 후원자
         else:
-            limit = 3000
+            limit = 25
             usercode = sess['usercode']
 
     htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow, method='dataframe', limit=limit, usercode=usercode)
