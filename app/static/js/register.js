@@ -10,11 +10,22 @@ function checkPasswordMatches(){
     document.getElementById('confirmation_password_same').style.color = 'green';
     document.getElementById('confirmation_password_same').innerHTML = 'matching';
 
+
+    button_update_password = document.getElementById('update_password')
+    if (null!= button_update_password){
+        button_update_password.disabled=""
+    }
     flag_password_confirmed = true
 
   } else {
     document.getElementById('confirmation_password_same').style.color = 'red';
     document.getElementById('confirmation_password_same').innerHTML = 'not matching';
+
+    button_update_password = document.getElementById('update_password')
+    if (null!= button_update_password){
+        button_update_password.disabled="disabled"
+    }
+
 
     flag_password_confirmed =  false
   }
@@ -142,10 +153,106 @@ function checkConfirmationCodeMatches(email){
 
 function checkDupUsername(){
 
+    var username = document.getElementById('username').value
+
+    if (username == username_origin){
+        alert("기존 닉네임과 일치합니다")
+    }
+
+    else {
+
+        var req = new XMLHttpRequest()
+        req.responseType = 'json';
+        req.onreadystatechange = function()
+        {
+            if (req.readyState == 4)
+            {
+                if (req.status == 200){
+
+                    if(req.response.result == false)
+                    {
+                        alert("이미 존재하는 username입니다")
+                        var button = document.getElementById('update_username')
+                        button.disabled = "disabled"
+                        flag_username_dup_checked = false
+
+                    }
+                    else {
+                        alert("사용가능한 username입니다")
+                        var button = document.getElementById('update_username')
+                        button.disabled = "";
+                        flag_username_dup_checked = true
+                        return true
+                    }
+                }
+            }
+        }
+
+        req.open('POST', '/checkDupUsername')
+        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+        req.send('username='+username)
+    }
+
+}
+
+
+
+function updateUsername(){
 
 
 
     var username = document.getElementById('username').value
+    if ( username == username_origin ){
+        alert("닉네임을 변경되지 않았거나, 중복체크되지 않았습니다.")
+    }
+    else if (flag_username_dup_checked == false){
+        alert("중복체크해주세요.")
+    }
+
+    else {
+
+        var req = new XMLHttpRequest()
+        req.responseType = 'json';
+        req.onreadystatechange = function()
+        {
+            if (req.readyState == 4)
+            {
+                if (req.status == 200){
+
+                    if(req.response.result == false)
+                    {
+                        alert("알수 없는 에러가 발생하였습니다, 다시 시도해주세요")
+                        flag_username_dup_checked = false
+                    }
+                    else {
+                        alert("닉네임이 변경되었습니다")
+
+                        username_origin = username
+                        var button = document.getElementById('button_check_username_dup')
+                        button.disabled = "disabled";
+
+                        var button = document.getElementById('update_username')
+                        button.disabled = "disabled";
+
+
+
+                        return true
+                    }
+                }
+            }
+        }
+
+        req.open('POST', '/updateUsername')
+        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+        req.send('username='+username)
+    }
+}
+
+
+function updatePassword(){
+
+
+
     var req = new XMLHttpRequest()
     req.responseType = 'json';
     req.onreadystatechange = function()
@@ -156,26 +263,29 @@ function checkDupUsername(){
 
                 if(req.response.result == false)
                 {
-                    alert("이미 존재하는 username입니다")
-                    flag_username_dup_checked = false
+                    alert("알수 없는 에러가 발생하였습니다, 다시 시도해주세요")
                 }
                 else {
-                    alert("사용가능한 username입니다")
-                    var button = document.getElementById('button_check_username_dup')
-                    //  button.disabled = "disabled";
+                    alert("비밀번호가 변경되었습니다, 재접속해주세요.")
+                    window.location = "/logout";
 
-                    flag_username_dup_checked = true
                     return true
                 }
             }
         }
     }
 
-    req.open('POST', '/checkDupUsername')
+
+
+    var pw = SHA256(document.getElementById('pw').value)
+
+    req.open('POST', '/updatePassword')
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-    req.send('username='+username)
+    req.send('password='+pw)
 
 }
+
+
 
 function checkCurrentPassword(){
 
@@ -211,8 +321,6 @@ function checkCurrentPassword(){
                     field.disabled = "";
 
 
-                    var field = document.getElementById('button_edit')
-                    field.disabled = "";
 
                 }
             }
@@ -225,12 +333,10 @@ function checkCurrentPassword(){
 
 }
 
-function doEdit(){
 
 
 
 
-}
 
 function doRegister(){
 

@@ -4,9 +4,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 
+
+<script>
+
+  var username_origin = "{{ username }}"
+  var username_dirty = false
+  console.log(username_origin)
+
+</script>
 <script type="text/javascript" src="static/js/open.js"></script>
 <script type="text/javascript" src="static/js/register.js"></script>
-
 
 
 </head>
@@ -14,22 +21,29 @@
 
   <form class="form-inline">
     <div class="container">
-      <h1>Register</h1>
+      <h1><u>Edit Profile</u></h1>
       <p>
+        닉네임과 비밀변호를 개별적으로 수정하는 페이지입니다<br>
         비밀번호는 화면단에서 암호화되어 서버로 전송됩니다, 안심하셔도 좋습니다.
+
       </p>
       <hr>
 
 
       <label for="curr_pw"><b>Current Password</b></label>
-        <input type="password" placeholder="기존비밀번호 입력" name="curr_pw" id="curr_pw">
+        <input type="password" placeholder="현재 비밀번호를 입력해주세요" name="curr_pw" id="curr_pw">
         <input type="button" id="button_check_current_pw" style="display:inline" onclick='checkCurrentPassword();' value="확인">
         <br>
+        <hr>
 
       <label for="username"><b>Username</b></label>
-        <input type="text" placeholder="닉네임 입력" name="username" id="username" disabled>
+        <input type="text" placeholder="닉네임 입력" name="username" id="username" disabled value="{{ username }}">
         <input type="button" id="button_check_username_dup" style="display:inline" onclick='checkDupUsername();' value="중복체크" disabled>
+        <input type="button" id="update_username" style="display:inline" onclick='updateUsername();' value="닉네임 업데이트" disabled>
         <br>
+
+
+      <hr>
 
       <label for="pw"><b>Password</b></label>
         <input type="password" placeholder="수정할 비밀번호 입력" name="pw" id="pw" disabled>
@@ -38,8 +52,9 @@
       <label for="pw_confirmation"><b>Repeat Password</b></label>
         <input type="password" placeholder="수정할 비밀번호 확인" name="pw_confirmation" id="pw_confirmation" onkeyup='checkPasswordMatches()' disabled>
         <span id='confirmation_password_same'></span><br>
+        <input type="button" id="update_password" style="display:inline" onclick='updatePassword();' value="비밀번호 업데이트" disabled>
       <hr>
-      <input type="button" id="button_edit" style="display:inline" onclick='doEdit();' value="프로필수정" disabled>
+      <a href="/">메인화면으로 돌아가기</a>
     </div>
 
   </form>

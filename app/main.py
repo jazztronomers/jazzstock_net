@@ -9,7 +9,7 @@ import random
 
 
 application = Flask(__name__, static_folder='static', )
-application.config['SECRET_KEY'] = 'the random string'
+application.config['SECRET_KEY'] = cf.FLASK_SECRET_KEY
 
 # ========================================================
 # USER
@@ -47,7 +47,7 @@ def login():
     else:
         return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
-@application.route('/logout', methods=['POST'])
+@application.route('/logout', methods=['POST','GET'])
 def logout():
     session.clear()
     return redirect(url_for("home"),code=302)
@@ -86,7 +86,7 @@ def editProfile():
         username = request.form['username']
 
         dao_user = DataAccessObjectUser()
-        if not  dao_user.check_dup(username):
+        if not dao_user.check_dup(username):
             return jsonify({'result': False})
         else:
             dao_user.register(email, pw, username)
@@ -94,6 +94,36 @@ def editProfile():
 
     else:
         return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+@application.route('/updateUsername', methods=['POST'])
+def updateUsername():
+    if request.method == 'POST' and \
+            'username' in request.form:
+
+        updated_username = request.form['username']
+        dao_user = DataAccessObjectUser()
+        result = dao_user.update_username(updated_username, session.get('usercode'))
+
+        if result:
+            session['username']=updated_username
+
+        return jsonify({'result': result})
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+@application.route('/updatePassword', methods=['POST'])
+def updatePassword():
+    if request.method == 'POST' and \
+            'password' in request.form:
+
+        password = request.form['password']
+        dao_user = DataAccessObjectUser()
+        result = dao_user.update_password(password, session.get('usercode'))
+        return jsonify({'result': result})
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+
 
 @application.route('/register', methods=['GET'])
 def renderingRegisterPage():
@@ -103,7 +133,7 @@ def renderingRegisterPage():
 def renderingProfilePage():
 
     if session.get('loggedin') == True:
-        return render_template('profile.html')
+        return render_template('profile.html', username=session_parser().get('username','zzzzzz'))
     else:
         return redirect(url_for("home"),code=302)  #
 
@@ -242,7 +272,10 @@ def static_from_root():
 
 @application.route('/')
 def home():
-    return render_template('home.html', session=session_parser(), alert_message=session.get('message'))
+    return render_template('home.html',
+                           username=session.get('username','Guest'),
+                           expiration_date=str(session.get('expiration_date',None)),
+                            alert_message=session.get('message'))
 
 
 
@@ -295,7 +328,7 @@ def ajax_getTable():
 
         # 후원자
         else:
-            limit = 25
+            limit = 2500
             usercode = sess['usercode']
 
     htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow, method='dataframe', limit=limit, usercode=usercode)

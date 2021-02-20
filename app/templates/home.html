@@ -56,7 +56,7 @@
 
     <div id="menu">
         <div class="navigation_top"  id="navigation_top">
-            <a class="active" href="#"><b>Jazzstock</b></a>
+            <a class="active" href="/"><b>Jazzstock</b></a>
             <div class="navigation_top_right" id="menu_loggedin">
                 <div id="notloggedin">
 
@@ -65,8 +65,7 @@
                     <a href="#" onclick="openForm()">로그인</a>
                 </div>
                 <div id="loggedin" style="display: none">
-                    <a href="#" onclick="description()">공지사항</a>
-                    <a href="#" onclick="profile()">프로필수정</a>
+                    <a href="/profile">프로필수정</a>
                     <a href="#" onclick="logout()">로그아웃</a>
                     <a href="#" onclick="openExpandFunction()">회원기능열기</a>
                 </div>
@@ -78,6 +77,9 @@
             <a href="#" class="tablink" onclick="openPage('full', this, 'red')" id="defaultOpen">Full</a>
             <a href="#" class="tablink" onclick="openPage('top100', this, 'red'); renderSecond();">Top100</a>
             <a href="#" class="tablink" onclick="getRealtime()">Realtime</a>
+            <div id="userinfo" class="navigation_top_right" style="display: none">
+                <p>닉네임: {{ username }}, 만료일자:{{ expiration_date }}</p>
+            </div>
         </div>
 <!--        <div class="adsense" id="adsense_top">-->
 <!--            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
@@ -244,9 +246,9 @@
     <div id="realtime"></div>
     <div id="footer" style="display:block">
         <div id="footer_mine">
-            <br><br><hr>
-            <p>문의 : jazzztronomers@gmail.com </p>
-            <p>후원 : 우리은행 1002-455-318806</p>
+            <hr>
+            문의 : jazzztronomers@gmail.com<br>
+            후원 : 우리은행 1002-455-318806
         </div>
         <div id="footer_adsense">
             <div class="adsense">

@@ -915,6 +915,7 @@ function setMenu(){
     if (user_loggedin==true){
         document.getElementById('notloggedin').style.display = "none";
         document.getElementById('loggedin').style.display = "block";
+        document.getElementById('userinfo').style.display = "block";
         // document.getElementById('only_member').style.display = "block";
     }
 

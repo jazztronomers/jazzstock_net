@@ -35,9 +35,10 @@ h5 {
 }
 
 p {
-    font-size: 0.8em;
+    font-size: 0.9em;
     text-align: center;
 }
+
 
 /**
 
@@ -89,6 +90,11 @@ p {
   float: right;
 }
 
+
+#navbar_stock_right {
+	float: right;
+}
+
 #navbar_stock_right {
 	float: right;
 }
@@ -128,6 +134,8 @@ div#footer {
     white-space: nowrap;
     float: center;
     width:   100%;
+    font-size: 0.8em;
+    text-align: center;
 
 
 }
