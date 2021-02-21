@@ -61,7 +61,7 @@ class DataAccessObjectUser:
     def login(self, email, pw):
         pw_encoded = sha256(pw.encode('utf-8')).hexdigest()
         response = db.selectpd('''
-                                SELECT USERCODE, EMAIL, USERNAME, EXPIRATION_DATE
+                                SELECT USERCODE, EMAIL, USERNAME, CAST(EXPIRATION_DATE AS CHAR) AS EXPIRATION_DATE
                                 FROM jazzstockuser.T_USER_INFO
                                 JOIN jazzstockuser.T_USER_DONATION USING (USERCODE)
                                 WHERE 1=1
@@ -219,7 +219,7 @@ class DataAccessObjectUser:
     def check_curr_pw(self, usercode, curr_pw):
 
         curr_pw_input = sha256(curr_pw.encode('utf-8')).hexdigest()
-        query = "SELECT PASSWORD FROM jazzstockuser.T_USER_INFO WHERE USERCODE = '%s'"%(username)
+        query = "SELECT PASSWORD FROM jazzstockuser.T_USER_INFO WHERE USERCODE = '%s'"%(usercode)
         curr_pw_db = db.selectSingleValue(query)
 
         if curr_pw_input == curr_pw_db:
@@ -228,4 +228,27 @@ class DataAccessObjectUser:
         else:
             return False
 
+    def update_username(self, new_username, usercode):
 
+        if self.check_dup(new_username):
+            query = '''UPDATE `jazzstockuser`.`T_USER_INFO` SET `USERNAME` = '%s' WHERE (`USERCODE` = '%s');'''%(new_username, usercode)
+            try:
+                db.insert(query)
+                return True
+
+            except Exception as e:
+                return False
+
+        else:
+            return False
+
+    def update_password(self, new_password, usercode):
+
+        new_password_encoded = sha256(new_password.encode('utf-8')).hexdigest()
+        query = '''UPDATE `jazzstockuser`.`T_USER_INFO` SET `PASSWORD` = '%s' WHERE (`USERCODE` = '%s');'''%(new_password_encoded, usercode)
+        try:
+            db.insert(query)
+            return True
+
+        except Exception as e:
+            return False

@@ -8,6 +8,12 @@ body {font-family: 'Nanum Barun Gothic';}
 p {
     font-size: 0.8em;
     text-align: left;
+    display: inline;
+}
+
+.comment {
+
+    font-size: 0.8em;
 }
 
 .form-inline {

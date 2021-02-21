@@ -9,7 +9,7 @@ import random
 
 
 application = Flask(__name__, static_folder='static', )
-application.config['SECRET_KEY'] = 'the random string'
+application.config['SECRET_KEY'] = cf.FLASK_SECRET_KEY
 
 # ========================================================
 # USER
@@ -47,7 +47,7 @@ def login():
     else:
         return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
-@application.route('/logout', methods=['POST'])
+@application.route('/logout', methods=['POST','GET'])
 def logout():
     session.clear()
     return redirect(url_for("home"),code=302)
@@ -86,7 +86,7 @@ def editProfile():
         username = request.form['username']
 
         dao_user = DataAccessObjectUser()
-        if not  dao_user.check_dup(username):
+        if not dao_user.check_dup(username):
             return jsonify({'result': False})
         else:
             dao_user.register(email, pw, username)
@@ -94,6 +94,36 @@ def editProfile():
 
     else:
         return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+@application.route('/updateUsername', methods=['POST'])
+def updateUsername():
+    if request.method == 'POST' and \
+            'username' in request.form:
+
+        updated_username = request.form['username']
+        dao_user = DataAccessObjectUser()
+        result = dao_user.update_username(updated_username, session.get('usercode'))
+
+        if result:
+            session['username']=updated_username
+
+        return jsonify({'result': result})
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+@application.route('/updatePassword', methods=['POST'])
+def updatePassword():
+    if request.method == 'POST' and \
+            'password' in request.form:
+
+        password = request.form['password']
+        dao_user = DataAccessObjectUser()
+        result = dao_user.update_password(password, session.get('usercode'))
+        return jsonify({'result': result})
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+
 
 @application.route('/register', methods=['GET'])
 def renderingRegisterPage():
@@ -103,7 +133,7 @@ def renderingRegisterPage():
 def renderingProfilePage():
 
     if session.get('loggedin') == True:
-        return render_template('profile.html')
+        return render_template('profile.html', username=session_parser().get('username','zzzzzz'))
     else:
         return redirect(url_for("home"),code=302)  #
 
@@ -242,7 +272,10 @@ def static_from_root():
 
 @application.route('/')
 def home():
-    return render_template('home.html', session=session_parser(), alert_message=session.get('message'))
+    return render_template('home.html',
+                           username=session.get('username','Guest'),
+                           expiration_date=str(session.get('expiration_date',None)),
+                            alert_message=session.get('message'))
 
 
 
@@ -260,7 +293,7 @@ def ajax_getTable():
     intervals = [int(interval) for interval in request.form.get("intervals").split(',')]
     orderby = "+".join(request.form.get("orderby").split(','))
     orderhow = request.form.get("orderhow")
-    limit = request.form.get("limit")
+    limit = int(request.form.get("limit"))
 
     dic = {
 
@@ -284,18 +317,18 @@ def ajax_getTable():
 
     # 비회원
     if sess['loggedin'] == None or sess['loggedin'] == False:
-        limit = 50
+        limit = min(25, limit)
         usercode = -1
 
     # 회원
     else:
         if sess['expiration_date'] < str(datetime.now().date()):
-            limit = 100
+            limit = min(50, limit)
             usercode = -1
 
         # 후원자
         else:
-            limit = 3000
+            limit = limit
             usercode = sess['usercode']
 
     htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow, method='dataframe', limit=limit, usercode=usercode)
@@ -350,11 +383,13 @@ def ajax_getSndRelated():
 @application.route('/getTableCsv', methods=['GET'])
 def getTableFullCsv():
 
+    date_idx = int(request.args.get('day',0))
+
     dao = DataAccessObjectStock()
     sess = session_parser()
 
     filename_prefix = 'jazzstock_table_daily_full'
-    the_date = '20210216'
+    the_date = dao.recent_trading_days(limit=10)[date_idx]
 
     # 비회원
     if sess['loggedin'] == None or sess['loggedin'] == False:
@@ -369,8 +404,9 @@ def getTableFullCsv():
         # 후원자
         else:
             output_stream = StringIO()
-            df = dao.sndRank(order='I1+F1', by='DESC', method='dataframe', limit=20, usercode=0)
-            df.to_csv(output_stream, encoding='euc-kr')
+
+            df = dao.sndRank(targets=['P', 'I', 'F', 'YG', 'S', 'T', 'OC', 'FN'], intervals=[1,5,20,60], orderby ='I1+F1', orderhow='DESC', method='dataframe', limit=2500, usercode=0)
+            df.to_csv(output_stream, encoding='euc-kr', index=False)
 
             response = Response(
                 output_stream.getvalue(),

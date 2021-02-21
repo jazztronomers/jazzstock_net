@@ -56,7 +56,7 @@ function separatePlusMinus(data) {
    };
 }
 
-var width = Math.min(document.body.clientWidth,800);
+var width = Math.min(document.body.clientWidth*0.8,1200);
 
 var data_array = new Array;
 var volumes = new Array;
@@ -510,7 +510,7 @@ var myChart = echarts.init(document.getElementById(chartId));
                 xAxisIndex: [0, 1],
                 type: 'slider',
 
-                width: width*0.8,
+                width: width,
                 left: '8%',
                 right: '12%',
                 top: width*0.05,
