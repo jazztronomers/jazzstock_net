@@ -7,11 +7,14 @@ pd.options.display.max_rows = 2500
 
 class DataAccessObjectStock:
 
-    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0):
+    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0, dateidx=None):
 
         t1 = dt.now()
-        date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 0")
 
+        if dateidx == None:
+            date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 0")
+        else:
+            date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s"%(dateidx))
 
         '''
         IFNULL(P1,  'null') AS 
@@ -48,9 +51,11 @@ class DataAccessObjectStock:
                 querytarget = querytarget + ', %s%s'%(target, interval)
             querytarget = querytarget + '\n'
 
-
+        queryrank = ''
+        for target in targets[1:]:
+            queryrank = queryrank + ', %s%s'%(target.replace("YG", "Y"), 'R')
+        queryrank = queryrank + '\n'
         querycont = '''
-                , IR, FR, PR, YR, SR, TR
 
                 , CONCAT(DIR_L4, DIR_L3, DIR_L2, DIR_L1) AS PATTERN
                 , DAYS_L4 AS L4ED 
@@ -121,7 +126,7 @@ class DataAccessObjectStock:
 
             ''' % (date, orderby, orderhow, limit)
 
-        fullquery = queryhead + querytarget + querycont + querytail + queryend
+        fullquery = queryhead + querytarget + queryrank + querycont + querytail + queryend
         df = db.selectpd(fullquery)
         rtdf = df[df.columns[2:]].round(4)
         if method == 'dataframe':
@@ -137,13 +142,11 @@ class DataAccessObjectStock:
         rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode)
 
         t2 = dt.now()
-        float_columns = ['P1', 'P5', 'P20', 'P60', 'P120', 'P240',
-                         'I1', 'I5', 'I20', 'I60', 'I120','I240',
-                         'F1', 'F5', 'F20', 'F60', 'F120', 'F240'
+        float_columns = []
 
-            , 'YG1', 'YG5', 'YG20', 'YG60', 'YG120', 'YG240'
-            , 'S1', 'S5', 'S20', 'S60', 'S120', 'S240'
-                         ]
+        for target in targets:
+            for interval in intervals:
+                float_columns.append('%s%s'%(target,interval))
 
 
         rtdf[float_columns] = rtdf[float_columns] * 100
@@ -449,3 +452,9 @@ class DataAccessObjectStock:
         else:
 
             return {'result': 'Market closed'}
+
+
+    def recent_trading_days(self, limit=10):
+
+        recent_trading_days = db.selectSingleColumn('SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT < %s ORDER BY CNT ASC'%(limit))
+        return recent_trading_days

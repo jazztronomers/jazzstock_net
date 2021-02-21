@@ -115,15 +115,14 @@ div.scrollmenu#navigation_table {
 
 }
 
-div.scrollmenu#navigation_stock {
+div.scrollmenu#navigation_bottom {
   background-color: #555;
   overflow: auto;
   white-space: nowrap;
-  position: sticky;
-  bottom: 0;
+  position: fixed;
+  bottom:0;
   font-size: 13px;
-    width:inherit;
-    min-width:inherit;
+  width: 100%;
 
 }
 
@@ -133,7 +132,7 @@ div#footer {
     position: relative;
     white-space: nowrap;
     float: center;
-    width:   100%;
+    width: 100%;
     font-size: 0.8em;
     text-align: center;
 
@@ -262,7 +261,7 @@ table.DTFC_Cloned {
 }
 
 .sndChart {
-    height: 1500px;
+    height: 1000px;
 }
 
 input[type=checkbox] {

@@ -83,6 +83,15 @@ const array_filter = ["filter_a",
                "filter_e"]
 
 
+let tab_initialized = new Map
+
+tab_initialized['table_insfor']=false
+tab_initialized['table_forins']=false
+tab_initialized['table_ygfor']=false
+tab_initialized['table_samofor']=false
+tab_initialized['table_custom']=false
+tab_initialized['table_full']=false
+
 var stockcode_favorite = []
 var user_loggedin = false
 var user_expiration_date = '1970-01-01'
@@ -117,8 +126,12 @@ $.fn.dataTable.ext.search.push(
 
 $(document).ready(function(){
 
-    getTable('dataA',  ['P','I','F','YG','S'], [1,5,20,60,120, 240], ["I1","F1"], 'DESC', 100, true);
-    // getTable(tableId, targets, intervals, order, by, init=false)
+
+
+    // function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=false)
+    // getTable('table_insfor',  ['P','I','F','YG','S'], [1,5,20,60,120, 240], ["I1","F1"], 'DESC', 100, true);
+
+    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, true);
 
     array_filter.forEach(function (filter_id, index) {
 
@@ -133,15 +146,7 @@ $(document).ready(function(){
 })
 
 
-function renderSecond(){
 
-    if(document.getElementById('dataB').childElementCount == 1){
-        getTable('dataB',  ['P','I','F','YG','S'], [1,5,20,60,120, 240], ["I1","F1"], 'ASC', 150, true);
-    }
-    else{
-        console.log("second table rendered already")
-    }
-}
 
 function changeTable(tableid){
 
@@ -233,7 +238,6 @@ function getFavorite(){
         }
     }
 
-    console.log(" * Get favorite..")
     req.open('POST', '/getFavorite')
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
     req.send()
@@ -244,73 +248,6 @@ function getFavorite(){
 function profile(){
     alert("아직 개발중입니다 ㅠ")
 }
-
-function conditionalFormatting(row, data, stockcode_favorite){
-
-    // ["002350_넥센타이어", "N", "7.637600", "7820", "3.710000", "17.420000", "27.990000", "39.150000", "33.220000", "11.710000", "0.640000", "3.600000", "3.030000", "-0.010000", "-0.710000", "-8.450000", "-0.160000", "0.100000", "0.310000", "-0.240000", "-0.320000", "-14.510000", "5", "429", "487", "416", "68", "3", "UDMDMUUU", "11.000000", "8.000000", "7.000000", "3.000000", "0.295000", "0.190000", "0.169000", "0.170000", "1.079000", "1.035000", "0.680000", "0.419000", "-1.000000", "-1.000000", "None", "완성차/타이어", "1970-01-01"]
-    // ["002350_넥센타이어", "N", "7.637600", "7820", "3.710000", "17.420000", "27.990000", "39.150000", "33.220000", "11.710000", "0.640000", "3.600000", "3.030000", "-0.010000", "-0.710000", "-8.450000", "-0.160000", "0.100000", "0.310000", "-0.240000", "-0.320000", "-14.510000", "5", "429", "487", "416", "68", "3", "UDMDMUUU", "11.000000", "8.000000", "7.000000", "3.000000", "0.295000", "0.190000", "0.169000", "0.170000", "1.079000", "1.035000", "0.680000", "0.419000", "-1.000000", "-1.000000", "None", "완성차/타이어", "1970-01-01"]
-    // 즐겨찾기 종목 체크박스 만들고 색칠하기
-    var stockcode_stockname = data[0].split("_")
-    stockcode = stockcode_stockname[0]
-    stockname = stockcode_stockname[1]
-
-    title = '<div id="table_daily_stockcode_'+stockcode+'" style=""><a href="#" onclick="getChartData(' + "'"  + stockcode +"','" + stockname + "');\">" + stockname + '</a></div>'
-    $('td:eq('+0+')', row).html(title)
-    $('td:eq('+0+')', row).css('background-color', '#ffffff')
-    $('td:eq('+1+')', row).html('<input type="checkbox" onchange="handleChange(this)" value="'+ stockcode +'">')
-
-    if (stockcode_favorite.includes(stockcode)){
-        $('td:eq('+0+')', row).css('background-color', '#eac112')
-        $('td:eq('+1+')', row).html('<input type="checkbox" onchange="handleChange(this)" value="'+ stockcode +'" checked>')
-    }
-
-
-    for (var i = 4; i < 34; i++){
-        for (color in profit_map){
-
-
-            if (data[i] >= profit_map[color][1] && data[i] < profit_map[color][0]){
-                 $('td.col'+i, row).css('background-color', profit_map[color][2])
-                break
-            }
-        }
-    }
-
-    for (var i = 34; i < 40; i++){
-        for (color in rank_map){
-
-            if (data[i] >= rank_map[color][1] && data[i] < rank_map[color][0]){
-                $('td.col'+i, row).css('background-color', rank_map[color][2])
-                break
-            }
-        }
-    }
-
-    for (var i = 49; i < 53; i++){
-        for (color in bbw_map){
-
-            if (data[i] >= bbw_map[color][1] && data[i] < bbw_map[color][0]){
-                $('td.col'+i, row).css('background-color', bbw_map[color][2])
-                break
-            }
-        }
-    }
-
-
-    for (var i = 45; i < 49; i++){
-        for (color in bbp_map){
-
-            if (data[i] >= bbp_map[color][1] && data[i] < bbp_map[color][0]){
-                $('td.col'+i, row).css('background-color', bbp_map[color][2])
-                break
-            }
-        }
-    }
-
-
-
-}
-
 
 
 function setBuiltinFilter(from_id, to_id){
@@ -335,7 +272,17 @@ function setBuiltinFilter(from_id, to_id){
 }
 
 
+function hideColumn(tableId){
 
+    if(tableId=="tab_full"){
+        hideColumnFull(tableId)
+    }
+    else{
+        hideColumnPartial(tableId)
+    }
+
+
+}
 
 function setCustomFilter(filter_id){
 
@@ -345,10 +292,24 @@ function setCustomFilter(filter_id){
         최종 target은 datatables의 search input 값
     */
 
-    filter_value = document.getElementById(filter_id).value
-    console.log(" * Set Filter..", filter_id, filter_value)
-    setStorage("jazzstock_"+filter_id, filter_value)
-    doSearching(filter_value, 'dataA')
+
+    var tabtables = document.getElementsByClassName('tabtable')
+
+    for (var i=0; i<tabtables.length; i++){
+
+        if (tabtables[i].style.display=="block"){
+            tableId=tabtables[i].id.replace("tab", "table")
+
+            filter_value = document.getElementById(filter_id).value
+            console.log(" * Set Filter..", filter_id, filter_value, tableId)
+            setStorage("jazzstock_"+filter_id, filter_value)
+            doSearching(filter_value, tableId)
+            return true
+        }
+    }
+
+    alert("대상 테이블탭이 활성화되지 않았습니다")
+
 }
 
 function doSearching(keywords, tableId){
@@ -398,142 +359,50 @@ function clearStorage(){
 
 function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=false)
 {
-    if(init==false){
-        clearTable(keyA, keyB, tableId,chartId)
-    }
-    var req = new XMLHttpRequest()
-    req.onreadystatechange = function()
-    {
-        if (req.readyState == 4)
+
+    console.log(' * get table...', tableId, tab_initialized[tableId])
+
+    if(tab_initialized[tableId] == false){
+        tab_initialized[tableId]=true
+        if(init==false){
+            clearTable(keyA, keyB, tableId,chartId)
+        }
+        var req = new XMLHttpRequest()
+        req.onreadystatechange = function()
         {
-            if (req.status != 200)
+            if (req.readyState == 4)
             {
-                alert("테이블을 가져오는데 실패하였습니다, 다시 시도해주세요")
-            }
-            else
-            {
-                response = req.responseText
-                if (tableId == 'dataA'){
-                    render_table_full(tableId, response)
+                if (req.status != 200)
+                {
+                    alert("테이블을 가져오는데 실패하였습니다, 다시 시도해주세요")
                 }
-                else{
-                    render_table_full(tableId, response)
+                else
+                {
+                    response = req.responseText
+                    if (tableId == 'table_full'){
+                        renderTableFull(tableId, response)
+                    }
+                    else{
+                        renderTablePartial(tableId, response)
+                    }
                 }
             }
         }
+
+        req.open('POST', '/ajaxTable')
+        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+        req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit)
+
     }
 
-    console.log(" * GET TABLE FROM DATABASE")
-    req.open('POST', '/ajaxTable')
-    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-    req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit)
-
+    else{
+        console.log(tableId, "already")
+    }
 }
 
 
 
 
-function render_table_full(tableId, response){
-
-    document.getElementById(tableId).innerHTML = response
-    console.log(' * Table rendering start', tableId, now())
-
-
-    // 서버사이드에서 받아온 HTML테이블객체를 DATATABLE형태로 INITIALIZE
-    $('#'+tableId).dataTable( {
-        aaSorting: [],
-        // stateSave:true,
-        sScrollX:"100%",
-        autoWidth:true,
-        aLengthMenu: [ 15, 25, 35, 50, 100 ],
-        iDisplayLength: 25,
-        fixedHeader: true,
-        columns: [
-                { name:"STOCKNAME"},
-                { name:"FAV", orderDataType: "dom-checkbox" },
-                { name:"MC" },
-                null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null
-            ],
-        columnDefs: [
-
-                // { type: 'natural', targets: '_all'},
-
-                { orderSequence: [ "desc", "asc"],
-                  targets: [ 2,3,
-                                4,  5,  6,  7,  8,  9,
-                                10, 11, 12, 13, 14, 15,
-                                16, 17, 18, 19, 20, 21,
-                                        22,23,24,25,26,27,
-                                        28,29,30,31,32,33] },
-                // STOCKNAME
-
-
-                { width: 70, targets: 0 },
-
-                // FAV
-                { width: 20, targets: 1},
-
-                // MC
-                { width: 30, targets: 2, render: $.fn.dataTable.render.number(',', '.', 1, '')},
-
-                // CLOSE
-                { width: 45, targets: 3, render: $.fn.dataTable.render.number( ',', '.', 0, '')},
-
-                // P I F
-                { width: 30, targets: [4,5,6,7,8,9,  10,11,12,13,14,15,  16,17,18,19,20,21,  22,23,24,25,26,27, 28,29,30,31,32,33] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-                // RANK
-                { width: 30, targets: [34, 35, 36, 37, 38, 39] },
-
-                // EVENT PATTERN
-                { width: 90, targets: 40 },
-
-                // DAYS EVENT
-                { width: 30, targets: [41,42,43,44] , render: $.fn.dataTable.render.number(',', '.', 0, '')},
-
-                // BBP EVENT
-                { width: 30, targets: [45,46,47,48] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-                // BBW EVENT
-                { width: 30, targets: [49,50,51,52] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-                // FINAN
-                { width: 30, targets: [53,54,55] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-                // CATEGORY
-                { width: 200, targets: [56] },
-
-                { width: 60, targets: [57] }
-        ],
-
-        scrollCollapse: true,
-        fixedColumns : {//关键是这里了，需要第一列不滚动就设置1
-            leftColumns : 3
-        },
-
-
-        rowCallback: function( row, data ) {
-
-            console.log(" * Row Call back triggered")
-            conditionalFormatting(row, data, stockcode_favorite) // Conlorize + Modify inner cell value
-
-        },
-
-    } );
-
-    console.log(' * Table rendering DONE', now())
-    hideColumn(tableId)
-    var table = $('#'+tableId).DataTable();
-    $('#mc_min, #mc_max').on("keyup input change propertychange", function() {
-        table.draw()
-    } );
-
-}
 
 function clearTable(keyA, keyB, tableId,chartId){
 
@@ -654,7 +523,7 @@ function removeRelated(relatedId){
 
 function openPage(pageName, elmnt, color) {
 
-    console.log(" * OPEN PAGE...", pageName, color)
+    console.log(" * openPage... ", pageName)
 
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
@@ -667,8 +536,8 @@ function openPage(pageName, elmnt, color) {
         tablinks[i].style.backgroundColor = "";
     }
 
-    console.log(" * open tab... ", pageName.replace('tab','tabcontent'))
-    document.getElementById(pageName.replace('tab','tabcontent')).style.display = "block";
+
+    document.getElementById(pageName).style.display = "block";
 }
 
 var stockQueue = [];
@@ -763,7 +632,7 @@ function getRealtimeOnDev(){
 function addTabToQueue(stockcode, stockname){
 
 
-    console.log(stockcode, stockname)
+    console.log(" * addTabToQueue...", stockcode, stockname)
     // var min = new Date().getSeconds()
     if(stockQueue.length < 5){
         stockQueue.push(stockcode)
@@ -785,40 +654,41 @@ function addTabToPage(stockcode, stockname){
 
     var tabMenu= document.getElementById('navigation_stock') // tabMenu
     var tablink = document.createElement("a")
+
+
     tablink.setAttribute("class", "tablink");
-    tablink.setAttribute("id", "tab"+stockcode);
-    tablink.setAttribute("onclick", "openPage('tab"+stockcode+"', this, 'red')");
+    tablink.setAttribute("id", "tablink_"+stockcode);
+    tablink.setAttribute("onclick", "openPage('tab_"+stockcode+"', this, 'red')");
     tablink.innerHTML=stockname;
 
     tabMenu.appendChild(tablink)
 
     var tabConts= document.getElementById('tabConts')
 
-    var tabCont = document.createElement("div")
-    tabCont.setAttribute("class", "tabcontent");
-    tabCont.setAttribute("id", "tabcontent"+stockcode);
-    tabCont.setAttribute("style", "display:block");
+        var tabCont = document.createElement("div")
+        tabCont.setAttribute("class", "tabcontent");
+        tabCont.setAttribute("id", "tab_"+stockcode);
+        tabCont.setAttribute("style", "display:block");
 
-    var table_finan =document.createElement("table")
+            var table_finan =document.createElement("table")
 
-    table_finan.setAttribute("class", "finanTable");
-    table_finan.setAttribute("id", "finan"+stockcode);
-    table_finan.setAttribute("style", "width:100%");
-    table_finan.innerHTML='<br>'
+            table_finan.setAttribute("class", "finanTable");
+            table_finan.setAttribute("id", "finan"+stockcode);
+            table_finan.setAttribute("style", "width:100%");
 
-    var chart = document.createElement("div");
-    chart.setAttribute("class", "sndChart");
-    chart.setAttribute("id", "chart"+stockcode);
 
-    chart.setAttribute("style", "height: 1000px");
+            var chart = document.createElement("div");
 
-    tabCont.appendChild(table_finan);
-    tabCont.appendChild(document.createElement("br"));
-    tabCont.appendChild(chart);
+            chart.setAttribute("id", "chart"+stockcode);
+            chart.setAttribute("class", "sndChart");
+
+        tabCont.appendChild(table_finan);
+        // tabCont.appendChild(document.createElement("br"));
+        tabCont.appendChild(chart);
+
+    console.log(tabCont)
 
     tabConts.appendChild(tabCont);
-
-
 
 
 }
@@ -826,7 +696,10 @@ function addTabToPage(stockcode, stockname){
 function removeOldestTab(){
 
     var tabMenu= document.getElementById('navigation_stock')
-    tabMenu.removeChild(tabMenu.getElementsByTagName('button')[0])
+    tabMenu.removeChild(tabMenu.getElementsByTagName('a')[0])
+
+    var tabConts = document.getElementById('tabConts')
+    tabConts.removeChild(tabConts.getElementsByTagName('div')[0])
 
 }
 
@@ -916,15 +789,20 @@ function setMenu(){
         document.getElementById('notloggedin').style.display = "none";
         document.getElementById('loggedin').style.display = "block";
         document.getElementById('userinfo').style.display = "block";
-        // document.getElementById('only_member').style.display = "block";
     }
 
     expdate = new Date(user_expiration_date).setHours(0,0,0,0)
     curdate = new Date().setHours(0,0,0,0)
 
     if (expdate>=curdate){
-        document.getElementById('only_supporter').style.display = "block";
-        document.getElementById('builtinFilter').style.display = "block";
+
+        console.log(" * Supporter function rendering....")
+        var class_for_supporter = document.getElementsByClassName('only_supporter')
+        for (var i = 0; i < class_for_supporter.length; i++) {
+            class_for_supporter[i].style.display="block"
+        }
+        // document.getElementById('only_supporter').style.display = "block";
+        // document.getElementById('builtinFilter').style.display = "block";
     }
 }
 
@@ -989,6 +867,20 @@ function openExpandFunction(){
 
 
 
+function openDownload(){
+
+    var content = document.getElementById('download');
+
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+
+}
+
+
+
 function sleep(milliseconds) {
   var start = new Date().getTime();
   for (var i = 0; i < 1e7; i++) {
@@ -1002,9 +894,9 @@ function sleep(milliseconds) {
 function getChartData(stockcode, stockname){
 
 
-    if (stockQueue.includes("stockcode")){
-        openPage("tab"+stockcode, this, "yellow");
-        document.getElementById("tab"+stockcode).innerHTML=stockname
+    if (stockQueue.includes(stockcode)){
+        openPage("tab_"+stockcode, this, "yellow");
+        // document.getElementById("tabcontent"+stockcode).innerHTML=stockname
     }
     else {
 
@@ -1023,19 +915,18 @@ function getChartData(stockcode, stockname){
 
                     addTabToQueue(stockcode, stockname)
                     chartId = "chart"+stockcode
-                    removeChart(chartId)
 
 
                     if(req.response.sampledata!=null){
-                        openPage("tab"+stockcode, this, "yellow");
-                        document.getElementById("tab"+stockcode).innerHTML=stockcode
+                        openPage("tab_"+stockcode, this, "yellow");
+                        // document.getElementById("tabcontent"+stockcode).innerHTML=stockcode
 
                         if(document.body.clientWidth<500){
                             document.getElementById(chartId).style.height = "600px"
                         }
 
                         else{
-                            document.getElementById(chartId).style.height = "1000px"
+                            document.getElementById(chartId).style.height = "1200px"
                         }
 
 
@@ -1099,14 +990,104 @@ function getChartData(stockcode, stockname){
 
 }
 
-function hideColumn(tableId){
-    table = $('#' + tableId).DataTable();
-    var column_idx_to_hide = [8, 9, 14, 15, 20, 21,
-                                    22,23,24,25,26,27,
-                                    28,29,30,31,32,33];
-    for (idx in column_idx_to_hide){
-        var column = table.column(column_idx_to_hide[idx]);
-        column.visible( ! column.visible() );
-    }
-}
 
+function renderTablePartial(tableId, response){
+
+    document.getElementById(tableId).innerHTML = response
+    console.log(' * Table rendering start', tableId, now())
+
+
+    // 서버사이드에서 받아온 HTML테이블객체를 DATATABLE형태로 INITIALIZE
+    $('#'+tableId).dataTable( {
+        aaSorting: [],
+        // stateSave:true,
+        sScrollX:"100%",
+        autoWidth:true,
+        aLengthMenu: [ 15, 25, 35, 50, 100 ],
+        iDisplayLength: 25,
+        fixedHeader: true,
+        columns: [
+                { name:"STOCKNAME"},
+                { name:"FAV", orderDataType: "dom-checkbox" },
+                { name:"MC" },
+                null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null
+            ],
+        columnDefs: [
+
+                // { type: 'natural', targets: '_all'},
+
+                { orderSequence: [ "desc", "asc"],
+                  targets: [ 2,3,
+                                4,  5,  6,  7,  8,  9,
+                                10, 11, 12, 13, 14, 15,
+                                16, 17, 18, 19, 20, 21,
+                                        22,23,24,25,26,27,
+                                        28,29,30,31,32,33] },
+                // STOCKNAME
+
+
+                { width: 70, targets: 0 },
+
+                // FAV
+                { width: 20, targets: 1},
+
+                // MC
+                { width: 30, targets: 2, render: $.fn.dataTable.render.number(',', '.', 1, '')},
+
+                // CLOSE
+                { width: 45, targets: 3, render: $.fn.dataTable.render.number( ',', '.', 0, '')},
+
+                // P I F
+                { width: 30, targets: [4,5,6,7,8,9,  10,11,12,13,14,15,  16,17,18,19,20,21,  22,23,24,25,26,27, 28,29,30,31,32,33] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+
+                // RANK
+                { width: 30, targets: [34, 35, 36, 37, 38, 39] },
+
+                // EVENT PATTERN
+                { width: 90, targets: 40 },
+
+                // DAYS EVENT
+                { width: 30, targets: [41,42,43,44] , render: $.fn.dataTable.render.number(',', '.', 0, '')},
+
+                // BBP EVENT
+                { width: 30, targets: [45,46,47,48] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+
+                // BBW EVENT
+                { width: 30, targets: [49,50,51,52] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+
+                // FINAN
+                { width: 30, targets: [53,54,55] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
+
+                // CATEGORY
+                { width: 200, targets: [56] },
+
+                { width: 60, targets: [57] }
+        ],
+
+        scrollCollapse: true,
+        fixedColumns : {//关键是这里了，需要第一列不滚动就设置1
+            leftColumns : 3
+        },
+
+
+        rowCallback: function( row, data ) {
+
+            conditionalFormattingFull(row, data, stockcode_favorite) // Conlorize + Modify inner cell value
+
+        },
+
+    } );
+
+    console.log(' * Table rendering DONE', now())
+    hideColumn(tableId)
+    var table = $('#'+tableId).DataTable();
+    $('#mc_min, #mc_max').on("keyup input change propertychange", function() {
+        table.draw()
+    } );
+
+}
