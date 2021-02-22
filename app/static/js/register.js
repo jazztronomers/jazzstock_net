@@ -180,7 +180,17 @@ function checkDupUsername(){
                     else {
                         alert("사용가능한 username입니다")
                         var button = document.getElementById('update_username')
-                        button.disabled = "";
+                        if (null != button){
+                            button.disabled = "";
+                        }
+
+                        var button = document.getElementById('button_register')
+                        if (null != button){
+                            button.disabled = "";
+                        }
+
+
+
                         flag_username_dup_checked = true
                         return true
                     }
