@@ -723,6 +723,7 @@ function login(){
                 }
                 else {
                     alert("환영합니다!")
+                    checkUuid()
                     window.location = "/";
                 }
             }
@@ -863,6 +864,54 @@ function openExpandFunction(){
     }
 
 
+}
+
+function checkUuid(){
+
+    if(localStorage.getItem("jazzstock_uuid")==null){
+        localStorage.setItem("jazzstock_uuid", uuidv4())
+        console.log(" * localStorgae_uuid generated", localStorage.getItem('jazzstock_uuid'))
+    }
+
+    else{
+        console.log(" * localStorgae_uuid existed", localStorage.getItem('jazzstock_uuid'))
+    }
+
+    updateUuid()
+
+}
+
+function updateUuid(){
+
+    var req = new XMLHttpRequest()
+    req.onreadystatechange = function()
+    {
+        if (req.readyState == 4)
+        {
+            if (req.status != 200)
+            {
+                console.log('hello')
+            }
+            else
+            {
+
+                response = req.responseText
+                console.log(' * uuid setted', response)
+            }
+        }
+    }
+
+    console.log(" * Update uuid..")
+    req.open('POST', '/updateUuid')
+    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+    req.send('uuid=' + localStorage.getItem('jazzstock_uuid'))
+
+}
+
+function uuidv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
 }
 
 

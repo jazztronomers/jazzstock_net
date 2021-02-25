@@ -435,6 +435,24 @@ def getRecentTradingDayAndResultCount():
 
 
 
+@application.route('/updateUuid', methods=['POST'])
+def updateUuid():
+
+    if "uuid" in request.form:
+
+        dao = DataAccessObjectUser()
+        uuid = request.form.get('uuid')
+        usercode = session.get('usercode')
+        response = dao.update_uuid(usercode, uuid)
+
+
+        return jsonify({'result': response})
+
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+
+
 
 
 if __name__ == '__main__':
