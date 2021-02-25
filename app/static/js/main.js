@@ -182,11 +182,12 @@ function handleChange(row){
 
 
 
-
 function setFavorite(){
 
     console.log(stockcode_favorite)
     var req = new XMLHttpRequest()
+
+    req.responseType = 'json';
     req.onreadystatechange = function()
     {
         if (req.readyState == 4)
@@ -197,10 +198,16 @@ function setFavorite(){
             }
             else
             {
+                console.log(req.response.result)
+                if (req.response.result == false){
+                    alert(req.response.message)
+                }
+                else{
 
-                response = req.responseText
-                alert("즐겨찾기리스트가 업데이트되었습니다.")
-                console.log(response)
+                    response = req.responseText
+                    alert("즐겨찾기리스트가 업데이트되었습니다.")
+                    console.log(response)
+                }
             }
         }
     }
@@ -404,7 +411,6 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
         console.log(tableId, "already")
     }
 }
-
 
 
 
@@ -918,7 +924,6 @@ function uuidv4() {
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   );
 }
-
 
 
 function openDownload(){

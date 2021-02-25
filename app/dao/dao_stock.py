@@ -144,8 +144,6 @@ class DataAccessObjectStock:
                 ''' % (date, orderby, orderhow, limit)
 
         fullquery = queryhead + querytarget + queryrank + querycont + querytail + queryend
-
-        print("FAV ONLY:", fav_only, fullquery)
         df = db.selectpd(fullquery)
         rtdf = df[df.columns[2:]].round(4)
         if method == 'dataframe':

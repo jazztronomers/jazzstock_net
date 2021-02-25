@@ -2,9 +2,10 @@ from jazzstock_net.app.dao.dao_stock import DataAccessObjectStock
 from jazzstock_net.app.dao.dao_user import DataAccessObjectUser
 from jazzstock_net.app.common.mail import send_mail
 import jazzstock_net.app.config.config as cf
+from jazzstock_net.app.config.config_message import alert_message
 from datetime import datetime
 from io import StringIO
-from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response
+from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response, flash
 import random
 
 
@@ -161,17 +162,22 @@ def getFavorite():
 
 @application.route('/setFavorite', methods=['POST'])
 def setFavorite():
-    if request.method == 'POST' and 'stockcode_favorite' in request.form:
-        stockcode_favorite = request.form['stockcode_favorite'].split(',')
-        dao = DataAccessObjectUser()
-        sess = session_parser()
-        if sess['loggedin']==True:
-            dao.set_favorite(usercode=sess['usercode'], stockcodes_new=stockcode_favorite)['result']
-            return jsonify(result ="favorite updated")
-        else:
-            return jsonify(result ="login first")
+
+    member = _getMembership()
+    if member.get("membership") == 'supporter':
+        if request.method == 'POST' and 'stockcode_favorite' in request.form:
+            stockcode_favorite = request.form['stockcode_favorite'].split(',')
+            dao = DataAccessObjectUser()
+            sess = session_parser()
+            if sess['loggedin']==True:
+                dao.set_favorite(usercode=sess['usercode'], stockcodes_new=stockcode_favorite)['result']
+                return jsonify(result ="favorite updated")
+            else:
+                return jsonify(result ="login first")
+
+
     else:
-        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+        return jsonify({'result': False, 'code': 400, 'message': alert_message['supporter_only']})
 
 @application.route('/getEmailConfirmationCode', methods=['POST'])
 def getEmailConfirmationCode():
@@ -261,6 +267,35 @@ def session_parser(init=False):
             'expiration_date':expiration_date}
 
 
+
+@application.route('/updateUuid', methods=['POST'])
+def updateUuid():
+
+    if "uuid" in request.form:
+
+        dao = DataAccessObjectUser()
+        uuid = request.form.get('uuid')
+        usercode = session.get('usercode')
+        response = dao.update_uuid(usercode, uuid)
+
+
+        return jsonify({'result': response})
+
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+def _getMembership():
+    if session.get('loggedin')==True:
+        if session.get('expiration_date') > str(datetime.now().date()):
+            return {'result': True, 'membership': 'supporter'}
+
+        else:
+            return {'result': True, 'membership': 'general'}
+
+    else:
+        return {'result': True, 'membership': 'non-member'}
+
+
 # ========================================================
 # STOCK
 # ========================================================
@@ -276,6 +311,9 @@ def home():
                            username=session.get('username','Guest'),
                            expiration_date=str(session.get('expiration_date',None)),
                             alert_message=session.get('message'))
+
+
+
 
 
 
@@ -317,13 +355,13 @@ def ajax_getTable():
     sess = session_parser()
 
     # 비회원
-    if sess['loggedin'] == None or sess['loggedin'] == False:
+    if session.get('loggedin') in [None, False]:
         limit = min(25, limit)
         usercode = -1
 
     # 회원
     else:
-        if sess['expiration_date'] < str(datetime.now().date()):
+        if session.get('expiration_date','1970-01-01') < str(datetime.now().date()):
             limit = min(50, limit)
             usercode = -1
 
@@ -393,14 +431,14 @@ def getTableFullCsv():
     the_date = dao.recent_trading_days(limit=10)[date_idx]
 
     # 비회원
-    if sess['loggedin'] == None or sess['loggedin'] == False:
-        return jsonify({'result': False, "message": "supporters only"})
+    if session.get('loggedin') in [None, False]:
+        return jsonify({'result': False, "message": alert_message['supporter_only']})
 
     # 회원
     else:
         # 일반회원
-        if sess.get('expiration_date', '1970-01-01') < str(datetime.now().date()):
-            return jsonify({'result': False, "message": "supporters only"})
+        if session.get('expiration_date', '1970-01-01') < str(datetime.now().date()):
+            return jsonify({'result': False, "message": alert_message['supporter_only']})
 
         # 후원자
         else:
@@ -436,21 +474,6 @@ def getRecentTradingDayAndResultCount():
 
 
 
-@application.route('/updateUuid', methods=['POST'])
-def updateUuid():
-
-    if "uuid" in request.form:
-
-        dao = DataAccessObjectUser()
-        uuid = request.form.get('uuid')
-        usercode = session.get('usercode')
-        response = dao.update_uuid(usercode, uuid)
-
-
-        return jsonify({'result': response})
-
-    else:
-        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
 
 
