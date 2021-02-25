@@ -294,6 +294,7 @@ def ajax_getTable():
     orderby = "+".join(request.form.get("orderby").split(','))
     orderhow = request.form.get("orderhow")
     limit = int(request.form.get("limit"))
+    fav_only = True if request.form.get("fav_only") in [True, "true"] else False
 
     dic = {
 
@@ -331,7 +332,7 @@ def ajax_getTable():
             limit = limit
             usercode = sess['usercode']
 
-    htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow, method='dataframe', limit=limit, usercode=usercode)
+    htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow, method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only)
     return htmltable
 
 
