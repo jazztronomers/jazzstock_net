@@ -147,7 +147,12 @@ class DataAccessObjectUser:
         return ret
 
     def set_favorite(self, usercode, stockcodes_new):
+
         stockcode_favdate_list_old = self.get_favorite(usercode)['result']
+
+        if stockcodes_new == [""]:
+            stockcodes_new = []
+
         if len(stockcodes_new) > 0:
             for stockcode in stockcodes_new:
                 if stockcode not in [x[0] for x in stockcode_favdate_list_old] and stockcode != '':
@@ -248,6 +253,36 @@ class DataAccessObjectUser:
         query = '''UPDATE `jazzstockuser`.`T_USER_INFO` SET `PASSWORD` = '%s' WHERE (`USERCODE` = '%s');'''%(new_password_encoded, usercode)
         try:
             db.insert(query)
+            return True
+
+        except Exception as e:
+            return False
+
+
+    def update_uuid(self, usercode, uuid):
+
+        # 같은 UUID가 DB에 이미 존재하는경우
+
+        df = db.selectpd('''SELECT USERCODE, UUID, LOGINCNT FROM jazzstockuser.T_USER_UUID WHERE USERCODE = "%s" AND UUID = "%s"'''%(usercode, uuid))
+        current_time = datetime.now()
+
+        try:
+            # 같은 UUID가 DB에 이미 존재하는경우
+            if len(df) >0:
+                query = '''
+                UPDATE `jazzstockuser`.`T_USER_UUID` SET `LASTLOGINED` = '%s', `LOGINCNT` = '%s' 
+                WHERE (`USERCODE` = '%s') and (`UUID` = '%s');
+                '''%(current_time, int(df.LOGINCNT.values[0])+1, usercode, uuid)
+                db.insert(query)
+
+            # 같은 UUID가 존재하지 않는경우
+            else:
+                query = '''
+                INSERT INTO `jazzstockuser`.`T_USER_UUID` (`USERCODE`, `UUID`, `TIMESTAMP`, `LASTLOGINED`, `LOGINCNT`) 
+                VALUES ('%s', '%s', '%s', '%s', '%s');
+                '''%(usercode, uuid, current_time, current_time, 1)
+                db.insert(query)
+
             return True
 
         except Exception as e:

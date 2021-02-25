@@ -77,12 +77,13 @@
 
         <div id="navigation_table"  class="scrollmenu"  >
 
-            <a href="#" class="tablink" onclick="openPage('tab_insfor', this, 'red')" id="defaultOpen">기관/외인</a>
-            <a href="#" class="tablink" onclick="openPage('tab_forins', this, 'red'); getTable('table_forins',  ['P','F','I'], [1,5,20,60], ['F1'], 'DESC', 100, true);">외인/기관</a>
-            <a href="#" class="tablink only_supporter" style="display: none" onclick="openPage('tab_ygfor', this, 'red'); getTable('table_ygfor',  ['P','YG','F'], [1,5,20,60], ['YG1'], 'DESC', 100, true);">연기금/외인</a>
-            <a href="#" class="tablink only_supporter" style="display: none" onclick="openPage('tab_samofor', this, 'red'); getTable('table_samofor',  ['P','S','F'], [1,5,20,60], ['S1'], 'DESC', 100, true);">사모/외인</a>
-            <a href="#" class="tablink only_supporter" style="display: none" onclick="openPage('tab_custom', this, 'red'); getTable('table_custom',  ['P','OC','F'], [1,5,20,60], ['OC1'], 'DESC', 100, true);">커스텀</a>
-            <a href="#" class="tablink only_supporter" style="display: none" onclick="openPage('tab_full', this, 'red'); getTable('table_full',  ['P','I','F','YG','S'], [1,5,20,60,120, 240], ['I1','F1'], 'DESC', 2500, true);">전종목</a>
+            <a href="#" class="tablink" onclick="openPage('tab_insfor', this, 'red')" id="defaultOpen">기관</a>
+            <a href="#" class="tablink" onclick="openPage('tab_forins', this, 'red'); getTable('table_forins',  ['P','F','I'], [1,5,20,60], ['F1'], 'DESC', 100, false, true);">외인</a>
+            <a href="#" class="tablink only_supporter" style="display: none" onclick="openPage('tab_ygfor', this, 'red'); getTable('table_ygfor',  ['P','YG','F'], [1,5,20,60], ['YG1'], 'DESC', 100, false, true);">연기금</a>
+            <a href="#" class="tablink only_supporter" style="display: none" onclick="openPage('tab_samofor', this, 'red'); getTable('table_samofor',  ['P','S','F'], [1,5,20,60], ['S1'], 'DESC', 100, false, true);">사모</a>
+            <a href="#" class="tablink only_supporter" style="display: none" onclick="openPage('tab_custom', this, 'red'); getTable('table_custom',  ['P','OC','F'], [1,5,20,60], ['OC1'], 'DESC', 100, false, true);">커스텀</a>
+            <a href="#" class="tablink only_supporter" style="display: none" onclick="openPage('tab_fav', this, 'red'); getTable('table_fav',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 100, true, true);">즐겨찾기</a>
+            <a href="#" class="tablink only_supporter" style="display: none" onclick="openPage('tab_full', this, 'red'); getTable('table_full',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 2500, false, true);">전종목</a>
             <!--<a href="#" class="tablink" onclick="openPage('table_top100', this, 'red'); renderSecond();"></a>-->
             <a href="#" class="tablink" onclick="getRealtime()">실시간(준비중)</a>
             <div id="userinfo" class="navigation_top_right" style="display: none">
@@ -251,6 +252,15 @@
             </div>
             <br>
         </div>
+        <div id="tab_fav" class="tabcontent tabtable" style="display:none">
+            <div class="row">
+                <div class="card">
+                    <table id="table_fav" class="display" style="width:100%">
+                        <tr><td class="loading"><div class="signal"></div></td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
         <div id="tab_full" class="tabcontent tabtable" style="display:none">
             <div class="row">
                 <div class="card">
@@ -323,7 +333,7 @@
             <div class="navigation_top_right">
                 <a href="#" onclick="setFavorite()">즐겨찾기 업데이트</a>
                 <a href="#" onclick="openDownload()">다운로드열기</a>
-                <a href="#" onclick="openExpandFunction()">필터창열기</a>
+                <a href="#" onclick="openExpandFunction()">필터열기</a>
             </div>
     </div>
 

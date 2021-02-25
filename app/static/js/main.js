@@ -91,6 +91,7 @@ tab_initialized['table_ygfor']=false
 tab_initialized['table_samofor']=false
 tab_initialized['table_custom']=false
 tab_initialized['table_full']=false
+tab_initialized['table_fav']=false
 
 var stockcode_favorite = []
 var user_loggedin = false
@@ -131,7 +132,7 @@ $(document).ready(function(){
     // function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=false)
     // getTable('table_insfor',  ['P','I','F','YG','S'], [1,5,20,60,120, 240], ["I1","F1"], 'DESC', 100, true);
 
-    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, true);
+    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true);
 
     array_filter.forEach(function (filter_id, index) {
 
@@ -181,11 +182,12 @@ function handleChange(row){
 
 
 
-
 function setFavorite(){
 
     console.log(stockcode_favorite)
     var req = new XMLHttpRequest()
+
+    req.responseType = 'json';
     req.onreadystatechange = function()
     {
         if (req.readyState == 4)
@@ -196,10 +198,16 @@ function setFavorite(){
             }
             else
             {
+                console.log(req.response.result)
+                if (req.response.result == false){
+                    alert(req.response.message)
+                }
+                else{
 
-                response = req.responseText
-                alert("즐겨찾기리스트가 업데이트되었습니다.")
-                console.log(response)
+                    response = req.responseText
+                    alert("즐겨찾기리스트가 업데이트되었습니다.")
+                    console.log(response)
+                }
             }
         }
     }
@@ -357,7 +365,7 @@ function clearStorage(){
 }
 
 
-function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=false)
+function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_only=false, init=false)
 {
 
     console.log(' * get table...', tableId, tab_initialized[tableId])
@@ -379,8 +387,12 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=fa
                 else
                 {
                     response = req.responseText
-                    if (tableId == 'table_full'){
+                    if (tableId == 'table_full' || tableId=='table_fav'){
+                        if (response.length<5000){
+                            alert("즐겨찾기 종목이 없습니다..")
+                        }
                         renderTableFull(tableId, response)
+
                     }
                     else{
                         renderTablePartial(tableId, response)
@@ -391,7 +403,7 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=fa
 
         req.open('POST', '/ajaxTable')
         req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-        req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit)
+        req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit  + "&fav_only=" + fav_only)
 
     }
 
@@ -399,7 +411,6 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=fa
         console.log(tableId, "already")
     }
 }
-
 
 
 
@@ -723,6 +734,7 @@ function login(){
                 }
                 else {
                     alert("환영합니다!")
+                    checkUuid()
                     window.location = "/";
                 }
             }
@@ -865,6 +877,53 @@ function openExpandFunction(){
 
 }
 
+function checkUuid(){
+
+    if(localStorage.getItem("jazzstock_uuid")==null){
+        localStorage.setItem("jazzstock_uuid", uuidv4())
+        console.log(" * localStorgae_uuid generated", localStorage.getItem('jazzstock_uuid'))
+    }
+
+    else{
+        console.log(" * localStorgae_uuid existed", localStorage.getItem('jazzstock_uuid'))
+    }
+
+    updateUuid()
+
+}
+
+function updateUuid(){
+
+    var req = new XMLHttpRequest()
+    req.onreadystatechange = function()
+    {
+        if (req.readyState == 4)
+        {
+            if (req.status != 200)
+            {
+                console.log('hello')
+            }
+            else
+            {
+
+                response = req.responseText
+                console.log(' * uuid setted', response)
+            }
+        }
+    }
+
+    console.log(" * Update uuid..")
+    req.open('POST', '/updateUuid')
+    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+    req.send('uuid=' + localStorage.getItem('jazzstock_uuid'))
+
+}
+
+function uuidv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
 
 
 function openDownload(){

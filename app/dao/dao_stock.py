@@ -7,7 +7,7 @@ pd.options.display.max_rows = 2500
 
 class DataAccessObjectStock:
 
-    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0, dateidx=None):
+    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0, fav_only=False, dateidx=None):
 
         t1 = dt.now()
 
@@ -105,7 +105,7 @@ class DataAccessObjectStock:
                 )G ON (A.STOCKCODE = G.STOCKCODE)
                 LEFT JOIN jazzdb.T_STOCK_BB I ON (A.STOCKCODE = I.STOCKCODE AND A.DATE = I.DATE)
                 LEFT JOIN (
-					SELECT STOCKCODE, TIMESTAMP
+					SELECT STOCKCODE, TIMESTAMP, USERCODE
 					FROM jazzstockuser.T_USER_STOCK_FAVORITE
                     WHERE 1=1
                     AND USERCODE = '%s'
@@ -115,16 +115,33 @@ class DataAccessObjectStock:
                 #=========================================================================
                 WHERE 1=1'''%(usercode)
 
-        queryend = '''
-
-                AND A.DATE = "%s"
-                AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
-                AND  J.MC > 0.62  # 2021-02-15기준 2000종목
-                ORDER BY %s %s
-                LIMIT %s
 
 
-            ''' % (date, orderby, orderhow, limit)
+        if fav_only:
+            queryend = '''
+
+                                AND A.DATE = "%s"
+                                AND H.USERCODE = '%s'
+                                AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
+                                AND  J.MC > 0.62  # 2021-02-15기준 2000종목
+                                ORDER BY %s %s
+                                LIMIT %s
+
+
+                            ''' % (date, usercode, orderby, orderhow, limit)
+
+        else:
+
+            queryend = '''
+    
+                    AND A.DATE = "%s"
+                    AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
+                    AND  J.MC > 0.62  # 2021-02-15기준 2000종목
+                    ORDER BY %s %s
+                    LIMIT %s
+    
+    
+                ''' % (date, orderby, orderhow, limit)
 
         fullquery = queryhead + querytarget + queryrank + querycont + querytail + queryend
         df = db.selectpd(fullquery)
@@ -136,10 +153,10 @@ class DataAccessObjectStock:
 
 
     # 수급테이블
-    def sndRankHtml(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='dataframe', limit=50, usercode=0):
+    def sndRankHtml(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='dataframe', limit=50, usercode=0, fav_only=False):
 
         t1 = dt.now()
-        rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode)
+        rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode, fav_only=fav_only)
 
         t2 = dt.now()
         float_columns = []
