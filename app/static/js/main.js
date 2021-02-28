@@ -364,8 +364,16 @@ function clearStorage(){
 
 }
 
+function isJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 
-function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_only=false, init=false)
+function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_only=false, init=false, only_supporter=false)
 {
 
     console.log(' * get table...', tableId, tab_initialized[tableId])
@@ -386,16 +394,21 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
                 }
                 else
                 {
-                    response = req.responseText
-                    if (tableId == 'table_full' || tableId=='table_fav'){
-                        if (response.length<5000){
-                            alert("즐겨찾기 종목이 없습니다..")
-                        }
-                        renderTableFull(tableId, response)
-
+                    if (isJsonString(req.responseText)){
+                        alert(JSON.parse(req.responseText).message)
                     }
                     else{
-                        renderTablePartial(tableId, response)
+                        response = req.responseText
+                        if (tableId == 'table_full' || tableId=='table_fav'){
+                            if (response.length<5000){
+                                alert("즐겨찾기 종목이 없습니다..")
+                            }
+                            renderTableFull(tableId, response)
+
+                        }
+                        else{
+                            renderTablePartial(tableId, response)
+                        }
                     }
                 }
             }
@@ -403,7 +416,7 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
 
         req.open('POST', '/ajaxTable')
         req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-        req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit  + "&fav_only=" + fav_only)
+        req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit  + "&fav_only=" + fav_only + "&only_supporter="+ only_supporter)
 
     }
 

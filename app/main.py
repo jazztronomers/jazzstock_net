@@ -162,7 +162,6 @@ def getFavorite():
 
 @application.route('/setFavorite', methods=['POST'])
 def setFavorite():
-
     member = _getMembership()
     if member.get("membership") == 'supporter':
         if request.method == 'POST' and 'stockcode_favorite' in request.form:
@@ -177,7 +176,7 @@ def setFavorite():
 
 
     else:
-        return jsonify({'result': False, 'code': 400, 'message': alert_message['supporter_only']})
+        return jsonify({'result': False, 'code': 400, 'message': alert_message['supporter_only_kr']})
 
 @application.route('/getEmailConfirmationCode', methods=['POST'])
 def getEmailConfirmationCode():
@@ -332,6 +331,7 @@ def ajax_getTable():
     orderby = "+".join(request.form.get("orderby").split(','))
     orderhow = request.form.get("orderhow")
     limit = int(request.form.get("limit"))
+    only_supporter = True if request.form.get("only_supporter") == 'true' else False
     fav_only = True if request.form.get("fav_only") in [True, "true"] else False
 
     dic = {
@@ -353,25 +353,38 @@ def ajax_getTable():
     st = datetime.now()
     dao = DataAccessObjectStock()
     sess = session_parser()
+    member = _getMembership()
 
-    # 비회원
-    if session.get('loggedin') in [None, False]:
-        limit = min(25, limit)
-        usercode = -1
 
-    # 회원
+    # 후원자인경우
+
+    if member.get("membership")=='supporter':
+        limit = limit
+        usercode = sess['usercode']
+        htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
+                                    method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only)
+        return htmltable
+
+
+    # 후원자가 아닌경우
     else:
-        if session.get('expiration_date','1970-01-01') < str(datetime.now().date()):
-            limit = min(50, limit)
-            usercode = -1
 
-        # 후원자
+        if only_supporter:
+            return jsonify({'result': False, "message": alert_message['supporter_only_kr']})
+
         else:
-            limit = limit
-            usercode = sess['usercode']
+            if member.get("membership") == 'general':
+                limit = min(50, limit)
+                usercode = -1
+            else:
+                limit = min(25, limit)
+                usercode = -1
 
-    htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow, method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only)
-    return htmltable
+            htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
+                                        method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only)
+            return htmltable
+
+
 
 
 
@@ -423,38 +436,31 @@ def ajax_getSndRelated():
 def getTableFullCsv():
 
     date_idx = int(request.args.get('day',0))
-
     dao = DataAccessObjectStock()
-    sess = session_parser()
 
     filename_prefix = 'jazzstock_table_daily_full'
     the_date = dao.recent_trading_days(limit=10)[date_idx]
+    member=_getMembership()
 
-    # 비회원
-    if session.get('loggedin') in [None, False]:
-        return jsonify({'result': False, "message": alert_message['supporter_only']})
+    if member.get("membership") == 'supporter':
+        output_stream = StringIO()
 
-    # 회원
+        df = dao.sndRank(targets=['P', 'I', 'F', 'YG', 'S', 'T', 'OC', 'FN'], intervals=[1, 5, 20, 60], orderby='I1+F1',
+                         orderhow='DESC', method='dataframe', limit=2500, usercode=0)
+        df.to_csv(output_stream, encoding='euc-kr', index=False)
+
+        response = Response(
+            output_stream.getvalue(),
+            mimetype='text/csv',
+            content_type='text/csv',
+        )
+        response.headers["Content-Disposition"] = "attachment; filename=%s_%s.csv" % (filename_prefix, the_date)
+        return response
+
     else:
-        # 일반회원
-        if session.get('expiration_date', '1970-01-01') < str(datetime.now().date()):
-            return jsonify({'result': False, "message": alert_message['supporter_only']})
+        return jsonify({'result': False, "message": alert_message['supporter_only_en']})
 
-        # 후원자
-        else:
-            output_stream = StringIO()
 
-            df = dao.sndRank(targets=['P', 'I', 'F', 'YG', 'S', 'T', 'OC', 'FN'], intervals=[1,5,20,60], orderby ='I1+F1', orderhow='DESC', method='dataframe', limit=2500, usercode=0)
-            df.to_csv(output_stream, encoding='euc-kr', index=False)
-
-            response = Response(
-                output_stream.getvalue(),
-                mimetype='text/csv',
-                content_type='text/csv',
-            )
-            response.headers["Content-Disposition"] = "attachment; filename=%s_%s.csv"%(filename_prefix, the_date)
-
-            return response
 
 @application.route('/getTradingDays', methods=['POST'])
 def getRecentTradingDays():
