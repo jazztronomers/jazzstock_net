@@ -422,6 +422,8 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
 
     else{
         console.log(tableId, "already")
+        var table = $('#'+tableId).DataTable();
+        table.draw();
     }
 }
 
@@ -1062,104 +1064,3 @@ function getChartData(stockcode, stockname){
 
 }
 
-
-function renderTablePartial(tableId, response){
-
-    document.getElementById(tableId).innerHTML = response
-    console.log(' * Table rendering start', tableId, now())
-
-
-    // 서버사이드에서 받아온 HTML테이블객체를 DATATABLE형태로 INITIALIZE
-    $('#'+tableId).dataTable( {
-        aaSorting: [],
-        // stateSave:true,
-        sScrollX:"100%",
-        autoWidth:true,
-        aLengthMenu: [ 15, 25, 35, 50, 100 ],
-        iDisplayLength: 25,
-        fixedHeader: true,
-        columns: [
-                { name:"STOCKNAME"},
-                { name:"FAV", orderDataType: "dom-checkbox" },
-                { name:"MC" },
-                null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null
-            ],
-        columnDefs: [
-
-                // { type: 'natural', targets: '_all'},
-
-                { orderSequence: [ "desc", "asc"],
-                  targets: [ 2,3,
-                                4,  5,  6,  7,  8,  9,
-                                10, 11, 12, 13, 14, 15,
-                                16, 17, 18, 19, 20, 21,
-                                        22,23,24,25,26,27,
-                                        28,29,30,31,32,33] },
-                // STOCKNAME
-
-
-                { width: 70, targets: 0 },
-
-                // FAV
-                { width: 20, targets: 1},
-
-                // MC
-                { width: 30, targets: 2, render: $.fn.dataTable.render.number(',', '.', 1, '')},
-
-                // CLOSE
-                { width: 45, targets: 3, render: $.fn.dataTable.render.number( ',', '.', 0, '')},
-
-                // P I F
-                { width: 30, targets: [4,5,6,7,8,9,  10,11,12,13,14,15,  16,17,18,19,20,21,  22,23,24,25,26,27, 28,29,30,31,32,33] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-                // RANK
-                { width: 30, targets: [34, 35, 36, 37, 38, 39] },
-
-                // EVENT PATTERN
-                { width: 90, targets: 40 },
-
-                // DAYS EVENT
-                { width: 30, targets: [41,42,43,44] , render: $.fn.dataTable.render.number(',', '.', 0, '')},
-
-                // BBP EVENT
-                { width: 30, targets: [45,46,47,48] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-                // BBW EVENT
-                { width: 30, targets: [49,50,51,52] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-                // FINAN
-                { width: 30, targets: [53,54,55] , render: $.fn.dataTable.render.number(',', '.', 2, '')},
-
-                // CATEGORY
-                { width: 200, targets: [56] },
-
-                { width: 60, targets: [57] }
-        ],
-
-        scrollCollapse: true,
-        fixedColumns : {//关键是这里了，需要第一列不滚动就设置1
-            leftColumns : 3
-        },
-
-
-        rowCallback: function( row, data ) {
-
-            conditionalFormattingFull(row, data, stockcode_favorite) // Conlorize + Modify inner cell value
-
-        },
-
-    } );
-
-    console.log(' * Table rendering DONE', now())
-    hideColumn(tableId)
-    var table = $('#'+tableId).DataTable();
-    $('#mc_min, #mc_max').on("keyup input change propertychange", function() {
-        table.draw()
-    } );
-
-}

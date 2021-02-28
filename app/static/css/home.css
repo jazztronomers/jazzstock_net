@@ -262,6 +262,7 @@ table.DTFC_Cloned {
 
 .sndChart {
     height: 1000px;
+    position: relative;
 }
 
 input[type=checkbox] {

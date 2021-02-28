@@ -89,7 +89,7 @@ function renderTablePartial(tableId, response){
         aaSorting: [],
         // stateSave:true,
         sScrollX:"100%",
-        autoWidth:true,
+        autoWidth:false,
         aLengthMenu: [ 15, 25, 35, 50, 100 ],
         iDisplayLength: 25,
         fixedHeader: true,
@@ -168,10 +168,9 @@ function renderTablePartial(tableId, response){
 
 
         rowCallback: function( row, data ) {
-
             conditionalFormattingPartial(row, data, stockcode_favorite) // Conlorize + Modify inner cell value
 
-        },
+        }
 
     } );
 

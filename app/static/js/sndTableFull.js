@@ -89,7 +89,7 @@ function renderTableFull(tableId, response){
         aaSorting: [],
         // stateSave:true,
         sScrollX:"100%",
-        autoWidth:true,
+        autoWidth:false,
         aLengthMenu: [ 15, 25, 35, 50, 100 ],
         iDisplayLength: 25,
         fixedHeader: true,
@@ -163,7 +163,6 @@ function renderTableFull(tableId, response){
 
 
         rowCallback: function( row, data ) {
-
             conditionalFormattingFull(row, data, stockcode_favorite) // Conlorize + Modify inner cell value
 
         },
