@@ -326,6 +326,7 @@ def ajax_getTable():
 
     '''
 
+    print(request.form)
     targets = request.form.get("targets").split(',')
     intervals = [int(interval) for interval in request.form.get("intervals").split(',')]
     orderby = "+".join(request.form.get("orderby").split(','))
@@ -333,6 +334,7 @@ def ajax_getTable():
     limit = int(request.form.get("limit"))
     only_supporter = True if request.form.get("only_supporter") == 'true' else False
     fav_only = True if request.form.get("fav_only") in [True, "true"] else False
+    date_idx = int(request.form.get("date_idx"))
 
     dic = {
 
@@ -362,7 +364,7 @@ def ajax_getTable():
         limit = limit
         usercode = sess['usercode']
         htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
-                                    method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only)
+                                    method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only, date_idx=date_idx)
         return htmltable
 
 
@@ -446,7 +448,7 @@ def getTableFullCsv():
         output_stream = StringIO()
 
         df = dao.sndRank(targets=['P', 'I', 'F', 'YG', 'S', 'T', 'OC', 'FN'], intervals=[1, 5, 20, 60], orderby='I1+F1',
-                         orderhow='DESC', method='dataframe', limit=2500, usercode=0)
+                         orderhow='DESC', method='dataframe', limit=2500, usercode=0, date_idx=date_idx)
         df.to_csv(output_stream, encoding='euc-kr', index=False)
 
         response = Response(
@@ -462,13 +464,15 @@ def getTableFullCsv():
 
 
 
-@application.route('/getTradingDays', methods=['POST'])
+@application.route('/getRecentTradingDays', methods=['POST'])
 def getRecentTradingDays():
     '''
     T_DATE_INDEXED에서 TOP 240 DATE를 가져오는 함수
     '''
     dao = DataAccessObjectStock()
-    pass
+    recent_trading_days_list = dao.recent_trading_days(limit=60)
+    print(recent_trading_days_list)
+    return jsonify({'result': True, "content": recent_trading_days_list})
 
 @application.route('/getRecentTradingDayAndResultCount', methods=['POST'])
 def getRecentTradingDayAndResultCount():

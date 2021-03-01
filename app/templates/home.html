@@ -77,31 +77,23 @@
 
         <div id="navigation_table"  class="scrollmenu"  >
 
-            <a href="#" class="tablink" onclick="openPage('tab_insfor', this, 'red'); getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true, false);" id="defaultOpen">기관</a>
-            <a href="#" class="tablink" onclick="openPage('tab_forins', this, 'red'); getTable('table_forins',  ['P','F','I'], [1,5,20,60], ['F1'], 'DESC', 100, false, true, false);">외인</a>
-            <a href="#" class="tablink only_supporter" onclick="openPage('tab_ygfor', this, 'red'); getTable('table_ygfor',  ['P','YG','F'], [1,5,20,60], ['YG1'], 'DESC', 100, false, true, true);">연기금</a>
-            <a href="#" class="tablink only_supporter" onclick="openPage('tab_samofor', this, 'red'); getTable('table_samofor',  ['P','S','F'], [1,5,20,60], ['S1'], 'DESC', 100, false, true, true);">사모</a>
-            <a href="#" class="tablink only_supporter" onclick="openPage('tab_custom', this, 'red'); getTable('table_custom',  ['P','OC','F'], [1,5,20,60], ['OC1'], 'DESC', 100, false, true, true);">커스텀</a>
-            <a href="#" class="tablink only_supporter" onclick="openPage('tab_fav', this, 'red'); getTable('table_fav',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 100, true, true, true);">즐겨찾기</a>
-            <a href="#" class="tablink only_supporter" onclick="openPage('tab_full', this, 'red'); getTable('table_full',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 2500, false, true, true);">전종목</a>
+            <a href="#" class="tablink" onclick="openPage('tab_insfor', this, 'red'); getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true, false, 0);" id="defaultOpen">기관</a>
+            <a href="#" class="tablink" onclick="openPage('tab_forins', this, 'red'); getTable('table_forins',  ['P','F','I'], [1,5,20,60], ['F1'], 'DESC', 100, false, true, false, 0);">외인</a>
+            <a href="#" class="tablink only_supporter" onclick="openPage('tab_ygfor', this, 'red'); getTable('table_ygfor',  ['P','YG','F'], [1,5,20,60], ['YG1'], 'DESC', 100, false, true, true, 0);">연기금</a>
+            <a href="#" class="tablink only_supporter" onclick="openPage('tab_samofor', this, 'red'); getTable('table_samofor',  ['P','S','F'], [1,5,20,60], ['S1'], 'DESC', 100, false, true, true, 0);">사모</a>
+            <a href="#" class="tablink only_supporter" onclick="openPage('tab_custom', this, 'red'); getTable('table_custom',  ['P','T','F'], [1,5,20,60], ['T1'], 'DESC', 100, false, true, true, 0);">커스텀</a>
+            <a href="#" class="tablink only_supporter" onclick="openPage('tab_fav', this, 'red'); getTable('table_fav',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 100, true, true, true, 0);">즐겨찾기</a>
+            <a href="#" class="tablink only_supporter" onclick="openPage('tab_full', this, 'red'); getTable('table_full',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 2500, false, true, true, 0);">전종목</a>
             <!--<a href="#" class="tablink" onclick="openPage('table_top100', this, 'red'); renderSecond();"></a>-->
             <a href="#" class="tablink" onclick="getRealtime()">실시간(준비중)</a>
             <div id="userinfo" class="navigation_top_right" style="display: none">
-                <p>닉네임: {{ username }}  |  만료일자: {{ expiration_date }}</p>
+                <p>닉네임: {{ username }}  |  후원만료일자: {{ expiration_date }}</p>
+            </div>
+
+            <div id="induce_signin" class="navigation_top_right" style="display: block">
+                <p>로그인을 하시면 조회권한이 늘어납니다</p>
             </div>
         </div>
-<!--        <div class="adsense" id="adsense_top">-->
-<!--            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
-<!--            &lt;!&ndash; 2020HEAD &ndash;&gt;-->
-<!--            <ins class="adsbygoogle jazzstockhead"-->
-<!--                 style="display:inline-block"-->
-<!--                 data-ad-client="ca-pub-7952244387820356"-->
-<!--                 data-ad-slot="4979248724"></ins>-->
-<!--            <script>-->
-<!--                 (adsbygoogle = window.adsbygoogle || []).push({});-->
-<!--                 var session = {{ session | tojson | safe }}-->
-<!--            </script>-->
-<!--        </div>-->
         <div id="function_expanded" style="display: none">
             <div class="only_supporter">
                     <b><u>FILTER</u></b>
@@ -153,26 +145,16 @@
                 </form>
         </div>
         <div id='description' style="display: none">
-            <hr><br>
-            <p><b>2021년2월14일</b><p>
-            <p>2주년을 맞이하여 <b>회원가입 및 개인화기능 추가하였습니다!</b></p><br>
 
-            <p><u>회원가입후 로그인을 하시면</u></p>
-            <p>기존 특정컬럼으로 정렬된 상위 50종목만 보여주던것과 달리 <b>전종목데이터</b>를 표시후</p>
-            <p>사용자가 직접 분석관점대로 수급데이터를 정렬을 해볼 수 있도록 개선하였습니다</p>
-            <p>아무래도 전종목 데이터이다보니, 테이블을 받아오는데 길게는 10초까지 소요될 수 있으며</p>
-            <p>트래픽비용이 이전보다 훨씬 많이 발생하게 되어, 향후에는 <b>후원자전용 기능</b>으로 변경될 예정입니다.</p>
-            <p>일반회원의 경우, 기존에 제공하던 수준의 데이터는 그대로 받아보실 수 있도록 하겠습니다.</b></p><br>
-
-            <p><u>트래픽이 얼마나 발생할지 예측이 어려워서<br>2월말~3월초정도까지를 서비스 안정화기간으로 잡고있습니다.</u></p>
-            <p>해당기간동안에는 모든 가입회원에 대해서 후원자전용 기능, 즉 전종목데이터를 테스트로 제공할 예정입니다.</p>
-            <p>자세한 공지사항은 카톡방을 통해 전해드리겠습니다.</p>
-            <p><a href="https://open.kakao.com/o/ge5OuYhb" >https://open.kakao.com/o/ge5OuYhb</a></p>
-            <p>입장코드 : jazz</p>
-            <p><a href="https://blog.naver.com/rubenchu" >개발자블로그</a></p><br>
-            <p><b>컬럼에 대한 설명.jpg</b></p>
-            <p><a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
-            <p>(신규컬럼이 포함된  버전은 차차 업데이트 하겠습니다  ㅎㅎ..)</p>
+            <p id="notice">
+                * 재즈스탁은 크롬엔진에 최적화되어있습니다, 크롬, 엣지 브라우저를 사용해주세요<br>
+                * 재즈스탁 사용법: https://youtu.be/notyet..<br>
+                * <a href="https://blog.naver.com/rubenchu" >개발자 블로그</a><br>
+                * <a href="https://open.kakao.com/o/sFf8ti8" >개발자 카톡문의</a>
+                * <a href="https://open.kakao.com/o/ge5OuYhb">재즈스탁 오픈카톡방</a> 입장코드 : jazz<br>
+                <a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
+            </p>
+            <hr>
         </div>
     </div>
     <div id="tables">
@@ -220,30 +202,37 @@
             <div class="row">
                 <div class="card">
                     <p>
-                    <select id="select_custom_A">
-                          <option value="0">기관</option>
-                          <option value="1">외인</option>
-                          <option value="2">연기금</option>
-                          <option value="3">사모펀드</option>
-                          <option value="4">투신</option>
-                          <option value="5">금융</option>
-                          <option value="6">기타법인</option>
-                          <option value="7">개인</option>
-                          <option value="8">보험</option>
-                          <option value="9">은행</option>
+                    <select id="select_custom_date">
                     </select>
-                    <select id="select_custom_B">
-                          <option value="0">기관</option>
-                          <option value="1">외인</option>
-                          <option value="2">연기금</option>
-                          <option value="3">사모펀드</option>
-                          <option value="4">투신</option>
-                          <option value="5">금융</option>
-                          <option value="6">기타법인</option>
-                          <option value="7">개인</option>
-                          <option value="8">보험</option>
-                          <option value="9">은행</option>
+                    <select id="select_custom_a">
+                        <option value="I">기관</option>
+                        <option value="F">외인</option>
+                        <option value="YG">연기금</option>
+                        <option value="S">사모펀드</option>
+                        <option value="T" selected="selected">투신</option>
+                        <option value="FN">금융</option>
+                        <option value="OC">기타법인</option>
+                        <option value="PS">개인</option>
+                        <option value="IS">보험</option>
+                        <option value="BK">은행</option>
                     </select>
+                    <select id="select_custom_b">
+                        <option value="I">기관</option>
+                        <option value="F" selected="selected">외인</option>
+                        <option value="YG">연기금</option>
+                        <option value="S">사모펀드</option>
+                        <option value="T">투신</option>
+                        <option value="FN">금융</option>
+                        <option value="OC">기타법인</option>
+                        <option value="PS">개인</option>
+                        <option value="IS">보험</option>
+                        <option value="BK">은행</option>
+                    </select>
+                    <select id="select_custom_order_how">
+                          <option value="DESC">내림차순</option>
+                          <option value="ASC">오름차순</option>
+                    </select>
+                        <a href="#" onclick="getTableCustom()">apply!</a>
                     </p>
                     <table id="table_custom" class="display" style="width:100%">
                         <tr><td class="loading"><div class="signal"></div></td></tr>
@@ -287,8 +276,9 @@
     <div id="footer">
         <div id="footer_mine">
             <hr>
-            문의 : jazzztronomers@gmail.com<br>
-            후원 : 우리은행 1002-455-318806
+            문의: <a href="https://open.kakao.com/o/sFf8ti8" >Kakao</a> | jazztronomers@gmail.com<br>
+
+            후원: 우리은행 1002-455-318806
         </div>
         <div id="footer_adsense">
             <div class="adsense">

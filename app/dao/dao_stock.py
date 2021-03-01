@@ -7,14 +7,17 @@ pd.options.display.max_rows = 2500
 
 class DataAccessObjectStock:
 
-    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0, fav_only=False, dateidx=None):
+    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0, fav_only=False, date_idx=None):
 
         t1 = dt.now()
 
-        if dateidx == None:
+        if date_idx == None:
             date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 0")
         else:
-            date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s"%(dateidx))
+            date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s"%(date_idx))
+
+
+        print(date, date_idx, orderby, orderhow)
 
         '''
         IFNULL(P1,  'null') AS 
@@ -53,7 +56,7 @@ class DataAccessObjectStock:
 
         queryrank = ''
         for target in targets[1:]:
-            queryrank = queryrank + ', %s%s'%(target.replace("YG", "Y"), 'R')
+            queryrank = queryrank + ', %s%s'%(target.replace("YG", "Y").replace("PS","P"), 'R')
         queryrank = queryrank + '\n'
         querycont = '''
 
@@ -153,10 +156,10 @@ class DataAccessObjectStock:
 
 
     # 수급테이블
-    def sndRankHtml(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='dataframe', limit=50, usercode=0, fav_only=False):
+    def sndRankHtml(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='dataframe', limit=50, usercode=0, fav_only=False, date_idx=0):
 
         t1 = dt.now()
-        rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode, fav_only=fav_only)
+        rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode, fav_only=fav_only, date_idx=date_idx)
 
         t2 = dt.now()
         float_columns = []
@@ -294,7 +297,7 @@ class DataAccessObjectStock:
 
 
     # 관련종목
-    def sndRelated(self,code, chartid):
+    def sndRelated(self, code, chartid):
 
         # df = pd.read_csv('./static/pdtable.csv').round(4)
 
@@ -473,5 +476,6 @@ class DataAccessObjectStock:
 
     def recent_trading_days(self, limit=10):
 
-        recent_trading_days = db.selectSingleColumn('SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT < %s ORDER BY CNT ASC'%(limit))
+        recent_trading_days = db.selectSingleColumn('SELECT CAST(DATE AS CHAR) AS DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT < %s ORDER BY CNT ASC'%(limit))
         return recent_trading_days
+

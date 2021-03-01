@@ -94,6 +94,7 @@ tab_initialized['table_full']=false
 tab_initialized['table_fav']=false
 
 var stockcode_favorite = []
+var recent_trading_days = []
 var user_loggedin = false
 var user_expiration_date = '1970-01-01'
 
@@ -132,7 +133,7 @@ $(document).ready(function(){
     // function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=false)
     // getTable('table_insfor',  ['P','I','F','YG','S'], [1,5,20,60,120, 240], ["I1","F1"], 'DESC', 100, true);
 
-    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true);
+    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, 0);
 
     array_filter.forEach(function (filter_id, index) {
 
@@ -142,6 +143,7 @@ $(document).ready(function(){
     });
     getFavorite()
     getUserInfo()
+    getRecentTradingDays()
     console.log(' * Document initialized', now())
 
 })
@@ -149,16 +151,6 @@ $(document).ready(function(){
 
 
 
-function changeTable(tableid){
-
-
-    var keyA = document.getElementById("select"+tableid+"A").value;
-    var keyB = document.getElementById("select"+tableid+"B").value;
-
-
-    getTable([keyA, keyB], "data"+tableid, "chart"+tableid ,q_interval, q_orderby);
-
-}
 
 function now(){
     var today = new Date();
@@ -247,6 +239,46 @@ function getFavorite(){
     }
 
     req.open('POST', '/getFavorite')
+    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+    req.send()
+
+}
+
+
+function getRecentTradingDays(){
+
+    var req = new XMLHttpRequest()
+    req.responseType = 'json';
+    req.onreadystatechange = function()
+    {
+        if (req.readyState == 4)
+        {
+            if (req.status != 200)
+            {
+                console.log('hello')
+            }
+            else
+            {
+
+                recent_trading_days = req.response.content
+                console.log(recent_trading_days)
+                select_box = document.getElementById('select_custom_date')
+
+                for (var i = 0; i<=recent_trading_days.length-1; i++){
+                    var opt = document.createElement('option');
+                    opt.value = i;
+                    opt.innerHTML = recent_trading_days[i];
+                    select_box.appendChild(opt);
+                }
+
+
+
+
+            }
+        }
+    }
+
+    req.open('POST', '/getRecentTradingDays')
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
     req.send()
 
@@ -373,15 +405,15 @@ function isJsonString(str) {
     return true;
 }
 
-function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_only=false, init=false, only_supporter=false)
+function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_only=false, init=false, only_supporter=false, date_idx=0)
 {
 
-    console.log(' * get table...', tableId, tab_initialized[tableId])
+    // console.log(' * get table...', tableId, tab_initialized[tableId])
 
-    if(tab_initialized[tableId] == false){
+    if(tab_initialized[tableId] == false || init==false){
         tab_initialized[tableId]=true
         if(init==false){
-            clearTable(keyA, keyB, tableId,chartId)
+            clearTable(tableId)
         }
         var req = new XMLHttpRequest()
         req.onreadystatechange = function()
@@ -416,12 +448,12 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
 
         req.open('POST', '/ajaxTable')
         req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-        req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit  + "&fav_only=" + fav_only + "&only_supporter="+ only_supporter)
+        req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit  + "&fav_only=" + fav_only + "&only_supporter="+ only_supporter + "&date_idx=" + date_idx)
 
     }
 
     else{
-        console.log(tableId, "already")
+        // console.log(tableId, "already")
         var table = $('#'+tableId).DataTable();
         table.draw();
     }
@@ -430,7 +462,9 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
 
 
 
-function clearTable(keyA, keyB, tableId,chartId){
+function clearTable(tableId){
+
+    console.log("clear table", tableId)
 
       var table = $('#'+tableId).DataTable();
       table.destroy()
@@ -560,10 +594,14 @@ function openPage(pageName, elmnt, color) {
     tablinks = document.getElementsByClassName("tablink");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].style.backgroundColor = "";
+        tablinks[i].style.color = "white";
     }
 
 
     document.getElementById(pageName).style.display = "block";
+    elmnt.style.backgroundColor = "#F9A602";
+    elmnt.style.color = "black";
+
 }
 
 var stockQueue = [];
@@ -816,6 +854,8 @@ function setMenu(){
         document.getElementById('notloggedin').style.display = "none";
         document.getElementById('loggedin').style.display = "block";
         document.getElementById('userinfo').style.display = "block";
+        document.getElementById('induce_signin').style.display = "none";
+
     }
 
     expdate = new Date(user_expiration_date).setHours(0,0,0,0)
@@ -965,6 +1005,18 @@ function sleep(milliseconds) {
 }
 
 
+function getTableCustom(){
+
+
+    var select_custom_date_idx = document.getElementById("select_custom_date").value
+    var select_custom_a = document.getElementById("select_custom_a").value
+    var select_custom_b = document.getElementById("select_custom_b").value
+    var select_custom_order_how = document.getElementById("select_custom_order_how").value
+    getTable('table_custom',  ['P', select_custom_a, select_custom_b], [1,5,20,60], [select_custom_a + '1'], select_custom_order_how, 100, false, false, true, select_custom_date_idx);
+
+}
+
+
 function getChartData(stockcode, stockname){
 
 
@@ -992,7 +1044,7 @@ function getChartData(stockcode, stockname){
 
 
                     if(req.response.sampledata!=null){
-                        openPage("tab_"+stockcode, this, "yellow");
+                        openPage("tab_"+stockcode, document.getElementById("tablink_"+stockcode), "yellow");
                         // document.getElementById("tabcontent"+stockcode).innerHTML=stockcode
 
                         if(document.body.clientWidth<500){
@@ -1010,7 +1062,7 @@ function getChartData(stockcode, stockname){
                         aLengthMenu: [ 4, 12, 24 ],
                         aaSorting: [],
                         sScrollX:"100%",
-                        autoWidth:true,
+                        autoWidth:false,
 
                         columnDefs: [
                                 { width: 30, targets: 0 },

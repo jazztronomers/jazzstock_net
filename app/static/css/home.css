@@ -39,6 +39,12 @@ p {
     text-align: center;
 }
 
+p#notice {
+    font-size: 0.9em;
+    text-align: left;
+}
+
+
 
 /**
 
@@ -75,7 +81,7 @@ p {
 
 /* Change the color of links on hover */
 .navigation_top a:hover {
-  background-color: #ddd;
+  background-color: #FABD02;
   color: black;
 }
 
@@ -122,6 +128,7 @@ div.scrollmenu#navigation_bottom {
   position: fixed;
   bottom:0;
   font-size: 13px;
+  padding: 2px;
   width: 100%;
 
 }
@@ -157,7 +164,8 @@ div.scrollmenu a {
 }
 
 div.scrollmenu a:hover {
-  background-color: #777;
+  color: black;
+  background-color: #FABD02;
 }
 
 
