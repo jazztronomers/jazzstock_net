@@ -17,7 +17,6 @@ class DataAccessObjectStock:
             date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s"%(date_idx))
 
 
-        print(date, date_idx, orderby, orderhow)
 
         '''
         IFNULL(P1,  'null') AS 

@@ -176,7 +176,6 @@ function handleChange(row){
 
 function setFavorite(){
 
-    console.log(stockcode_favorite)
     var req = new XMLHttpRequest()
 
     req.responseType = 'json';
@@ -190,15 +189,13 @@ function setFavorite(){
             }
             else
             {
-                console.log(req.response.result)
                 if (req.response.result == false){
                     alert(req.response.message)
                 }
                 else{
 
-                    response = req.responseText
+                    response = req.response.result
                     alert("즐겨찾기리스트가 업데이트되었습니다.")
-                    console.log(response)
                 }
             }
         }
@@ -261,7 +258,6 @@ function getRecentTradingDays(){
             {
 
                 recent_trading_days = req.response.content
-                console.log(recent_trading_days)
                 select_box = document.getElementById('select_custom_date')
 
                 for (var i = 0; i<=recent_trading_days.length-1; i++){
@@ -282,11 +278,6 @@ function getRecentTradingDays(){
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
     req.send()
 
-}
-
-
-function profile(){
-    alert("아직 개발중입니다 ㅠ")
 }
 
 

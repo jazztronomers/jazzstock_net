@@ -176,15 +176,9 @@ class DataAccessObjectUser:
 
 
         if True:
-            ret = {'result': 'a',
-                   'message': 'interested stockcodes',
-                   'id': None,
-                   'name': None}
+            ret = {'result': True}
         else:
-            ret = {'result': None,
-                   'message': 'There is no registered interested item',
-                   'id': None,
-                   'name': None}
+            ret = {'result': False}
 
         return ret
 
