@@ -747,7 +747,7 @@ function addTabToPage(stockcode, stockname){
             chart.setAttribute("class", "sndChart");
 
         tabCont.appendChild(table_finan);
-        // tabCont.appendChild(document.createElement("br"));
+        tabCont.appendChild(document.createElement("br"));
         tabCont.appendChild(chart);
 
     console.log(tabCont)
