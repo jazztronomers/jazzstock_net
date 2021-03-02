@@ -52,17 +52,24 @@ function sendConfirmationCodeByEmail(){
 
     email = document.getElementById('email').value
     var req = new XMLHttpRequest()
+
+    req.responseType = 'json';
     req.onreadystatechange = function()
     {
         if (req.readyState == 4)
         {
-            if (req.status == 200)
-            {
-                setConfirmationTimer()
-                var button = document.getElementById('button_confirmation')
-                button.disabled = "";
-            }
+            if (req.status == 200){
+                if(req.response.result == false){
+                        alert(req.response.message)
+                        return false
+                }
+                else {
 
+                        setConfirmationTimer()
+                        var button = document.getElementById('button_confirmation')
+                        button.disabled = "";
+                }
+            }
         }
     }
 
@@ -70,7 +77,6 @@ function sendConfirmationCodeByEmail(){
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
     req.send('email="'+email+'"')
     alert('인증코드가 전송되었습니다, 메일을 확인하세요')
-
 }
 
 
@@ -376,9 +382,10 @@ function doRegister(){
         {
             if (req.status == 200){
 
+                console.log(req.response)
                 if(req.response.result == false)
                 {
-                    alert("알수없는 에러가...관리자에게 연락주세요 bb")
+                    alert(req.response.message)
                 }
                 else {
 

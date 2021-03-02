@@ -66,11 +66,11 @@ def register():
         username = request.form['username']
 
         dao_user = DataAccessObjectUser()
-        if not  dao_user.check_dup(username):
+        if not dao_user.check_dup(username):
             return jsonify({'result': False})
         else:
-            dao_user.register(email, pw, username)
-            return jsonify({'result': True})
+            result = dao_user.register(email, pw, username)
+            return jsonify(result)
     else:
         return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
@@ -169,12 +169,11 @@ def setFavorite():
             dao = DataAccessObjectUser()
             sess = session_parser()
             if sess['loggedin']==True:
-                dao.set_favorite(usercode=sess['usercode'], stockcodes_new=stockcode_favorite)['result']
-                return jsonify(result ="favorite updated")
+                result = dao.set_favorite(usercode=sess['usercode'], stockcodes_new=stockcode_favorite)['result']
+                return jsonify({'result': result})
+
             else:
-                return jsonify(result ="login first")
-
-
+                return jsonify({'result': False})
     else:
         return jsonify({'result': False, 'code': 400, 'message': alert_message['supporter_only_kr']})
 
@@ -182,16 +181,24 @@ def setFavorite():
 def getEmailConfirmationCode():
     if request.method == 'POST' and \
             'email' in request.form:
-        email = request.form['email']
-        confirmation_code = str(random.randint(0,999999)).zfill(6)
-        session['confirmation_code'] = str(confirmation_code).zfill(6)
-
-        send_mail(from_mail='jazztronomers@gmail.com',
-                  to_mail=email,
-                  app_pw=cf.MAIL_APP_PW,
-                  code=confirmation_code)
-
-        return jsonify({'result':True})
+        email = request.form['email'].replace('"','')
+        
+        dao = DataAccessObjectUser()
+        email_dup = dao.check_dup_email(email)
+        if email_dup:
+            return jsonify({'result':False, 'message':"근데 이미 가입된 이메일주소입니다, 비밀번호를 잊으셨다면 관리자에 문의주세요"})
+            
+        else:
+        
+            confirmation_code = str(random.randint(0,999999)).zfill(6)
+            session['confirmation_code'] = str(confirmation_code).zfill(6)
+    
+            send_mail(from_mail='jazztronomers@gmail.com',
+                      to_mail=email,
+                      app_pw=cf.MAIL_APP_PW,
+                      code=confirmation_code)
+    
+            return jsonify({'result':True})
 
     else:
         return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
@@ -326,7 +333,6 @@ def ajax_getTable():
 
     '''
 
-    print(request.form)
     targets = request.form.get("targets").split(',')
     intervals = [int(interval) for interval in request.form.get("intervals").split(',')]
     orderby = "+".join(request.form.get("orderby").split(','))
@@ -471,7 +477,6 @@ def getRecentTradingDays():
     '''
     dao = DataAccessObjectStock()
     recent_trading_days_list = dao.recent_trading_days(limit=60)
-    print(recent_trading_days_list)
     return jsonify({'result': True, "content": recent_trading_days_list})
 
 @application.route('/getRecentTradingDayAndResultCount', methods=['POST'])

@@ -27,14 +27,14 @@ class DataAccessObjectUser:
     def register(self, email, pw, username):
         # CHECK EXISTS
         pw_encoded = sha256(pw.encode('utf-8')).hexdigest()
-        print(' * REGISTER', id, username)
+        print(' * REGISTER', email, username)
 
 
-        ret = db.selectSingleValue("SELECT USERCODE FROM jazzstockuser.T_USER_INFO WHERE EMAIL='%s'"%(email))
-        if ret is not None and len(ret) > 0:
+        email_dup = self.check_dup_email(email)
+        if email_dup:
 
             return {'result': False,
-                    'message':'ID already exsists'}
+                    'message':'email already exsists'}
 
         else:
             now = datetime.now()
@@ -55,8 +55,16 @@ class DataAccessObjectUser:
             return {'result': True,
                     'message':'Success'}
 
+    def check_dup_email(self, email):
 
-        # INSERT
+        ret = db.selectSingleValue("SELECT USERCODE FROM jazzstockuser.T_USER_INFO WHERE EMAIL='%s'" % (email))
+        if ret is None:
+            return False # 이메일 존재함
+        else:
+            return True # 이메일 존재하지 않음
+
+
+    # INSERT
 
     def login(self, email, pw):
         pw_encoded = sha256(pw.encode('utf-8')).hexdigest()
