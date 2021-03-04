@@ -143,6 +143,7 @@ $(document).ready(function(){
     });
     getFavorite()
     getUserInfo()
+    getSpecification()
     getRecentTradingDays()
     console.log(' * Document initialized', now())
 
@@ -815,6 +816,42 @@ function logout(){
 }
 
 
+function getSpecification(){
+
+    var req = new XMLHttpRequest()
+    req.responseType = 'json';
+    req.onreadystatechange = function()
+    {
+        if (req.readyState == 4)
+        {
+            if (req.status == 200){
+                console.log(" * getSpecification...:", req.response)
+                column_spec_list = req.response
+
+                select_box = document.getElementById('specification_selectbox')
+
+
+                for (var i = 0; i<=column_spec_list.length-1; i++){
+                    var opt = document.createElement('option');
+                    opt.value = column_spec_list[i].column_description;
+                    opt.innerHTML = column_spec_list[i].column_name;
+                    select_box.appendChild(opt);
+                }
+            }
+        }
+    }
+
+    req.open('POST', '/getSpecification')
+    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+    req.send()
+}
+
+function drawSpecification(opt){
+
+    content_field = document.getElementById('specification_content')
+    content_field.innerHTML  =  opt.value
+}
+
 function getUserInfo(){
 
     var req = new XMLHttpRequest()
@@ -913,6 +950,21 @@ function description(){
 function openExpandFunction(){
 
     var content = document.getElementById('function_expanded');
+
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+
+
+}
+
+
+
+function openColumnSpec(){
+
+    var content = document.getElementById('specification');
 
     if (content.style.display === "block") {
       content.style.display = "none";

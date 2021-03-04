@@ -64,12 +64,13 @@
                     <a href="#" onclick="description()">공지사항</a>
                     <a href="/register">회원가입</a>
                     <a href="#" onclick="openForm()">로그인</a>
+                    <a href="#" onclick="openColumnSpec()">컬럼설명</a>
                 </div>
                 <div id="loggedin" style="display: none">
                     <a href="#" onclick="description()">공지사항</a>
                     <a href="/profile">프로필수정</a>
                     <a href="#" onclick="logout()">로그아웃</a>
-                    <a href="#" onclick="openExpandFunction()">필터열기</a>
+                    <a href="#" onclick="openColumnSpec()">컬럼설명</a>
                 </div>
             </div>
 
@@ -77,7 +78,18 @@
 
         <div id="navigation_table"  class="scrollmenu"  >
 
-            <a href="#" class="tablink" onclick="openPage('tab_insfor', this, 'red'); getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true, false, 0);" id="defaultOpen">기관</a>
+            <a href="#" class="tablink" onclick="openPage('tab_insfor', this, 'red'); getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true, false, 0);" id="defaultOpen">
+<!--                <div class="tooltip">기관-->
+<!--                  <span class="tooltiptext">-->
+<!--                      When you move the mouse over the text below<br>-->
+<!--                      When you move the mouse over the text below<br>-->
+<!--                      When you move the mouse over the text below<br>-->
+<!--                      When you move the mouse over the text below<br>-->
+<!--                      When you move the mouse over the text below<br>-->
+<!--                  </span>-->
+<!--                </div>-->
+
+            </a>
             <a href="#" class="tablink" onclick="openPage('tab_forins', this, 'red'); getTable('table_forins',  ['P','F','I'], [1,5,20,60], ['F1'], 'DESC', 100, false, true, false, 0);">외인</a>
             <a href="#" class="tablink only_supporter" onclick="openPage('tab_ygfor', this, 'red'); getTable('table_ygfor',  ['P','YG','F'], [1,5,20,60], ['YG1'], 'DESC', 100, false, true, true, 0);">연기금</a>
             <a href="#" class="tablink only_supporter" onclick="openPage('tab_samofor', this, 'red'); getTable('table_samofor',  ['P','S','F'], [1,5,20,60], ['S1'], 'DESC', 100, false, true, true, 0);">사모</a>
@@ -94,6 +106,19 @@
                 <p>로그인을 하시면 <u>조회권한</u> 및 <u>조회건수</u>가 늘어납니다</p>
             </div>
         </div>
+        <div id="specification" style="display: none">
+            <select id="specification_selectbox" onchange="drawSpecification(this)">
+            </select>
+            <div id="specification_content">
+                <u>선택된 컬럼에 대한 설명과 예시가 보여집니다.</u>
+            </div>
+            <hr>
+
+
+        </div>
+
+
+
         <div id="function_expanded" style="display: none">
             <div class="only_supporter">
                     <b><u>FILTER</u></b>
@@ -148,9 +173,9 @@
 
             <p id="notice">
                 <b>NOTICE:</b><br><br>
-                - 재즈스탁은 크롬엔진에 최적화 되어있습니다, 크롬/엣지 브라우저를 사용해주세요.<br>
-                - 3월14일까지 일반회원도 후원자 전용기능을 사용할 수 있습니다, 일정은 변경될 수 있습니다.<br>
-                - 자세한 내용은 오픈카톡방, 또는 카톡 1:1오픈챗으로 문의주세요.<br><br>
+                - 재즈스탁은 크롬브라우저에 최적화 되어있습니다, 크롬을 사용해주세요.<br>
+                - 3월14일까지 일반회원도 후원자 전용기능을 사용할 수 있습니다, 일정은 추후 변경될 수 있습니다.<br>
+                - 후원자 전용기능 또는 기타 문의는 오픈카톡방, 1:1오픈챗으로 문의주세요.<br><br>
 
                 <b>LINK:</b><br><br>
                 - <a href="https://blog.naver.com/rubenchu" >개발자 블로그</a><br>
@@ -158,7 +183,7 @@
                 - <a href="https://open.kakao.com/o/ge5OuYhb">재즈스탁 오픈카톡방</a> | 입장코드 : jazzz<br>
                 - <a href="https://t.me/joinchat/ScYM_CnhEPnSGu9K">재즈스탁 텔레그램 알람봇 BETA</a><br><br>
 
-                <b>USAGE:</b><br><br> 업데이트할게요...<br>
+                <b>USAGE:</b><br><br> 업데이트할게요......<br>
                 <a href="/static/images/refermobile.png"  target="_blank"><img src="/static/images/refermobile.png" width="350px"></a></p>
             </p>
             <hr>

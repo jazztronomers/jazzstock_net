@@ -52,6 +52,8 @@ p#notice a {
 
 
 
+
+
 /**
 
 #function_default {
@@ -149,6 +151,38 @@ div#footer {
     font-size: 0.8em;
     text-align: center;
 
+}
+
+select#specification_selectbox {
+
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+div#specification_tip {
+
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap;
+    float: center;
+    width: 100%;
+    font-size: 0.6em;
+    text-align: left;
+    margin-left:10px;
+
+}
+div#specification_content {
+
+    border:1px;
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap;
+    float: center;
+    width: 100%;
+    font-size: 0.8em;
+    text-align: left;
+    margin:10px;
+    padding:10px;
 
 }
 
@@ -311,6 +345,41 @@ input[type="button"] {
     appearance: none;
 }
 */
+
+
+.tooltip {
+  position: relative;
+  display: block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 500px;
+    background-color: white;
+    color: black;
+    text-align: left;
+    border-radius: 5px;
+    padding: 20px;
+    position: fixed;
+    /*z-index: 1;
+    bottom: -150%;
+    left: 130%;*/
+
+    bottom: 37px;
+      right: 0px;
+      border: 3px solid #f1f1f1;
+      z-index: 9;
+
+    margin-left: 0px;
+    opacity: 80%;
+    transition: opacity 1s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
 
 
 

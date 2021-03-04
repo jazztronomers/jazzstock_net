@@ -3,6 +3,7 @@ from jazzstock_net.app.dao.dao_user import DataAccessObjectUser
 from jazzstock_net.app.common.mail import send_mail
 import jazzstock_net.app.config.config as cf
 from jazzstock_net.app.config.config_message import alert_message
+from jazzstock_net.app.config.config_table_specification import spec as spec_content
 from datetime import datetime
 from io import StringIO
 from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response, flash
@@ -306,6 +307,9 @@ def _getMembership():
 # STOCK
 # ========================================================
 
+
+
+
 @application.route('/ads.txt')
 def static_from_root():
     return send_from_directory(application.static_folder, request.path[1:])
@@ -479,16 +483,17 @@ def getRecentTradingDays():
     recent_trading_days_list = dao.recent_trading_days(limit=60)
     return jsonify({'result': True, "content": recent_trading_days_list})
 
-@application.route('/getRecentTradingDayAndResultCount', methods=['POST'])
-def getRecentTradingDayAndResultCount():
+
+
+
+@application.route('/getSpecification', methods=['POST'])
+def getSpecification():
     '''
     최근거래일 총 데이터건수를 가져오는 함수
     '''
-    dao = DataAccessObjectStock()
-    pass
 
 
-
+    return jsonify(spec_content)
 
 
 
