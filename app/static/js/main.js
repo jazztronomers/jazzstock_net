@@ -75,6 +75,27 @@ bbp_map['B2'] = [0.20, 0.10, B[2]]
 bbp_map['B3'] = [0.10, 0.00, B[3]]
 bbp_map['B4'] = [0.00, -1.00, B[4]]
 
+let vma_map = new Map()
+
+vma_map['R9'] = [999, 12, R[9]]
+vma_map['R8'] = [12, 9, R[8]]
+vma_map['R7'] = [9, 7, R[7]]
+
+vma_map['R6'] = [7, 5, R[6]]
+vma_map['R5'] = [5, 4, R[5]]
+vma_map['R4'] = [4, 3,  R[4]]
+
+vma_map['R3'] = [3, 1.5,   R[3]]
+vma_map['R2'] = [1.5, 1,   R[2]]
+vma_map['R1'] = [1, 0.3,   R[1]]
+
+vma_map['MM'] = [0.30, -0.1, '#ffffff']
+
+vma_map['B1'] = [-0.1, -0.3, B[1]]
+vma_map['B2'] = [-0.3, -0.6, B[2]]
+vma_map['B3'] = [-0.6, -0.8, B[3]]
+vma_map['B4'] = [-0.8, -1.0, B[4]]
+
 
 const array_filter = ["filter_a",
                "filter_b",
@@ -97,7 +118,7 @@ var stockcode_favorite = []
 var recent_trading_days = []
 var user_loggedin = false
 var user_expiration_date = '1970-01-01'
-
+var column_spec_list = []
 
 $.fn.dataTable.ext.order['dom-checkbox'] = function  ( settings, col )
 {
@@ -418,22 +439,17 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
                 }
                 else
                 {
-                    if (isJsonString(req.responseText)){
-                        alert(JSON.parse(req.responseText).message)
-                    }
-                    else{
-                        response = req.responseText
-                        if (tableId == 'table_full' || tableId=='table_fav'){
-                            if (response.length<5000){
-                                alert("즐겨찾기 종목이 없습니다..")
-                            }
-                            renderTableFull(tableId, response)
+//                    if (isJsonString(req.responseText)){
+//                        alert(JSON.parse(req.responseText).message)
+//                    }
+//                    else{
+                        response = JSON.parse(req.responseText)
+                        if (response.htmltable.length<5000){
+                            alert("즐겨찾기 종목이 없습니다..")
+                        }
+                        console.log(response.column_list)
+                        renderTable(tableId, response.htmltable, response.column_list)
 
-                        }
-                        else{
-                            renderTablePartial(tableId, response)
-                        }
-                    }
                 }
             }
         }
@@ -441,7 +457,6 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
         req.open('POST', '/ajaxTable')
         req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
         req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit  + "&fav_only=" + fav_only + "&only_supporter="+ only_supporter + "&date_idx=" + date_idx)
-
     }
 
     else{
@@ -827,7 +842,7 @@ function getSpecification(){
             if (req.status == 200){
                 console.log(" * getSpecification...:", req.response)
                 column_spec_list = req.response
-
+                console.log(column_spec_list)
                 select_box = document.getElementById('specification_selectbox')
 
 
@@ -1159,3 +1174,36 @@ function getChartData(stockcode, stockname){
 
 }
 
+function getColumnDefs(column_list){
+
+    columns_def = []
+    for (var i=0; i<column_list.length; i++){
+        for (var j=0; j<column_spec_list.length; j++){
+
+            if (column_list[i] == column_spec_list[j].column_name ||
+                (null !=column_spec_list[j].column_childs && column_spec_list[j].column_childs.includes(column_list[i]))){
+                if (null != column_spec_list[j].column_def){
+
+                    let column_def = Object.assign({}, column_spec_list[j].column_def)
+
+                    column_def.targets=i
+                    if (null != column_def.render){
+                        column_def.render = getDataTableRenderMethod(column_def.render)
+                    }
+                    columns_def.push(column_def)
+                    break;
+                }
+
+            }
+
+        }
+    }
+
+    console.log(columns_def)
+
+    return columns_def
+}
+
+function getDataTableRenderMethod(round=0){
+    return $.fn.dataTable.render.number( ',', '.', round, '')
+}

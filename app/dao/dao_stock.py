@@ -44,6 +44,7 @@ class DataAccessObjectStock:
                         , "N" AS FAV
                         , MC
                         , CLOSE
+                        
                     '''
 
 
@@ -58,6 +59,16 @@ class DataAccessObjectStock:
             queryrank = queryrank + ', %s%s'%(target.replace("YG", "Y").replace("PS","P"), 'R')
         queryrank = queryrank + '\n'
         querycont = '''
+        
+        
+                , PSMAR5 AS PMA5
+                , PSMAR60 AS PMA60
+                , VSMAR5 AS VMA5
+                , VSMAR60 AS VMA60
+                
+                , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS cPER
+                , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS cPBR
+                , ROE
 
                 , CONCAT(DIR_L4, DIR_L3, DIR_L2, DIR_L1) AS PATTERN
                 , DAYS_L4 AS L4ED 
@@ -74,10 +85,8 @@ class DataAccessObjectStock:
                 , BBP_L2 AS L3BP
                 , BBP_L3 AS L2BP
                 , BBP_L4 AS L1BP
-
-                , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS cPER
-                , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS cPBR
-                , ROE
+                
+            
                 , CATEGORY
                 , LEFT(IFNULL(H.TIMESTAMP, '1970-01-01'), 10) AS FAV_DATE 
 
@@ -114,6 +123,7 @@ class DataAccessObjectStock:
                     AND DELYN = 0
                 )  H ON (A.STOCKCODE = H.STOCKCODE)
                 LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
+                LEFT JOIN jazzdb.T_STOCK_DAY_SMAR K ON (A.STOCKCODE = K.STOCKCODE AND A.DATE = K.DATE)
                 #=========================================================================
                 WHERE 1=1'''%(usercode)
 
@@ -156,17 +166,15 @@ class DataAccessObjectStock:
 
     # 수급테이블
     def sndRankHtml(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='dataframe', limit=50, usercode=0, fav_only=False, date_idx=0):
-
-        t1 = dt.now()
         rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode, fav_only=fav_only, date_idx=date_idx)
-
-        t2 = dt.now()
         float_columns = []
 
         for target in targets:
             for interval in intervals:
                 float_columns.append('%s%s'%(target,interval))
 
+        float_columns.append("PMA5")
+        float_columns.append("PMA60")
 
         rtdf[float_columns] = rtdf[float_columns] * 100
         rtdf[float_columns] = rtdf[float_columns].round(3)
@@ -178,8 +186,10 @@ class DataAccessObjectStock:
                 .render()
         )
 
-        t3 = dt.now()
-        return html
+        return html, rtdf.columns.values.tolist()
+
+
+
 
     # 수급차트
     def sndChart(self, code):
@@ -294,142 +304,6 @@ class DataAccessObjectStock:
         return html
 
 
-
-    # 관련종목
-    def sndRelated(self, code, chartid):
-
-        # df = pd.read_csv('./static/pdtable.csv').round(4)
-
-
-        q = '''
-
-        SELECT CONCAT("<a href='#' onclick=\\"getChartData('", A.STOCKNAME, "','%s'); return false;\\">",CASE WHEN (A.STOCKCODE = '%s' OR STOCKNAME = '%s') THEN CONCAT('<b>','>>>',STOCKNAME,'</b>') ELSE STOCKNAME END,'</a>') AS STOCKNAME
-            , ROUND(ABS(MC),1) AS MC
-            , FORMAT(ABS(D.CLOSE),0) AS CLOSE
-
-            , CASE WHEN EPSC > 0 THEN ROUND(ABS(D.CLOSE)/EPSC,2) ELSE -1 END AS cPER
-            , CASE WHEN BPS > 0 THEN ROUND(ABS(D.CLOSE)/BPS,2) ELSE -1 END AS cPBR
-            , E.ROE
-            # , SBDD AS SBAL
-            , P1, P5, P20, P60, P120, P240
-            , I1, I5, I20, I60, I120, I240
-            , F1, F5, F20, F60, F120, F240
-            # , SRT3 AS SH3
-            # , SRT5 AS SH5
-            # , SBDFD1 AS SBDF1
-            # , SBDFD3 AS SBDF3
-            # , SBDFD5 AS SBDF5
-            , BBP, BBW
-        
-        FROM
-        (
-            SELECT STOCKCODE, STOCKNAME, GROUP_CONCAT(CATEGORY) AS CATEGORY
-            FROM jazzdb.T_STOCK_CODE_MGMT A
-            JOIN jazzdb.T_STOCK_CATEGORY_ROBO B USING (STOCKCODE)
-            WHERE 1=1
-            AND CATEGORY IN (
-                SELECT CATEGORY
-                FROM jazzdb.T_STOCK_CODE_MGMT
-                JOIN jazzdb.T_STOCK_CATEGORY_ROBO USING (STOCKCODE)
-                WHERE 1=1
-                AND (STOCKCODE = '%s' OR STOCKNAME = '%s')
-                GROUP BY CATEGORY
-            )
-            AND LISTED = 1
-            GROUP BY STOCKCODE, STOCKNAME
-        ) A
-
-        JOIN jazzdb.T_STOCK_SND_DAY D ON (A.STOCKCODE = D.STOCKCODE)
-        JOIN jazzdb.T_DATE_INDEXED C ON (D.DATE = C.DATE)
-
-        JOIN (
-
-            SELECT *
-            FROM jazzdb.T_STOCK_FINAN E
-            WHERE 1=1
-            AND DATE = '2003'
-            AND TYPE = 'C'
-
-
-
-
-        )E ON (A.STOCKCODE = E.STOCKCODE)
-        
-        JOIN jazzdb.T_STOCK_SND_ANALYSIS_RESULT_TEMP F ON (A.STOCKCODE = F.STOCKCODE AND D.DATE = F.DATE)
-        JOIN jazzdb.T_STOCK_SND_ANALYSIS_LONGTERM G ON (A.STOCKCODE = G.STOCKCODE AND D.DATE = G.DATE)
-        # LEFT JOIN jazzdb.T_STOCK_SHORT_ANALYSIS H ON (A.STOCKCODE = H.STOCKCODE AND D.DATE = H.DATE)
-        LEFT JOIN jazzdb.T_STOCK_BB I ON (A.STOCKCODE = I.STOCKCODE AND D.DATE = I.DATE)
-        LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND D.DATE = J.DATE)
-
-        
-        WHERE 1=1
-        AND CNT = 0
-        ORDER BY MC DESC
-
-
-        ''' %(chartid, code,code, code,code)
-
-        df = db.selectpd(q).round(4)
-
-        def color_negative_red(val):
-            """
-            Takes a scalar and returns a string with
-            the css property `'color: red'` for negative
-            strings, black otherwise.
-            """
-
-            if(isinstance(val, float)):
-
-
-                if (val > 30): color = '#ff3300'
-                elif (val > 20): color = '#ff3d0d'
-                elif (val > 10): color = '#ffad99'
-                elif (val > 8): color = '#ffb8a6'
-                elif (val > 6): color = '#ffc2b2'
-                elif (val > 4): color = '#ffccbf'
-                elif (val > 2): color = '#ffd6cc'
-                elif (val > 1): color = '#ffe0d9'
-                elif (val > 0.5): color = '#ffebe6'
-                elif (val > -0.5): color = '#ffffff'
-                elif (val > -1): color = '#e6f0fa'
-                elif (val > -2): color = '#d9e8f7'
-                elif (val > -4): color = '#cce0f5'
-                elif (val > -6): color = '#bfd9f2'
-                elif (val > -8): color = '#b2d1f0'
-                elif (val > -10): color = '#3385d6'
-                elif (val > -20): color = '#1a75d1'
-                elif (val > -30): color = '#0066cc'
-                else: color = '#1a47a3'
-                return 'background-color: %s' % color
-            else:
-                if(val==code): return 'background-color: %s' % ('#bfd9f2')
-
-        def highlight(val):
-            """
-            Takes a scalar and returns a string with
-            the css property `'color: red'` for negative
-            strings, black otherwise.
-            """
-
-            if(val==code): return 'background-color: %s' % ('#bfd9f2')
-
-
-
-        float_columns = df.select_dtypes(include=[np.float64]).columns
-        df[float_columns[4:]] = df[float_columns[4:]] * 100
-
-        # print(df.columns)
-
-        html = (
-                df.style
-                .hide_index()
-                .applymap(color_negative_red, subset=df.columns[7:])
-                .highlight_null('grey')
-                .render()
-        )
-
-
-        return html
 
 
 

@@ -346,23 +346,6 @@ def ajax_getTable():
     fav_only = True if request.form.get("fav_only") in [True, "true"] else False
     date_idx = int(request.form.get("date_idx"))
 
-    dic = {
-
-        '0': 'I',
-        '1': 'F',
-        '2': 'YG',
-        '3': 'S',
-        '4': 'T',
-        '5': 'FN',
-        '6': 'OC',
-        '7': 'PS',
-        '8': 'IS',
-        '9': 'BK',
-
-
-    }
-
-    st = datetime.now()
     dao = DataAccessObjectStock()
     sess = session_parser()
     member = _getMembership()
@@ -373,9 +356,13 @@ def ajax_getTable():
     if member.get("membership")=='supporter':
         limit = limit
         usercode = sess['usercode']
-        htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
+        htmltable, column_list = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
                                     method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only, date_idx=date_idx)
-        return htmltable
+
+
+
+
+        return jsonify(htmltable=htmltable, column_list=column_list)
 
 
     # 후원자가 아닌경우
@@ -392,9 +379,10 @@ def ajax_getTable():
                 limit = min(25, limit)
                 usercode = -1
 
-            htmltable = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
+            htmltable, column_list = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
                                         method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only)
-            return htmltable
+
+            return jsonify(htmltable=htmltable, column_list=column_list)
 
 
 
@@ -491,7 +479,6 @@ def getSpecification():
     '''
     최근거래일 총 데이터건수를 가져오는 함수
     '''
-
 
     return jsonify(spec_content)
 
