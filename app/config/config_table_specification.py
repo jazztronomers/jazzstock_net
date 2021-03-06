@@ -23,7 +23,6 @@ table_column_specification = [
                 "data_type":'float',
                 "column_def": {"width": 30,
                              'render':1,
-                             'className': "dt-body-right",
                              'orderSequence':["desc","asc"]},
         },{
                 "column_name":"FAV",
@@ -43,7 +42,6 @@ table_column_specification = [
                 "data_type":'int',
                 "column_def": {"width": 50,
                              'render':0,
-                             'className': "dt-body-right",
                              'orderSequence':["desc","asc"]},
         }
 ]
@@ -60,7 +58,6 @@ table_column_specification_interval = [
                 "background_color_map":"profit_map",
                 "column_def": {"width": 35,
                              'render':2,
-                             'className': "dt-body-right",
                              'orderSequence':["desc","asc"]},
 
         },{
