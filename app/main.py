@@ -362,7 +362,7 @@ def ajax_getTable():
 
 
 
-        return jsonify(htmltable=htmltable, column_list=column_list)
+        return jsonify(htmltable=htmltable, column_list=column_list, result=True)
 
 
     # 후원자가 아닌경우

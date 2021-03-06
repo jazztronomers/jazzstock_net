@@ -65,6 +65,36 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
                         }
                     }
                 }
+
+                if ('per_map' == column_spec_list[j].background_color_map){
+
+                    for (color in per_map){
+                        if (data[i] >= per_map[color][1] && data[i] < per_map[color][0]){
+                             $('td.col'+i, row).css('background-color', per_map[color][2])
+                            break
+                        }
+                    }
+                }
+
+                if ('pbr_map' == column_spec_list[j].background_color_map){
+
+                    for (color in pbr_map){
+                        if (data[i] >= pbr_map[color][1] && data[i] < pbr_map[color][0]){
+                             $('td.col'+i, row).css('background-color', pbr_map[color][2])
+                            break
+                        }
+                    }
+                }
+
+                if ('roe_map' == column_spec_list[j].background_color_map){
+
+                    for (color in roe_map){
+                        if (data[i] >= roe_map[color][1] && data[i] < roe_map[color][0]){
+                             $('td.col'+i, row).css('background-color', roe_map[color][2])
+                            break
+                        }
+                    }
+                }
             }
         }
     }

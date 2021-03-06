@@ -96,6 +96,40 @@ vma_map['B2'] = [-0.3, -0.6, B[2]]
 vma_map['B3'] = [-0.6, -0.8, B[3]]
 vma_map['B4'] = [-0.8, -1.0, B[4]]
 
+let per_map = new Map()
+
+per_map['R4'] = [5, 0, R[4]]
+per_map['R3'] = [12, 5, R[3]]
+per_map['R2'] = [20, 12, R[2]]
+per_map['R1'] = [40, 20, R[1]]
+
+per_map['MM'] = [9999, 40, B[2]]
+
+per_map['B4'] = [-0.1, -200, B[4]]
+
+let pbr_map = new Map()
+
+pbr_map['R4'] = [1, 0, R[4]]
+pbr_map['R3'] = [2, 1, R[3]]
+pbr_map['R2'] = [4, 2, R[2]]
+pbr_map['R1'] = [8, 4, '#ffffff']
+
+
+pbr_map['R1'] = [8, 4, B[2]]
+pbr_map['MM'] = [500, 8, B[3]]
+
+
+let roe_map = new Map()
+
+roe_map['R4'] = [100, 25, R[7]]
+roe_map['R3'] = [25, 15, R[5]]
+roe_map['R2'] = [15, 7, R[3]]
+roe_map['R1'] = [7, 3, R[1]]
+
+roe_map['MM'] = [7, 0, '#ffffff']
+
+roe_map['B4'] = [-0.1, -200, B[4]]
+
 
 const array_filter = ["filter_a",
                "filter_b",
@@ -444,11 +478,14 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
 //                    }
 //                    else{
                         response = JSON.parse(req.responseText)
-                        if (response.htmltable.length<5000){
-                            alert("즐겨찾기 종목이 없습니다..")
+                        if (response.result==false){
+                            alert(response.message)
                         }
-                        console.log(response.column_list)
-                        renderTable(tableId, response.htmltable, response.column_list)
+
+                        else{
+                            console.log(response.column_list)
+                            renderTable(tableId, response.htmltable, response.column_list)
+                        }
 
                 }
             }

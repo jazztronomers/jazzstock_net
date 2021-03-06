@@ -174,16 +174,15 @@ div#specification_tip {
 div#specification_content {
 
     border:1px;
-    overflow: hidden;
     position: relative;
     white-space: initial;
+    overflow-wrap: break-word;
     float: center;
-    width: 100%;
+    width: 85%;
     font-size: 0.8em;
     text-align: left;
     margin:10px;
-    margin-right:100px;
-    padding:10px;
+    padding:5px;
 
 }
 
@@ -253,7 +252,8 @@ th {
 td {
   border: 1px solid #636363;
   text-align: center;
-  padding: 3px;
+  padding: 3.5px;
+  overflow: hidden;
 }
 
 td:nth-child(1) {
@@ -263,23 +263,30 @@ td:nth-child(1) {
 }
 
 td:nth-child(2) {
-  text-align: center;
+  text-align: left;
   word-break: break-all;
   width:20px;
+
 }
 
 td:nth-child(3) {
-  text-align: right;
+  text-align: center;
   word-break: break-all;
-  width:60px;
+  width:30px;
 }
 
 td:nth-child(4) {
-  text-align: right;
+  text-align: center;
   word-break: break-all;
-  width:60px;
+  width:50px;
 }
 
+
+td:nth-last-child(2) {
+  text-align: left;
+  word-break: break-all;
+  width:50px;
+}
 
 table.DTFC_Cloned {
     background-color: #ffffff;
@@ -321,8 +328,13 @@ table.DTFC_Cloned {
 }
 
 input[type=checkbox] {
-    height: 11px;
-	width: 11px
+    height: 10px;
+	width: 10px
+	text-align: center;
+    margin: 1px;
+  /* center checkbox horizontally */
+  vertical-align: middle;
+  /* center checkbox vertically */
 }
 /*
 input[type=text] {

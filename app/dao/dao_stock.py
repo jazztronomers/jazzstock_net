@@ -66,8 +66,8 @@ class DataAccessObjectStock:
                 , VSMAR5 AS VMA5
                 , VSMAR60 AS VMA60
                 
-                , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS cPER
-                , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS cPBR
+                , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS PER
+                , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS PBR
                 , ROE
 
                 , CONCAT(DIR_L4, DIR_L3, DIR_L2, DIR_L1) AS PATTERN

@@ -13,7 +13,7 @@ table_column_specification = [
                 "column_name_full":"STOCKNAME",
                 "column_description":"종목명",
                 "data_type":'str',
-                "column_def":{"width":70},
+                "column_def":{"width":90},
         },{
                 "column_name":"MC",
                 "column_name_full": "Market Capital",
@@ -206,21 +206,25 @@ table_column_specification_ranking = [
 
 table_column_specification_finan = [
         {
-        "column_name":"cPER",
+        "column_name":"PER",
         "column_name_full": "calculated PER",
         "column_description": "연환산(최근 4분기) PER값을 의미합니다, 보다 자세한 재무데이터는 종목명을 클릭하여 확인하실 수 있습니다.",
         "data_type": 'int',
+        "background_color_map": "per_map",
         "column_def": {"width": 35,
-                       'render':2,}
+                       'render':2,
+                       'orderSequence':["desc","asc"]}
         }
 
         , {
-        "column_name": "cPBR",
+        "column_name": "PBR",
         "column_name_full": "calculated PBR",
         "column_description": "연환산(최근 4분기) PBR값을 의미합니다, 보다 자세한 재무데이터는 종목명을 클릭하여 확인하실 수 있습니다.",
         "data_type": 'int',
+        "background_color_map": "pbr_map",
         "column_def": {"width": 35,
-                       'render':2,}
+                       'render':2,
+                       'orderSequence':["desc","asc"]}
         }
 
         , {
@@ -228,8 +232,10 @@ table_column_specification_finan = [
         "column_name_full": "ROE",
         "column_description": "최근분기의 ROE값 입니다, 보다 자세한 재무데이터는 종목명을 클릭하여 확인하실 수 있습니다.",
         "data_type": 'int',
+        "background_color_map": "roe_map",
         "column_def": {"width": 35,
-                       'render':2,}
+                       'render':2,
+                       'orderSequence':["desc","asc"]}
         }
 
 ]
@@ -342,7 +348,7 @@ table_column_specification_other = [
         "column_name_full": "ROE",
         "column_description": "해당종목이 속한 카테고리(섹터)",
         "data_type": 'int',
-        "column_def": {"width": 300}
+        "column_def": {"width": 200}
 
         },
         {
