@@ -50,7 +50,28 @@ p#notice a {
     text-align: left;
 }
 
+/**
+::-webkit-scrollbar {
+  height: 11px;
+  width: 11px;
+  border: 2px solid #d5d5d5;
+}
 
+
+**/
+
+
+::-webkit-scrollbar{
+height: 8px;
+width: 8px;
+border: 1px solid grey;
+}
+::-webkit-scrollbar-thumb:horizontal{
+background: grey;
+border-radius: 10px;
+border: 1px solid #999;
+margin-left: 20px;
+}
 
 
 
@@ -184,6 +205,20 @@ div#specification_content {
     margin:10px;
     padding:5px;
 
+}
+
+div#Filter  {
+
+    margin-left:10px;
+    font-size: 0.8em;
+    line-height: 1.5;
+}
+
+#Filter input[type=text] {
+  box-sizing: border-box;
+  border: 1px solid #636363;
+  border-radius: 1px;
+  font-size: 0.9em;
 }
 
 div.tabcontent  {

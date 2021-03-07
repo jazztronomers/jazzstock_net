@@ -135,7 +135,9 @@ const array_filter = ["filter_a",
                "filter_b",
                "filter_c",
                "filter_d",
-               "filter_e"]
+               "filter_e",
+               "mc_min",
+               "mc_max"]
 
 
 let tab_initialized = new Map
@@ -483,7 +485,6 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
                         }
 
                         else{
-                            console.log(response.column_list)
                             renderTable(tableId, response.htmltable, response.column_list)
                         }
 
@@ -708,8 +709,6 @@ function getRealtimeOnDev(){
 
                     // 이걸로 지지고 볶도록
                     // response.realtime.result
-                    console.log(response.realtime.result)
-                    console.log(response.realtime.length)
                     localStorage.setItem('jazzstock_latest_date', latest_date)
                     localStorage.setItem('jazzstock_latest_seq', response.realtime.result[response.realtime.result.length-1].SEQ)
 
@@ -877,9 +876,8 @@ function getSpecification(){
         if (req.readyState == 4)
         {
             if (req.status == 200){
-                console.log(" * getSpecification...:", req.response)
+                console.log(" * getSpecification...:")
                 column_spec_list = req.response
-                console.log(column_spec_list)
                 select_box = document.getElementById('specification_selectbox')
 
 
@@ -1236,7 +1234,6 @@ function getColumnDefs(column_list){
         }
     }
 
-    console.log(columns_def)
 
     return columns_def
 }
