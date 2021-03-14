@@ -290,7 +290,7 @@ table_column_specification_bollinger_band = [
         "column_description": "최근X번째 볼린저밴드 이벤트가 몇 거래일이전에 발생하였는지를 나타내는 컬럼",
         "data_type": 'int',
         "column_def": {"width": 30,
-                       'render':0,}
+                       'render':0,} # 자릿수인듯...
 
         }, {
         "column_name": "L{X}BP",
@@ -359,6 +359,43 @@ table_column_specification_other = [
         "column_def": {"width": 70}
 
         }
+]
+
+
+
+
+table_column_specification_report = [
+
+        {
+        "column_name": "RTITLE",
+        "column_name_full": "RTITLE",
+        "column_description": "가장 최근에 발행된 증권사레포트 제목",
+        "data_type": 'str',
+        "column_def": {"width": 400}
+
+        },{
+        "column_name": "RC1M",
+        "column_name_full": "ROE",
+        "column_description": "REPORTS COUNT 1MONTH: 최근 20거래일간 발행된 레포트수",
+        "data_type": 'int',
+        "column_def": {"width": 35, "render":0}
+
+        },{
+        "column_name": "RC2M",
+        "column_name_full": "ROE",
+        "column_description": "REPORTS COUNT 2MONTH: 20거래일전 ~ 40거래일전 기간동안 발행된 레포트수",
+        "data_type": 'int',
+        "column_def": {"width": 35, "render":0}
+
+        },{
+        "column_name": "RDATE",
+        "column_name_full": "ROE",
+        "column_description": "가장 최근에 발행된 증권사레포트 발행일자",
+        "data_type": 'int',
+        "column_def": {"width": 60}
+
+        },
+
 
 
 ]
@@ -368,6 +405,7 @@ spec  = table_column_specification + \
         table_column_specification_bollinger_band +\
         table_column_specification_moving_average_ratio +\
         table_column_specification_finan +\
+        table_column_specification_report +\
         table_column_specification_other
 
 

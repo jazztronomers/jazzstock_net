@@ -4,10 +4,11 @@ from jazzstock_net.app.common.mail import send_mail
 import jazzstock_net.app.config.config as cf
 from jazzstock_net.app.config.config_message import alert_message
 from jazzstock_net.app.config.config_table_specification import spec as spec_content
+import jazzstock_net.app.static.pdf as path_pdf
 from datetime import datetime
 from io import StringIO
 from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response, flash
-import random
+import random, os
 
 
 application = Flask(__name__, static_folder='static', )
@@ -459,6 +460,31 @@ def getTableFullCsv():
 
     else:
         return jsonify({'result': False, "message": alert_message['supporter_only_en']})
+
+
+# @application.route('/getReportHK', methods=['GET'])
+# def getReportFromHK():
+#
+#
+#     rid = int(request.args.get('rid', 0))
+#     member=_getMembership()
+#
+#     if member.get("membership") == 'supporter':
+#
+#         if os.isfile(os.path.join(path_pdf, rid)):
+#
+#
+#
+#         response = Response(
+#             output_stream.getvalue(),
+#             mimetype='application/pdf',
+#             content_type='application/pdf',
+#         )
+#         response.headers["Content-Disposition"] = "attachment; filename=%s_%s.csv" % (filename_prefix, the_date)
+#         return response
+#
+#     else:
+#         return jsonify({'result': False, "message": alert_message['supporter_only_en']})
 
 
 

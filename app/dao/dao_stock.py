@@ -7,16 +7,22 @@ pd.options.display.max_rows = 2500
 
 class DataAccessObjectStock:
 
-    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0, fav_only=False, date_idx=None):
+    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0, fav_only=False, date_idx=None, debug=False):
 
         t1 = dt.now()
 
         if date_idx == None:
             date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 0")
+            date_20 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 20")
+            date_40 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 40")
+
+            print(date_40, date_20)
         else:
             date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s"%(date_idx))
+            date_20 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s" %(int(date_idx) + 20))
+            date_40 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s" % (int(date_idx) + 40))
 
-
+            print(date_40, date_20)
 
         '''
         IFNULL(P1,  'null') AS 
@@ -88,8 +94,10 @@ class DataAccessObjectStock:
                 
             
                 , CATEGORY
-                , LEFT(IFNULL(H.TIMESTAMP, '1970-01-01'), 10) AS FAV_DATE 
-
+                , TITLE AS RTITLE, RDATE, RC1M, RC2M
+                # , CONCAT("<a href='/downloadReport/",ETC,"'>",TITLE,"</a>") AS RTITLE, RDATE, RCNT1M, RCNT2M
+                
+                , LEFT(IFNULL(H.TIMESTAMP, '1970-01-01'), 10) AS FAV_DATE
 
             '''
         # ======================================================
@@ -124,8 +132,22 @@ class DataAccessObjectStock:
                 )  H ON (A.STOCKCODE = H.STOCKCODE)
                 LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
                 LEFT JOIN jazzdb.T_STOCK_DAY_SMAR K ON (A.STOCKCODE = K.STOCKCODE AND A.DATE = K.DATE)
+                LEFT JOIN (
+
+                    SELECT STOCKCODE, CONCAT('[', AUTHOR, '] ', CONTENT) AS TITLE, RDATE, RN, RC1M, RC2M, ETC
+                    FROM
+                    (
+                        SELECT STOCKCODE, CONTENT, DATE, AUTHOR, DATE AS RDATE, ETC,
+                            ROW_NUMBER() OVER (PARTITION BY STOCKCODE ORDER BY DATE DESC) AS RN,
+                            SUM(case when DATE >= '%s' then 1 else 0 end) OVER (PARTITION BY STOCKCODE) as RC1M,
+                            SUM(case when DATE BETWEEN '%s' AND '%s' then 1 else 0 end) OVER (PARTITION BY STOCKCODE) as RC2M
+                        FROM jazzdb.T_STOCK_TEXT
+                        WHERE DATE > "%s"
+                    ) A
+                    WHERE RN = 1
+                ) L ON (A.STOCKCODE = L.STOCKCODE)
                 #=========================================================================
-                WHERE 1=1'''%(usercode)
+                WHERE 1=1'''%(usercode, date_20, date_40, date_20, date_40)
 
 
 
@@ -156,6 +178,10 @@ class DataAccessObjectStock:
                 ''' % (date, orderby, orderhow, limit)
 
         fullquery = queryhead + querytarget + queryrank + querycont + querytail + queryend
+        print(fullquery)
+        if debug:
+            print(fullquery)
+
         df = db.selectpd(fullquery)
         rtdf = df[df.columns[2:]].round(4)
         if method == 'dataframe':
@@ -352,3 +378,8 @@ class DataAccessObjectStock:
         recent_trading_days = db.selectSingleColumn('SELECT CAST(DATE AS CHAR) AS DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT < %s ORDER BY CNT ASC'%(limit))
         return recent_trading_days
 
+
+if __name__ == '__main__':
+
+    dao = DataAccessObjectStock()
+    dao.sndRank(debug=True)
