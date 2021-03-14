@@ -1,10 +1,11 @@
 from jazzstock_net.app.common import connector_db as db
+from jazzstock_net.app.config import config_others as co
 from hashlib import sha256
 from datetime import datetime
 from datetime import timedelta
 
 # Config
-free_period = 10
+free_period = co.FREE_PERIOD
 
 
 class DataAccessObjectUser:

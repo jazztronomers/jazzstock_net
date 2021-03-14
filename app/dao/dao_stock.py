@@ -178,7 +178,6 @@ class DataAccessObjectStock:
                 ''' % (date, orderby, orderhow, limit)
 
         fullquery = queryhead + querytarget + queryrank + querycont + querytail + queryend
-        print(fullquery)
         if debug:
             print(fullquery)
 
