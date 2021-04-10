@@ -43,6 +43,30 @@ table_column_specification = [
                 "column_def": {"width": 50,
                              'render':0,
                              'orderSequence':["desc","asc"]},
+        },{
+                "column_name":"PCLSE",
+                "column_name_full": "Close price",
+                "column_description":"실시간 테이블에서 전일 종가를 의미합니다.",
+                "data_type":'int',
+                "column_def": {"width": 50,
+                             'render':0,
+                             'orderSequence':["desc","asc"]},
+        },{
+                "column_name":"RCLSE",
+                "column_name_full": "Close price",
+                "column_description":"실시간 테이블에서, 현재 종가(가격)을 의미합니다.",
+                "data_type":'int',
+                "column_def": {"width": 50,
+                             'render':0,
+                             'orderSequence':["desc","asc"]},
+        },{
+                "column_name":"TV",
+                "column_name_full": "Close price",
+                "column_description":"5분봉 거래대금(억)",
+                "data_type":'int',
+                "column_def": {"width": 35,
+                             'render':2,
+                             'orderSequence':["desc","asc"]},
         }
 ]
 
@@ -51,7 +75,7 @@ table_column_specification = [
 table_column_specification_interval = [
         {
                 "column_name":"P{X}",
-                "column_childs": ["P1", "P5", "P20", "P60", "P120", "P240"],
+                "column_childs": ["P0", "P1", "P5", "P20", "P60", "P120", "P240"],
                 "column_name_full": "Calculated Profit ratio based on closing price {X} trading days ago",
                 "column_description": "최근 {X}거래일이전 종가를 기준으로 계산된 당일 종가 수익률(또는 상승, 하락율)입니다",
                 "data_type": 'float',
@@ -317,7 +341,7 @@ table_column_specification_bollinger_band = [
 table_column_specification_moving_average_ratio =[
         {
         "column_name": "PMA{X}",
-        "column_childs": ["PMA5","PMA20","PMA60","PMA120"],
+        "column_childs": ["PMA5","PMA20","PMA60","PMA120","D_PMA5","D_PMA20","D_PMA60","D_PMA120"],
         "column_name_full": "ROE",
         "column_description": "(최근거래일주가 - X거래일 이동평균주가) / X거래일 이동평균주가",
         "data_type": 'int',
@@ -328,7 +352,7 @@ table_column_specification_moving_average_ratio =[
         },
         {
         "column_name": "VMA{X}",
-        "column_childs": ["VMA5","VMA20","VMA60","VMA120"],
+        "column_childs": ["VMA5","VMA20","VMA60","VMA120","D_VMA5","D_VMA20","D_VMA60","D_VMA120"],
         "column_name_full": "ROE",
         "column_description": "(최근거래일거래량 - X거래일 이동평균거래량) / X거래일 이동평균거래량",
         "data_type": 'int',
@@ -399,6 +423,30 @@ table_column_specification_report = [
 
 
 ]
+
+
+table_column_specification_realtime = [
+
+        {
+        "column_name": "TIME",
+        "column_childs": [ \
+                '0900', '0905', '0910', '0915', '0920', '0925', '0930', '0935', '0940', '0945', '0950', '0955',
+                '1000', '1005', '1010', '1015', '1020', '1025', '1030', '1035', '1040', '1045', '1050', '1055',
+                '1100', '1105', '1110', '1115', '1120', '1125', '1130', '1135', '1140', '1145', '1150', '1155',
+                '1200', '1205', '1210', '1215', '1220', '1225', '1230', '1235', '1240', '1245', '1250', '1255',
+                '1300', '1305', '1310', '1315', '1320', '1325', '1330', '1335', '1340', '1345', '1350', '1355',
+                '1400', '1405', '1410', '1415', '1420', '1425', '1430', '1435', '1440', '1445', '1450', '1455',
+                '1500', '1505', '1510', '1515', '1530'],
+        "column_name_full": "RTITLE",
+        "column_description": "가장 최근에 발행된 증권사레포트 제목",
+        "data_type": 'str',
+        "column_def": {"width": 20, "render":1,
+                       'orderSequence':["desc","asc"]}
+
+        }
+,
+
+]
 spec  = table_column_specification + \
         table_column_specification_interval +\
         table_column_specification_ranking +\
@@ -406,6 +454,7 @@ spec  = table_column_specification + \
         table_column_specification_moving_average_ratio +\
         table_column_specification_finan +\
         table_column_specification_report +\
+        table_column_specification_realtime +\
         table_column_specification_other
 
 

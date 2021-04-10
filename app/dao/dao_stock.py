@@ -1,7 +1,9 @@
 from jazzstock_net.app.common import connector_db as db
 from datetime import datetime as dt
-import numpy as np
+from jazzstock_net.app.config.config_others import PATH_ROOT
 import pandas as pd
+import pickle
+import os
 
 pd.options.display.max_rows = 2500
 
@@ -377,8 +379,230 @@ class DataAccessObjectStock:
         recent_trading_days = db.selectSingleColumn('SELECT CAST(DATE AS CHAR) AS DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT < %s ORDER BY CNT ASC'%(limit))
         return recent_trading_days
 
+    # ==================================================================================
+    # 여 기 서 부 터 실 시 간 테 이 블 용 !
+    # ==================================================================================
+
+    def get_last_trading_days_last_seq(self):
+
+
+        date_0, date_1 = self.recent_trading_days(limit=2)
+
+        query = '''
+        SELECT MAX(SEQ) 
+        FROM jazzdb.T_STOCK_MIN_05_SMAR_REALTIME 
+        WHERE 1=1
+        AND DATE = '%s' 
+        '''%(date_0)
+
+        seq_max_date_0 = db.selectSingleValue(query)
+
+
+
+        query = '''
+        SELECT MAX(SEQ) 
+        FROM jazzdb.T_STOCK_MIN_05_SMAR_REALTIME 
+        '''
+
+        seq_max = db.selectSingleValue(query)
+
+
+        return date_0, date_1, seq_max_date_0, seq_max
+
+
+
+
+    def realtime_table_html(self, the_date='2021-03-19', limit=200):
+
+        print(' * realtime_table_html', limit)
+        stocks = self._getRealtimeStocks(the_date, limit=limit)
+        timecolumns = [ \
+            '0900', '0905', '0910', '0915', '0920', '0925', '0930', '0935', '0940', '0945', '0950', '0955',
+            '1000', '1005', '1010', '1015', '1020', '1025', '1030', '1035', '1040', '1045', '1050', '1055',
+            '1100', '1105', '1110', '1115', '1120', '1125', '1130', '1135', '1140', '1145', '1150', '1155',
+            '1200', '1205', '1210', '1215', '1220', '1225', '1230', '1235', '1240', '1245', '1250', '1255',
+            '1300', '1305', '1310', '1315', '1320', '1325', '1330', '1335', '1340', '1345', '1350', '1355',
+            '1400', '1405', '1410', '1415', '1420', '1425', '1430', '1435', '1440', '1445', '1450', '1455',
+            '1500', '1505', '1510', '1515', '1530']
+
+
+
+        rows = []
+
+        for i in range(len(stocks.values())):
+            row = [['%s_%s'%(stockcode, stockname) for stockcode, stockname in stocks.items()][i]] + [0] * len(timecolumns)
+            rows.append(row)
+
+        df_data = pd.DataFrame(columns=['STOCKNAME'] + timecolumns, data=rows)
+
+        feature_columns = ['MC', 'I5', 'F5', 'PRV_CLSE', 'RP', 'D_PMA5', 'D_VMA5', 'D_PMA60', 'D_VMA60']
+        query = '''
+
+                    SELECT 
+                    
+                    CONCAT(E.STOCKCODE, '_', E.STOCKNAME) AS STOCKNAME,
+                    MC, 
+                    C.CLOSE AS PCLSE, 
+                    C.CLOSE AS RCLSE,
+                     
+                    0 AS P0,
+                    0 AS TV,
+                    
+                    P5,
+                    I5, 
+                    F5, 
+                    
+                    PSMAR5 AS PMA5, 
+                    PSMAR60 AS PMA60, 
+                    VSMAR5 AS VMA5, 
+                    VSMAR60 AS VMA60  # 13
+                    
+                    FROM jazzdb.T_STOCK_SND_ANALYSIS_RESULT_TEMP A
+                    JOIN jazzdb.T_STOCK_CODE_MGMT E USING (STOCKCODE)
+                    JOIN jazzdb.T_STOCK_MC B USING (STOCKCODE, DATE)
+                    JOIN jazzdb.T_STOCK_OHLC_DAY C USING (STOCKCODE, DATE)
+                    JOIN jazzdb.T_STOCK_DAY_SMAR D USING (STOCKCODE, DATE) 
+                    WHERE 1=1
+                    AND DATE = '%s'
+                    AND STOCKCODE IN %s 
+                    ''' % (the_date, tuple(list(stocks.keys())))
+        df_meta = db.selectpd(query)
+
+        float_column = ['P5', 'I5', 'F5']
+        df_meta[float_column] = df_meta[float_column] * 100
+
+
+        df = pd.merge(df_meta, df_data, on="STOCKNAME")
+
+
+        html = (
+            df.style
+                .hide_index()
+                .render()
+        )
+
+
+        return {"html":html,
+                "column_list":df.columns.values.tolist(),
+                "stockcodes":list(stocks.keys()),
+                "stocknames":list(stocks.values()),
+                "df":df}
+
+
+
+    def fetch(self, the_date='2021-03-19', seq=0):
+
+        print(' * fetch', the_date, seq)
+
+        query = '''
+
+            SELECT *
+            FROM
+            (
+                SELECT STOCKCODE, 
+                STOCKNAME, 
+                LEFT(REPLACE(CAST(TIME AS CHAR), ':',''),4) AS TIME, 
+
+                VSMAR5, 
+                PSMAR5,
+                VSMAR20, 
+                PSMAR20,
+                SEQ,
+                CLOSE,
+                TRADINGVALUE,  
+                ROW_NUMBER() OVER (PARTITION BY STOCKCODE, TIME ORDER BY SEQ DESC) AS RN 
+                FROM jazzdb.T_STOCK_MIN_05_SMAR_REALTIME
+                JOIN jazzdb.T_STOCK_CODE_MGMT USING (STOCKCODE)
+                WHERE 1=1
+                AND DATE = '%s'
+                AND SEQ > %s
+            ) A
+            WHERE 1=1
+            AND RN = 1
+            ORDER BY TIME ASC, SEQ ASC
+
+            ''' % (the_date, seq)
+
+
+        df = db.selectpd(query).round(3)
+        _times = df.TIME.drop_duplicates()
+
+        if len(df)>0:
+            seq_max = int(df.SEQ.max())
+        else:
+            seq_max = seq
+
+        ret = []
+        for _time in _times:
+            ret.append({'time':_time, 'stocks':df[df.TIME == _time][['STOCKCODE','STOCKNAME','VSMAR5','PSMAR5','VSMAR20','PSMAR20', 'CLOSE', 'TRADINGVALUE']].to_dict(orient='records')})
+
+        return {'data':ret,'seq_max':seq_max}
+
+
+
+
+        ## return html, df_pivoted.columns.values.tolist(), df, list(stocks.keys())
+
+
+
+    def _getRealtimeStocks(self, the_date='2021-03-19', init=False, limit=200):
+        print(' * _getRealtimeStocks', limit)
+        stockcodes_pickle_path = os.path.join(PATH_ROOT, 'app/static/realtime/%s_%s.pkl'%(the_date, limit))
+        if os.path.isfile(stockcodes_pickle_path):
+            stocks_dic = pickle.load(open(stockcodes_pickle_path, 'rb'))
+
+        else:
+            query = '''
+            SELECT STOCKCODE, STOCKNAME
+            FROM
+            (
+                SELECT STOCKCODE, 
+                        CASE WHEN RN <= 200 THEN "A"
+                             WHEN RN <= 400 THEN "B"
+                             WHEN RN <= 600 THEN "C"
+                             WHEN RN <= 800 THEN "D"
+                             WHEN RN <= 1000 THEN "E"
+                             WHEN RN <= 1200 THEN "F"
+                             WHEN RN <= 1400 THEN "G"
+                             ELSE "H" END AS GRP
+                FROM
+                (
+                    SELECT STOCKCODE, 
+                        ROW_NUMBER() OVER (PARTITION BY DATE ORDER BY I5+F5 DESC) AS RN
+                    FROM jazzdb.T_STOCK_SND_ANALYSIS_RESULT_TEMP
+                    JOIN jazzdb.T_STOCK_MC USING (STOCKCODE, DATE)
+                    WHERE 1=1
+                    AND MC > 1          # 1300종목
+                    AND DATE = '%s'
+                ) A
+            ) B        
+            JOIN jazzdb.T_STOCK_CODE_MGMT USING (STOCKCODE)
+            WHERE 1=1
+            AND GRP IN ("A", "B")
+            LIMIT %s
+            ''' %(the_date, limit)
+
+            stocks = db.selectpd(query)
+            stocks_dic = {stockcode:stockname for stockcode, stockname in stocks.values}
+            pickle.dump(stocks_dic, open(stockcodes_pickle_path, 'wb'))
+
+        return stocks_dic
+
+
 
 if __name__ == '__main__':
 
+
+    the_date = '2021-03-26'
     dao = DataAccessObjectStock()
-    dao.sndRank(debug=True)
+    ret = dao.realtime_table_html(the_date=the_date)
+
+    df_a = ret['df']
+    stockcodes = ret['stockcodes']
+
+
+
+
+
+
+    # dao.fetch(list(stocks_dic.keys()))

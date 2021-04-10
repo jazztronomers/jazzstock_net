@@ -462,29 +462,6 @@ def getTableFullCsv():
         return jsonify({'result': False, "message": alert_message['supporter_only_en']})
 
 
-# @application.route('/getReportHK', methods=['GET'])
-# def getReportFromHK():
-#
-#
-#     rid = int(request.args.get('rid', 0))
-#     member=_getMembership()
-#
-#     if member.get("membership") == 'supporter':
-#
-#         if os.isfile(os.path.join(path_pdf, rid)):
-#
-#
-#
-#         response = Response(
-#             output_stream.getvalue(),
-#             mimetype='application/pdf',
-#             content_type='application/pdf',
-#         )
-#         response.headers["Content-Disposition"] = "attachment; filename=%s_%s.csv" % (filename_prefix, the_date)
-#         return response
-#
-#     else:
-#         return jsonify({'result': False, "message": alert_message['supporter_only_en']})
 
 
 
@@ -509,6 +486,96 @@ def getSpecification():
     return jsonify(spec_content)
 
 
+
+@application.route('/getLastTradingDaysLastSeq', methods=['POST'])
+def getLastTradingDaysLastSeq():
+    '''
+    최근거래일 총 데이터건수를 가져오는 함수
+    '''
+
+    dao = DataAccessObjectStock()
+    date_0, date_1, seq_max_date_0, seq_max = dao.get_last_trading_days_last_seq()
+
+    print(date_0, date_1, seq_max_date_0, seq_max)
+
+    return jsonify({'result':True,
+                    'date_zero': date_0, 'date_one':date_1, 'seq_max_date_zero':seq_max_date_0, 'seq_max':seq_max})
+
+
+
+@application.route('/getRealtimeTableHTML', methods=['POST'])
+def getRealtimeTableHTML():
+    '''
+    최근거래일 총 데이터건수를 가져오는 함수
+    '''
+
+    if request.method == 'POST':
+        limit = request.form.get('limit')
+        the_date = request.form.get('the_date')
+
+        print(' * getRealtimeTableHTML:', limit, the_date)
+
+        dao = DataAccessObjectStock()
+        ret= dao.realtime_table_html(limit=limit, the_date=the_date)
+
+        htmltable = ret.get('html')
+        column_list = ret.get('column_list')
+        stocknames = ret.get('stocknames')
+
+        return jsonify(htmltable=htmltable,\
+                       column_list=column_list,
+                       stocknames=stocknames,
+                       result=True)
+
+
+@application.route('/fetchRowsRealtime', methods=['POST'])
+def fetchRowsRealtime():
+    '''
+    최근거래일 총 데이터건수를 가져오는 함수
+    '''
+
+    if request.method == 'POST':
+        the_date = request.form.get('the_date')
+        seq_max = int(request.form.get('seq_max'))
+
+        print(' * fetchRows...', seq_max, the_date)
+
+        dao = DataAccessObjectStock()
+        now = datetime.now()
+        now_date = str(now.date())
+        now_time = str(now.time())
+        if now.weekday() < 5 and now_time > '08:40:00.000000':
+            print(" * 전일 기준으로 fetch")
+            ret = dao.fetch(the_date = now_date, seq=seq_max)
+        else:
+            print(" * 최근거래일 일자로 fetch")
+            ret = dao.fetch(the_date = the_date, seq=seq_max)
+        return jsonify(ret)
+
+
+# @application.route('/getReportHK', methods=['GET'])
+# def getReportFromHK():
+#
+#
+#     rid = int(request.args.get('rid', 0))
+#     member=_getMembership()
+#
+#     if member.get("membership") == 'supporter':
+#
+#         if os.isfile(os.path.join(path_pdf, rid)):
+#
+#
+#
+#         response = Response(
+#             output_stream.getvalue(),
+#             mimetype='application/pdf',
+#             content_type='application/pdf',
+#         )
+#         response.headers["Content-Disposition"] = "attachment; filename=%s_%s.csv" % (filename_prefix, the_date)
+#         return response
+#
+#     else:
+#         return jsonify({'result': False, "message": alert_message['supporter_only_en']})
 
 
 
