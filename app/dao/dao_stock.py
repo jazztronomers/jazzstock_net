@@ -76,6 +76,10 @@ class DataAccessObjectStock:
                 , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS PBR
                 , ROE
 
+                , CATEGORY
+                , TITLE AS RTITLE, RDATE, RC1M, RC2M
+
+
                 , CONCAT(DIR_L4, DIR_L3, DIR_L2, DIR_L1) AS PATTERN
                 , DAYS_L4 AS L4ED 
                 , DAYS_L3 AS L3ED
@@ -93,8 +97,6 @@ class DataAccessObjectStock:
                 , BBP_L4 AS L1BP
                 
             
-                , CATEGORY
-                , TITLE AS RTITLE, RDATE, RC1M, RC2M
                 # , CONCAT("<a href='/downloadReport/",ETC,"'>",TITLE,"</a>") AS RTITLE, RDATE, RCNT1M, RCNT2M
                 
                 , LEFT(IFNULL(H.TIMESTAMP, '1970-01-01'), 10) AS FAV_DATE
@@ -113,7 +115,7 @@ class DataAccessObjectStock:
                             SELECT STOCKCODE, EPSC, BPS, ROE
                             FROM jazzdb.T_STOCK_FINAN E
                             WHERE 1=1
-                            AND DATE = '2009'
+                            AND DATE = '2012'
                             AND TYPE = 'C'
 
                 )F ON (A.STOCKCODE = F.STOCKCODE)
