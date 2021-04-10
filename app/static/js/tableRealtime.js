@@ -232,8 +232,8 @@ function _setRealtimeSmarRawdata(table, col){
             // IF LAST COL, UPDATE FIXED AREA
             if (i+1 == col.stocks.length){
 
-\
 
+                fluct = (col.stocks[i].CLOSE - table.cell({row:row_idx, column:2}).data()) / col.stocks[i].CLOSE * 100
                 table.cell({row:row_idx, column:4}).data(fluct);
                 table.cell({row:row_idx, column:5}).data(col.stocks[i].TRADINGVALUE);
             }
