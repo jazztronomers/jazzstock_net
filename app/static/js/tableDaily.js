@@ -127,7 +127,16 @@ function renderTable(tableId, response, columnList){
 
         rowCallback: function( row, data ) {
             conditionalFormatting(row, data, columnList, stockcode_favorite) // Conlorize + Modify inner cell value
+        },
+
+        initComplete: function( settings, json ) {
+
+            // $("div.dataTables_scrollBody").animate({ scrollLeft: 400 }, 1000);
+            $("div.dataTables_scrollBody").animate({ scrollLeft: 400 }, 100);
+
         }
+
+
 
     } );
 

@@ -651,89 +651,11 @@ function openPage(pageName, elmnt, color) {
 
 var stockQueue = [];
 
-function getRealtime(){
-    alert("개발중인 기능입니다.")
-}
-
-function getRealtimeOnDev(){
-    if(localStorage.getItem("jazzstock_latest_date")!= null){
-        latest_date = localStorage.getItem("jazzstock_latest_date")
-
-        console.log(latest_date)
-    }
-    else{
-        var today = new Date();
+//function getRealtime(){
+//    alert("개발중인 기능입니다.")
+//}
 
 
-        // console.log(d)
-        // var utc = d.getTime();
-        // var today = new Date(utc + (3600000*9));
-
-        console.log(today)
-
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-        var yyyy = today.getFullYear();
-        latest_date = yyyy+'-'+mm+'-'+dd
-
-        console.log(latest_date)
-
-    }
-    if(localStorage.getItem("jazzstock_latest_seq")!=null){
-
-        latest_seq = localStorage.getItem("jazzstock_latest_seq")
-    }
-    else{
-        latest_seq = 0
-    }
-
-    console.log(" * Get realtime..latest date and timestamp..: ", latest_date, latest_seq)
-
-    var req = new XMLHttpRequest()
-
-    req.responseType = 'json';
-    req.onreadystatechange = function()
-    {
-        if (req.readyState == 4)
-        {
-            if (req.status != 200)
-            {
-                console.log('hello')
-            }
-            else
-            {
-
-                response = req.response
-
-                if (response.realtime.result.length > 1){
-
-                    // 이걸로 지지고 볶도록
-                    // response.realtime.result
-                    localStorage.setItem('jazzstock_latest_date', latest_date)
-                    localStorage.setItem('jazzstock_latest_seq', response.realtime.result[response.realtime.result.length-1].SEQ)
-
-
-                }
-
-                else{
-                    console.log(response.realtime.length)
-                    console.log(" * Get realtime - response length is 0, pass")
-                }
-
-
-
-            }
-        }
-    }
-
-    console.log(" * GET TABLE FROM DATABASE")
-    req.open('POST', '/ajaxRealtime')
-    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-    req.send('date="' + latest_date + '&seq="' + latest_seq + '"')
-
-
-    console.log(latest_date, latest_seq)
-}
 
 
 function addTabToQueue(stockcode, stockname){
@@ -1233,7 +1155,6 @@ function getColumnDefs(column_list){
 
         }
     }
-
 
     return columns_def
 }
