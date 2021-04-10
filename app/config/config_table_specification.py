@@ -372,7 +372,7 @@ table_column_specification_other = [
         "column_name_full": "ROE",
         "column_description": "해당종목이 속한 카테고리(섹터)",
         "data_type": 'int',
-        "column_def": {"width": 200}
+       	"column_def": {"width": 140}
 
         },
         {
