@@ -18,13 +18,12 @@ class DataAccessObjectStock:
             date_20 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 20")
             date_40 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 40")
 
-            print(date_40, date_20)
         else:
             date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s"%(date_idx))
             date_20 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s" %(int(date_idx) + 20))
             date_40 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s" % (int(date_idx) + 40))
 
-            print(date_40, date_20)
+
 
         '''
         IFNULL(P1,  'null') AS 
