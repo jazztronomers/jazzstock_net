@@ -5,6 +5,7 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
     stockcode = stockcode_stockname[0]
     stockname = stockcode_stockname[1]
 
+
     title = '<div id="table_daily_stockcode_'+stockcode+'" style=""><a href="#" onclick="getChartData(' + "'"  + stockcode +"','" + stockname + "');\">" + stockname + '</a></div>'
     $('td:eq('+0+')', row).html(title)
     $('td:eq('+0+')', row).css('background-color', '#ffffff')
@@ -132,7 +133,7 @@ function renderTable(tableId, response, columnList){
         initComplete: function( settings, json ) {
 
             // $("div.dataTables_scrollBody").animate({ scrollLeft: 400 }, 1000);
-            $("div.dataTables_scrollBody").animate({ scrollLeft: 400 }, 100);
+            // $("div.dataTables_scrollBody").animate({ scrollLeft: 400 }, 100);
 
         }
 

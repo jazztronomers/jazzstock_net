@@ -1,13 +1,7 @@
-q_interval = ['1','5','20']
-q_orderby = '1'
-
-m_table = new Map([
-  ['A', ['0','1']],
-  ['B', ['1','0']],
-  ['C', ['2','3']],
-  ['D', ['3','2']]
-]);
-
+// ==============================================================
+// GLOBAL + CONFIG
+// ==============================================================
+// COLOR
 
 R = ["#ffffff", "#ffeeec", "#ffdeda", "#ffcdc7", "#ffbcb5", "#ffaca2", "#ff9b90", "#ff8a7d", "#ff7a6b", "#ff6958"]
 B = ["#ffffff", "#e8eff5", "#d1deea", "#b9cee0", "#a2bdd6", "#8badcb", "#749cc1", "#5c8cb7", "#457bac", "#2e6ba2"]
@@ -150,11 +144,13 @@ tab_initialized['table_custom']=false
 tab_initialized['table_full']=false
 tab_initialized['table_fav']=false
 
-var stockcode_favorite = []
-var recent_trading_days = []
-var user_loggedin = false
-var user_expiration_date = '1970-01-01'
-var column_spec_list = []
+let stockcode_favorite = []
+let recent_trading_days = []
+let user_loggedin = false
+let user_expiration_date = '1970-01-01'
+let column_spec_list = []
+let recent_tab = 'tab_insfor'
+let tab_array = ["tab_insfor", "tab_forins", "tab_ygfor", "tab_samofor", "tab_custom", "tab_fav", "tab_full"]
 
 $.fn.dataTable.ext.order['dom-checkbox'] = function  ( settings, col )
 {
@@ -167,9 +163,9 @@ $.fn.dataTable.ext.order['dom-checkbox'] = function  ( settings, col )
 $.fn.dataTable.ext.search.push(
     function( settings, data, dataIndex ) {
 
-        var min = parseInt( $('#mc_min').val(), 10 );
-        var max = parseInt( $('#mc_max').val(), 10 );
-        var age = parseFloat( data[2] ) || 0; // use data for the age column
+        let min = parseInt( $('#mc_min').val(), 10 );
+        let max = parseInt( $('#mc_max').val(), 10 );
+        let age = parseFloat( data[2] ) || 0; // use data for the age column
 
         if ( ( isNaN( min ) && isNaN( max ) ) ||
              ( isNaN( min ) && age <= max ) ||
@@ -188,8 +184,6 @@ $(document).ready(function(){
 
 
     // function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=false)
-    // getTable('table_insfor',  ['P','I','F','YG','S'], [1,5,20,60,120, 240], ["I1","F1"], 'DESC', 100, true);
-
     getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, 0);
 
     array_filter.forEach(function (filter_id, index) {
@@ -205,9 +199,6 @@ $(document).ready(function(){
     console.log(' * Document initialized', now())
 
 })
-
-
-
 
 
 function now(){
@@ -234,7 +225,7 @@ function handleChange(row){
 
 function setFavorite(){
 
-    var req = new XMLHttpRequest()
+    let req = new XMLHttpRequest()
 
     req.responseType = 'json';
     req.onreadystatechange = function()
@@ -268,7 +259,7 @@ function setFavorite(){
 
 function getFavorite(){
 
-    var req = new XMLHttpRequest()
+    let req = new XMLHttpRequest()
     req.responseType = 'json';
     req.onreadystatechange = function()
     {
@@ -302,7 +293,7 @@ function getFavorite(){
 
 function getRecentTradingDays(){
 
-    var req = new XMLHttpRequest()
+    let req = new XMLHttpRequest()
     req.responseType = 'json';
     req.onreadystatechange = function()
     {
@@ -318,8 +309,8 @@ function getRecentTradingDays(){
                 recent_trading_days = req.response.content
                 select_box = document.getElementById('select_custom_date')
 
-                for (var i = 0; i<=recent_trading_days.length-1; i++){
-                    var opt = document.createElement('option');
+                for (let i = 0; i<=recent_trading_days.length-1; i++){
+                    let opt = document.createElement('option');
                     opt.value = i;
                     opt.innerHTML = recent_trading_days[i];
                     select_box.appendChild(opt);
@@ -384,7 +375,7 @@ function setCustomFilter(filter_id){
 
     var tabtables = document.getElementsByClassName('tabtable')
 
-    for (var i=0; i<tabtables.length; i++){
+    for (let i=0; i<tabtables.length; i++){
 
         if (tabtables[i].style.display=="block"){
             tableId=tabtables[i].id.replace("tab", "table")
@@ -403,12 +394,12 @@ function setCustomFilter(filter_id){
 
 function doSearching(keywords, tableId){
 
-    var dataTable = $('#' + tableId).dataTable();
-    var input = $(".dataTables_filter input")
+    let dataTable = $('#' + tableId).dataTable();
+    let input = $(".dataTables_filter input")
     input.val(keywords)
 
-    var keywords = input.val().split(' '), filter ='';
-    for (var i=0; i<keywords.length; i++) {
+    keywords = input.val().split(' '), filter ='';
+    for (let i=0; i<keywords.length; i++) {
        filter = (filter!=='') ? filter+'|'+keywords[i] : keywords[i];
     }
 
@@ -464,7 +455,7 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
         if(init==false){
             clearTable(tableId)
         }
-        var req = new XMLHttpRequest()
+        let req = new XMLHttpRequest()
         req.onreadystatechange = function()
         {
             if (req.readyState == 4)
@@ -499,7 +490,7 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
 
     else{
         // console.log(tableId, "already")
-        var table = $('#'+tableId).DataTable();
+        let table = $('#'+tableId).DataTable();
         table.draw();
     }
 }
@@ -511,7 +502,7 @@ function clearTable(tableId){
 
     console.log("clear table", tableId)
 
-      var table = $('#'+tableId).DataTable();
+      let table = $('#'+tableId).DataTable();
       table.destroy()
       if(null!=document.getElementById(tableId)){
            document.getElementById(tableId).innerHTML='<tr><td class="loading"><div class="signal"></div></td></tr>';
@@ -522,12 +513,12 @@ function clearTable(tableId){
 
 function removeall(){
 
-    var chartlist = document.getElementsByClassName('sndChart');
-    var infolist = document.getElementsByClassName('infoTable');
-    for (var i = 0; i < chartlist.length; i++)
+    let chartlist = document.getElementsByClassName('sndChart');
+    let infolist = document.getElementsByClassName('infoTable');
+    for (let i = 0; i < chartlist.length; i++)
     {
 
-        var tempid = chartlist[i].id
+        let tempid = chartlist[i].id
 
       if(null!=document.getElementById(chartlist[i].id.replace('chart','related'))){
 
@@ -553,7 +544,7 @@ function removeall(){
           document.getElementById(chartlist[i].id.replace('chart','finan')).innerHTML=''
       }
 
-        var myNode = document.getElementById(tempid);
+        let myNode = document.getElementById(tempid);
         while (myNode.firstChild) {
             myNode.removeChild(myNode.firstChild);
         }
@@ -571,11 +562,11 @@ function removeall(){
 function removeChart(id){
 
     console.log(" * CHART TO REMOVE", id)
-    var chartlist = [document.getElementById(id)];
-    for (var i = 0; i < chartlist.length; i++)
+    let chartlist = [document.getElementById(id)];
+    for (let i = 0; i < chartlist.length; i++)
     {
 
-        var tempid = chartlist[i].id
+        let tempid = chartlist[i].id
 
       if(null!=document.getElementById(chartlist[i].id.replace('chart','related'))){
 
@@ -601,7 +592,7 @@ function removeChart(id){
           document.getElementById(chartlist[i].id.replace('chart','finan')).innerHTML=''
       }
 
-        var myNode = document.getElementById(tempid);
+        let myNode = document.getElementById(tempid);
         while (myNode.firstChild) {
             myNode.removeChild(myNode.firstChild);
         }
@@ -630,7 +621,24 @@ function openPage(pageName, elmnt, color) {
 
     console.log(" * openPage... ", pageName)
 
-    var i, tabcontent, tablinks;
+
+
+    if (tab_array.includes(pageName)){
+
+        recent_tab = pageName
+        prevTab = document.getElementById("prev_tab")
+        prevTab.style.display = "none";
+
+    }
+
+    else {
+
+        prevTab = document.getElementById("prev_tab")
+        prevTab.style.display = "block";
+        prevTab.style.backgroundColor = "#F9A602";
+    }
+
+    let i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
@@ -644,16 +652,38 @@ function openPage(pageName, elmnt, color) {
 
 
     document.getElementById(pageName).style.display = "block";
-    elmnt.style.backgroundColor = "#F9A602";
-    elmnt.style.color = "black";
+
+    if (tab_array.includes(elmnt)){
+
+        let tab_link = document.getElementById(elmnt+'_link')
+        tab_link.style.backgroundColor = "#F9A602";
+        tab_link.style.color = "black";
+
+    }
+
+//    else if (elmnt.endsWith("_link")){
+//        // 이미조회했던 종목인 경우
+//        console
+//        let tab_link = document.getElementById(elmnt+'_link')
+//        tab_link.style.backgroundColor = "#F9A602";
+//        tab_link.style.color = "black";
+//
+//    }
+
+    else {
+        // this 인경우
+        console.log(elmnt)
+        elmnt.style.backgroundColor = "#F9A602";
+        elmnt.style.color = "black";
+    }
 
 }
 
 var stockQueue = [];
 
-//function getRealtime(){
-//    alert("개발중인 기능입니다.")
-//}
+function getRealtime(){
+    alert("개발중인 기능입니다.")
+}
 
 
 
@@ -681,8 +711,14 @@ function addTabToPage(stockcode, stockname){
 
 
 
-    var tabMenu= document.getElementById('navigation_stock') // tabMenu
-    var tablink = document.createElement("a")
+    let tabMenu= document.getElementById('navigation_stock') // tabMenu
+
+    let prevTab = document.getElementById("prev_tab")
+    prevTab.setAttribute("style", "display:block");
+    prevTab.setAttribute("onclick", "openPage('"+recent_tab+"', '" + recent_tab + "', '#F9A602')");
+
+
+    let tablink = document.createElement("a")
 
 
     tablink.setAttribute("class", "tablink");
@@ -692,21 +728,21 @@ function addTabToPage(stockcode, stockname){
 
     tabMenu.appendChild(tablink)
 
-    var tabConts= document.getElementById('tabConts')
+    let tabConts= document.getElementById('tabConts')
 
-        var tabCont = document.createElement("div")
+        let tabCont = document.createElement("div")
         tabCont.setAttribute("class", "tabcontent");
         tabCont.setAttribute("id", "tab_"+stockcode);
         tabCont.setAttribute("style", "display:block");
 
-            var table_finan =document.createElement("table")
+            let table_finan =document.createElement("table")
 
             table_finan.setAttribute("class", "finanTable");
             table_finan.setAttribute("id", "finan"+stockcode);
             table_finan.setAttribute("style", "width:100%");
 
 
-            var chart = document.createElement("div");
+            let chart = document.createElement("div");
 
             chart.setAttribute("id", "chart"+stockcode);
             chart.setAttribute("class", "sndChart");
@@ -717,6 +753,7 @@ function addTabToPage(stockcode, stockname){
 
     console.log(tabCont)
 
+    tabConts.appendChild(prevTab);
     tabConts.appendChild(tabCont);
 
 
@@ -724,10 +761,10 @@ function addTabToPage(stockcode, stockname){
 
 function removeOldestTab(){
 
-    var tabMenu= document.getElementById('navigation_stock')
+    let tabMenu= document.getElementById('navigation_stock')
     tabMenu.removeChild(tabMenu.getElementsByTagName('a')[0])
 
-    var tabConts = document.getElementById('tabConts')
+    let tabConts = document.getElementById('tabConts')
     tabConts.removeChild(tabConts.getElementsByTagName('div')[0])
 
 }
@@ -735,39 +772,40 @@ function removeOldestTab(){
 
 function login(){
 
-
-    var email = document.getElementById('email').value
-    var pw = SHA256(document.getElementById('pw').value)
-    var req = new XMLHttpRequest()
-    req.responseType = 'json';
-    req.onreadystatechange = function()
-    {
-        if (req.readyState == 4)
+    if(event.key === 'Enter' || null == event.key) {
+        let email = document.getElementById('email').value
+        let pw = SHA256(document.getElementById('pw').value)
+        let req = new XMLHttpRequest()
+        req.responseType = 'json';
+        req.onreadystatechange = function()
         {
-            if (req.status == 200){
+            if (req.readyState == 4)
+            {
+                if (req.status == 200){
 
-                if(req.response.result == false)
-                {
-                    alert("존재하지 않는 계정이거나 비밀번호가 잘못되었습니다")
-                }
-                else {
-                    alert("환영합니다!")
-                    checkUuid()
-                    window.location = "/";
+                    if(req.response.result == false)
+                    {
+                        alert("존재하지 않는 계정이거나 비밀번호가 잘못되었습니다")
+                    }
+                    else {
+                        alert("환영합니다!")
+                        checkUuid()
+                        window.location = "/";
+                    }
                 }
             }
         }
-    }
 
-    req.open('POST', '/login')
-    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-    req.send('email='+email+'&pw='+pw)
+        req.open('POST', '/login')
+        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+        req.send('email='+email+'&pw='+pw)
+    }
 }
 
 
 
 function logout(){
-    var req = new XMLHttpRequest()
+    let req = new XMLHttpRequest()
     req.onreadystatechange = function()
     {
         if (req.readyState == 4)
@@ -791,7 +829,7 @@ function logout(){
 
 function getSpecification(){
 
-    var req = new XMLHttpRequest()
+    let req = new XMLHttpRequest()
     req.responseType = 'json';
     req.onreadystatechange = function()
     {
@@ -803,8 +841,8 @@ function getSpecification(){
                 select_box = document.getElementById('specification_selectbox')
 
 
-                for (var i = 0; i<=column_spec_list.length-1; i++){
-                    var opt = document.createElement('option');
+                for (let i = 0; i<=column_spec_list.length-1; i++){
+                    let opt = document.createElement('option');
                     opt.value = column_spec_list[i].column_description;
                     opt.innerHTML = column_spec_list[i].column_name;
                     select_box.appendChild(opt);
@@ -826,7 +864,7 @@ function drawSpecification(opt){
 
 function getUserInfo(){
 
-    var req = new XMLHttpRequest()
+    let req = new XMLHttpRequest()
     req.responseType = 'json';
     req.onreadystatechange = function()
     {
@@ -864,8 +902,8 @@ function setMenu(){
     if (expdate>=curdate){
 
         console.log(" * Supporter function rendering....")
-        var class_for_supporter = document.getElementsByClassName('only_supporter')
-        for (var i = 0; i < class_for_supporter.length; i++) {
+        let class_for_supporter = document.getElementsByClassName('only_supporter')
+        for (i = 0; i < class_for_supporter.length; i++) {
             class_for_supporter[i].style.display="block"
         }
         // document.getElementById('only_supporter').style.display = "block";
@@ -907,7 +945,7 @@ function closeForm() {
 
 function description(){
 
-    var content = document.getElementById('description');
+    let content = document.getElementById('description');
 
     if (content.style.display === "block") {
       content.style.display = "none";
@@ -921,7 +959,7 @@ function description(){
 
 function openExpandFunction(){
 
-    var content = document.getElementById('function_expanded');
+    let content = document.getElementById('function_expanded');
 
     if (content.style.display === "block") {
       content.style.display = "none";
@@ -936,7 +974,7 @@ function openExpandFunction(){
 
 function openColumnSpec(){
 
-    var content = document.getElementById('specification');
+    let content = document.getElementById('specification');
 
     if (content.style.display === "block") {
       content.style.display = "none";
@@ -964,7 +1002,7 @@ function checkUuid(){
 
 function updateUuid(){
 
-    var req = new XMLHttpRequest()
+    let req = new XMLHttpRequest()
     req.onreadystatechange = function()
     {
         if (req.readyState == 4)
@@ -998,7 +1036,7 @@ function uuidv4() {
 
 function openDownload(){
 
-    var content = document.getElementById('download');
+    let content = document.getElementById('download');
 
     if (content.style.display === "block") {
       content.style.display = "none";
@@ -1011,7 +1049,7 @@ function openDownload(){
 
 
 function sleep(milliseconds) {
-  var start = new Date().getTime();
+  let start = new Date().getTime();
   for (var i = 0; i < 1e7; i++) {
     if ((new Date().getTime() - start) > milliseconds){
       break;
@@ -1023,11 +1061,12 @@ function sleep(milliseconds) {
 function getTableCustom(){
 
 
-    var select_custom_date_idx = document.getElementById("select_custom_date").value
-    var select_custom_a = document.getElementById("select_custom_a").value
-    var select_custom_b = document.getElementById("select_custom_b").value
-    var select_custom_order_how = document.getElementById("select_custom_order_how").value
-    getTable('table_custom',  ['P', select_custom_a, select_custom_b], [1,5,20,60], [select_custom_a + '1'], select_custom_order_how, 100, false, false, true, select_custom_date_idx);
+    let select_custom_date_idx = document.getElementById("select_custom_date").value
+    let select_custom_a = document.getElementById("select_custom_a").value
+    let select_custom_b = document.getElementById("select_custom_b").value
+    let select_custom_order_by = document.getElementById("select_custom_order_by").value
+    let select_custom_order_how = document.getElementById("select_custom_order_how").value
+    getTable('table_custom',  ['P', select_custom_a, select_custom_b], [1,5,20,60], [select_custom_a + select_custom_order_by], select_custom_order_how, 100, false, false, true, select_custom_date_idx);
 
 }
 
@@ -1036,12 +1075,12 @@ function getChartData(stockcode, stockname){
 
 
     if (stockQueue.includes(stockcode)){
-        openPage("tab_"+stockcode, this, "yellow");
+        openPage("tab_"+stockcode, document.getElementById("tablink_"+stockcode), "yellow");
         // document.getElementById("tabcontent"+stockcode).innerHTML=stockname
     }
     else {
 
-        var req = new XMLHttpRequest()
+        let req = new XMLHttpRequest()
         req.responseType = 'json';
         req.onreadystatechange = function()
         {
@@ -1134,8 +1173,8 @@ function getChartData(stockcode, stockname){
 function getColumnDefs(column_list){
 
     columns_def = []
-    for (var i=0; i<column_list.length; i++){
-        for (var j=0; j<column_spec_list.length; j++){
+    for (i=0; i<column_list.length; i++){
+        for (j=0; j<column_spec_list.length; j++){
 
             if (column_list[i] == column_spec_list[j].column_name ||
                 (null !=column_spec_list[j].column_childs && column_spec_list[j].column_childs.includes(column_list[i]))){

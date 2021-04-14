@@ -59,7 +59,7 @@ class DataAccessObjectStock:
         querytarget =  ''
         for target in targets:
             for interval in intervals:
-                querytarget = querytarget + ', %s%s'%(target, interval)
+                querytarget = querytarget + ', IFNULL(%s%s, 0) AS %s%s'%(target, interval, target, interval)
             querytarget = querytarget + '\n'
 
         queryrank = ''
@@ -182,8 +182,8 @@ class DataAccessObjectStock:
                 ''' % (date, orderby, orderhow, limit)
 
         fullquery = queryhead + querytarget + queryrank + querycont + querytail + queryend
-        if debug:
-            print(fullquery)
+
+        # print(fullquery)
 
         df = db.selectpd(fullquery)
         rtdf = df[df.columns[2:]].round(4)
@@ -208,6 +208,10 @@ class DataAccessObjectStock:
         rtdf[float_columns] = rtdf[float_columns] * 100
         rtdf[float_columns] = rtdf[float_columns].round(3)
         rtdf = rtdf.fillna(0)
+
+
+        if orderhow == 'ASC':
+            rtdf.sort_values(by=orderby, ascending=True)
 
         html = (
                 rtdf.style

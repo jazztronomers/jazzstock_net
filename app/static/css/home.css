@@ -89,6 +89,19 @@ margin-left: 20px;
 **/
 
 
+a#prev_tab {
+
+  background-color: #F9A602;
+  position: fixed;
+  bottom: 50px;
+  left: 10px;
+  padding: 6px;
+  border: 1px solid #111;
+  z-index: 9;
+  border-radius: 30%;
+
+}
+
 /* Add a black background color to the top navigation */
 .navigation_top {
     background-color: #111;

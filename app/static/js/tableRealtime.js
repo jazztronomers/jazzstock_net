@@ -5,7 +5,7 @@ var seq_max = 0
 var stockcodes_realtime = 0
 var column_list = []
 
-function getRealtime(){
+function getRealtimeDev(){
     getTodaysDateAndStartingSeq(true)
 }
 
@@ -284,7 +284,7 @@ function renderTableRealtime(tableId, response, columnList){
         },
 
         rowCallback: function( row, data ) {
-            conditionalFormatting(row, data, columnList, stockcode_favorite) // Conlorize + Modify inner cell value
+            conditionalFormattingRealtime(row, data, columnList, stockcode_favorite) // Conlorize + Modify inner cell value
         },
     } );
 
@@ -293,7 +293,7 @@ function renderTableRealtime(tableId, response, columnList){
 }
 
 
-function conditionalFormatting(row, data, column_list, stockcode_favorite){
+function _conditionalFormattingRealtime(row, data, column_list, stockcode_favorite){
 
 
     var stockcode_stockname = data[0].split("_")
