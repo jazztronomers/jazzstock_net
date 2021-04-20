@@ -7,6 +7,8 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 <script type="text/javascript" charset="utf8" src="/static/js/datatables.js"></script>
+
+<script type="text/javascript" charset="utf8" src="/static/js/datatables.colReorder.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.22/sorting/natural.js"></script>
 
@@ -99,7 +101,7 @@
 
             <!-- <a href="#" id='tab_realtime_link' class="tablink" onclick="openPage('tab_realtime', this, 'red'); getRealtime()">실시간</a> -->
             <div id="userinfo" class="navigation_top_right" style="display: none">
-                <p>닉네임: {{ username }}  |  후원만료: {{ expiration_date }}</p>
+                <p>닉네임: {{ username }}  |  후원만료: {{ expiration_date }} | 최신일자: {{ recent_trading_day }} </p>
             </div>
 
             <div id="induce_signin" class="navigation_top_right" style="display: block">

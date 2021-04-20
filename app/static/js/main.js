@@ -1186,6 +1186,31 @@ function getColumnDefs(column_list){
                     if (null != column_def.render){
                         column_def.render = getDataTableRenderMethod(column_def.render)
                     }
+
+                    if ('stockname' == column_def.created_cell){
+                        column_def.createdCell = function(cell, cellData, rowData, rowIndex, colIndex){
+
+                            let stockcode_stockname = cellData.split("_")
+                            stockcode = stockcode_stockname[0]
+                            stockname = stockcode_stockname[1]
+                            title = getChartlink(stockcode, stockname)
+
+                            $(cell).html(title)
+
+                            // color = getColoringBool(stockcode)
+                            // $(cell).css('background-color', '#ffffff')
+                            // console.log(stockname, color)
+
+                        }
+                    }
+
+                    else if ('fav' == column_def.created_cell){
+                        column_def.createdCell = function(cell, cellData, rowData, rowIndex, colIndex){
+                            title = getFavCheckbox(cellData)
+                            $(cell).html(title)
+                        }
+                    }
+
                     columns_def.push(column_def)
                     break;
                 }
@@ -1195,9 +1220,30 @@ function getColumnDefs(column_list){
         }
     }
 
+    console.log(columns_def)
+
     return columns_def
 }
 
 function getDataTableRenderMethod(round=0){
     return $.fn.dataTable.render.number( ',', '.', round, '')
+}
+
+function getChartlink(stockcode, stockname){
+
+
+        title = '<div id="table_daily_stockcode_'+stockcode+'" style=""><a href="#" onclick="getChartData(' + "'"  + stockcode +"','" + stockname + "');\">" + stockname + '</a></div>'
+        return title
+}
+
+
+
+function getFavCheckbox(cellData){
+
+    if (stockcode_favorite.includes(cellData)){
+        return '<input type="checkbox" onchange="handleChange(this)" value="'+ cellData +'" checked>'
+    }
+    else {
+        return '<input type="checkbox" onchange="handleChange(this)" value="'+ cellData +'">'
+    }
 }

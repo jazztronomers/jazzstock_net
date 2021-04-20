@@ -6,14 +6,10 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
     stockname = stockcode_stockname[1]
 
 
-    title = '<div id="table_daily_stockcode_'+stockcode+'" style=""><a href="#" onclick="getChartData(' + "'"  + stockcode +"','" + stockname + "');\">" + stockname + '</a></div>'
-    $('td:eq('+0+')', row).html(title)
-    $('td:eq('+0+')', row).css('background-color', '#ffffff')
-    $('td:eq('+1+')', row).html('<input type="checkbox" onchange="handleChange(this)" value="'+ stockcode +'">')
 
     if (stockcode_favorite.includes(stockcode)){
         $('td:eq('+0+')', row).css('background-color', '#eac112')
-        $('td:eq('+1+')', row).html('<input type="checkbox" onchange="handleChange(this)" value="'+ stockcode +'" checked>')
+        // $('td:eq('+1+')', row).html('<input type="checkbox" onchange="handleChange(this)" value="'+ stockcode +'" checked>')
     }
 
 
@@ -119,11 +115,25 @@ function renderTable(tableId, response, columnList){
         autoWidth:false,
         aLengthMenu: [ 15, 25, 35, 50, 100 ],
         iDisplayLength: 25,
-        fixedHeader: true,
+        //fixedHeader: true,
         columnDefs: getColumnDefs(columnList),
         scrollCollapse: true,
         fixedColumns : {//关键是这里了，需要第一列不滚动就设置1
             leftColumns : 3
+        },
+        colReorder: {
+            enable: true,
+            realtime: false,
+            fixedColumnsLeft: 1,
+
+        },
+
+        createdCell: function (td, cellData, rowData, row, col) {
+
+             console.log(td, cellData, rowData, row, col)
+             if ( cellData < 1 ) {
+                    $(td).css('color', 'red')
+             }
         },
 
         rowCallback: function( row, data ) {
@@ -141,7 +151,7 @@ function renderTable(tableId, response, columnList){
 
     } );
 
-    console.log(' * Table rendering DONE', now())
+    console.log(' * Table rendering done', now())
     // hideColumn(tableId)
     var table = $('#'+tableId).DataTable();
     $('#mc_min, #mc_max').on("keyup input change propertychange", function() {
