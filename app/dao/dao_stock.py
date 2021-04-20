@@ -48,7 +48,7 @@ class DataAccessObjectStock:
                     SELECT CASE WHEN B.MARKET = '0' THEN '' ELSE '*' END AS MARKET
                         , A.DATE
                         , CONCAT(B.STOCKCODE, '_', B.STOCKNAME) AS  STOCKNAME
-                        , "N" AS FAV
+                        , B.STOCKCODE AS FAV
                         , MC
                         , CLOSE
                         
@@ -137,7 +137,7 @@ class DataAccessObjectStock:
                 LEFT JOIN jazzdb.T_STOCK_DAY_SMAR K ON (A.STOCKCODE = K.STOCKCODE AND A.DATE = K.DATE)
                 LEFT JOIN (
 
-                    SELECT STOCKCODE, CONCAT('[', AUTHOR, '] ', CONTENT) AS TITLE, RDATE, RN, RC1M, RC2M, ETC
+                    SELECT STOCKCODE, CONCAT(CONTENT, '-', REPLACE(AUTHOR, '증권', '증.권')) AS TITLE, RDATE, RN, RC1M, RC2M, ETC
                     FROM
                     (
                         SELECT STOCKCODE, CONTENT, DATE, AUTHOR, DATE AS RDATE, ETC,

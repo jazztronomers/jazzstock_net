@@ -13,7 +13,8 @@ table_column_specification = [
                 "column_name_full":"STOCKNAME",
                 "column_description":"종목명",
                 "data_type":'str',
-                "column_def":{"width":90},
+                "column_def":{"width":90,
+                              "created_cell":"stockname"},
         },{
                 "column_name":"MC",
                 "column_name_full": "Market Capital",
@@ -33,7 +34,8 @@ table_column_specification = [
                 체크된 종목들이 즐겨찾기 종목으로 등록되며, 향후 모든테이블에서 노란색으로 Highlighting 됩니다<br>
                 추가로 <즐겨찾기> 탭에서 별도로 모아서 조회할 수 있습니다.''',
                 "data_type":"checkbox",
-                "column_def": {"width": 20},
+                "column_def": {"width": 20,
+                               "created_cell":"fav"},
 
         },{
                 "column_name":"CLOSE",
