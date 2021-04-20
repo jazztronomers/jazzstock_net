@@ -127,15 +127,6 @@ function renderTable(tableId, response, columnList){
             fixedColumnsLeft: 1,
 
         },
-
-        createdCell: function (td, cellData, rowData, row, col) {
-
-             console.log(td, cellData, rowData, row, col)
-             if ( cellData < 1 ) {
-                    $(td).css('color', 'red')
-             }
-        },
-
         rowCallback: function( row, data ) {
             conditionalFormatting(row, data, columnList, stockcode_favorite) // Conlorize + Modify inner cell value
         },
@@ -149,6 +140,21 @@ function renderTable(tableId, response, columnList){
 
 
 
+    } );
+
+    $('#'+tableId).on('click', 'td', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+
+        if ($(tr).css('font-weight')==400){
+            $(tr).css('font-weight', 800)
+            $(tr).css('border-bottom','1.5pt')
+        }
+        else {
+            $(tr).css('font-weight', 400)
+            $(tr).css('border-bottom','1pt')
+
+        }
     } );
 
     console.log(' * Table rendering done', now())

@@ -1220,7 +1220,6 @@ function getColumnDefs(column_list){
         }
     }
 
-    console.log(columns_def)
 
     return columns_def
 }
