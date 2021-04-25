@@ -92,6 +92,17 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
                         }
                     }
                 }
+
+
+                if ('ccr_map' == column_spec_list[j].background_color_map){
+
+                    for (color in ccr_map){
+                        if (data[i] >= ccr_map[color][1] && data[i] < ccr_map[color][0]){
+                             $('td.col'+i, row).css('background-color', ccr_map[color][2])
+                            break
+                        }
+                    }
+                }
             }
         }
     }

@@ -262,6 +262,15 @@ table_column_specification_finan = [
         "column_def": {"width": 35,
                        'render':2,
                        'orderSequence':["desc","asc"]}
+        }, {
+        "column_name": "CCR",
+        "column_name_full": "CCR",
+        "column_description": "유통비율, 유통주식수/발행주식수",
+        "data_type": 'int',
+        "background_color_map": "ccr_map",
+        "column_def": {"width": 35,
+                       'render':2,
+                       'orderSequence':["desc","asc"]}
         }
 
 ]

@@ -124,6 +124,16 @@ roe_map['MM'] = [7, 0, '#ffffff']
 
 roe_map['B4'] = [-0.1, -200, B[4]]
 
+let ccr_map = new Map()
+
+ccr_map['R3'] = [0.1, 0, R[5]]
+ccr_map['R2'] = [0.2, 0.1, R[3]]
+ccr_map['R1'] = [0.35, 0.2, R[1]]
+ccr_map['MM'] = [0.75, 0.3, '#ffffff']
+ccr_map['B1'] = [0.8, 0.75, B[1]]
+ccr_map['B2'] = [0.9, 0.8, B[2]]
+ccr_map['B3'] = [1.1, 0.9, B[4]]
+
 
 const array_filter = ["filter_a",
                "filter_b",

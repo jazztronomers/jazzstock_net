@@ -78,7 +78,8 @@ class DataAccessObjectStock:
                 , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS PER
                 , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS PBR
                 , ROE
-
+                , M.CIRCRATE AS CCR
+                
                 , CATEGORY
                 , TITLE AS RTITLE, RDATE, RC1M, RC2M
 
@@ -151,6 +152,8 @@ class DataAccessObjectStock:
                     ) A
                     WHERE RN = 1
                 ) L ON (A.STOCKCODE = L.STOCKCODE)
+                
+                LEFT JOIN jazzdb.T_STOCK_SHARES_CIRCRATE M ON (A.STOCKCODE = M.STOCKCODE AND A.DATE = M.DATE)
                 #=========================================================================
                 WHERE 1=1'''%(usercode, date_20, date_40, date_20, date_40)
 
