@@ -72,6 +72,8 @@ class DataAccessObjectStock:
                 , PSMAR60 AS PMA60
                 , VSMAR5 AS VMA5
                 , VSMAR60 AS VMA60
+                , BBP
+                , BBW
                 
                 , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS PER
                 , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS PBR
@@ -137,7 +139,7 @@ class DataAccessObjectStock:
                 LEFT JOIN jazzdb.T_STOCK_DAY_SMAR K ON (A.STOCKCODE = K.STOCKCODE AND A.DATE = K.DATE)
                 LEFT JOIN (
 
-                    SELECT STOCKCODE, CONCAT(CONTENT, '-', REPLACE(AUTHOR, '증권', '증.권')) AS TITLE, RDATE, RN, RC1M, RC2M, ETC
+                    SELECT STOCKCODE, CONCAT(CONTENT, ' [', REPLACE(AUTHOR, '증권', ''),']') AS TITLE, RDATE, RN, RC1M, RC2M, ETC
                     FROM
                     (
                         SELECT STOCKCODE, CONTENT, DATE, AUTHOR, DATE AS RDATE, ETC,

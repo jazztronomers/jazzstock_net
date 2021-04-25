@@ -672,7 +672,6 @@ function openPage(pageName, elmnt, color) {
 
     else {
         // this 인경우
-        console.log(elmnt)
         elmnt.style.backgroundColor = "#F9A602";
         elmnt.style.color = "black";
     }
