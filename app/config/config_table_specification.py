@@ -338,7 +338,25 @@ table_column_specification_bollinger_band = [
         "column_def": {"width": 30,
                        'render':2,}
 
+        }, {
+        "column_name": "BBP",
+        "column_name_full": "ROE",
+        "column_description": "최근 거래일 BBP",
+        "data_type": 'int',
+        "background_color_map":"bbp_map",
+        "column_def": {"width": 30,
+                       'render':2,}
+        }, {
+        "column_name": "BBW",
+        "column_name_full": "ROE",
+        "column_description": "최근 거래일 BBW",
+        "data_type": 'int',
+        "background_color_map":"bbw_map",
+        "column_def": {"width": 30,
+                       'render':2,}
+
         }
+
 ]
 table_column_specification_moving_average_ratio =[
         {
@@ -418,7 +436,8 @@ table_column_specification_report = [
         "column_name_full": "ROE",
         "column_description": "가장 최근에 발행된 증권사레포트 발행일자",
         "data_type": 'int',
-        "column_def": {"width": 60}
+        "column_def": {"width": 60,
+                       'orderSequence':["desc","asc"]}
 
         },
 
