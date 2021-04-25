@@ -269,8 +269,7 @@ table_column_specification_finan = [
         "data_type": 'int',
         "background_color_map": "ccr_map",
         "column_def": {"width": 35,
-                       'render':2,
-                       'orderSequence':["desc","asc"]}
+                       'render':2}
         }
 
 ]
