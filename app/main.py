@@ -346,7 +346,10 @@ def ajax_getTable():
     only_supporter = True if request.form.get("only_supporter") == 'true' else False
     fav_only = True if request.form.get("fav_only") in [True, "true"] else False
     report_only = True if request.form.get("report_only") in [True, "true"] else False
-    date_idx = int(request.form.get("date_idx", 0))
+    try:
+        date_idx = int(request.form.get("date_idx", 0))
+    except:
+        date_idx = 0
 
     dao = DataAccessObjectStock()
     sess = session_parser()
