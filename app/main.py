@@ -345,6 +345,7 @@ def ajax_getTable():
     limit = int(request.form.get("limit"))
     only_supporter = True if request.form.get("only_supporter") == 'true' else False
     fav_only = True if request.form.get("fav_only") in [True, "true"] else False
+    report_only = True if request.form.get("report_only") in [True, "true"] else False
     date_idx = int(request.form.get("date_idx"))
 
     dao = DataAccessObjectStock()
@@ -358,7 +359,7 @@ def ajax_getTable():
         limit = limit
         usercode = sess['usercode']
         htmltable, column_list = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
-                                    method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only, date_idx=date_idx)
+                                    method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only, report_only=report_only, date_idx=date_idx)
 
 
 
@@ -381,7 +382,7 @@ def ajax_getTable():
                 usercode = -1
 
             htmltable, column_list = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
-                                        method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only)
+                                        method='dataframe', limit=limit, usercode=usercode, report_only=report_only, fav_only=fav_only)
 
             return jsonify(htmltable=htmltable, column_list=column_list)
 

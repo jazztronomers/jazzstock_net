@@ -9,7 +9,7 @@ pd.options.display.max_rows = 2500
 
 class DataAccessObjectStock:
 
-    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0, fav_only=False, date_idx=None, debug=False):
+    def sndRank(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='json', limit=50, usercode=0, fav_only=False, report_only=False, date_idx=None, debug=False):
 
         t1 = dt.now()
 
@@ -172,6 +172,18 @@ class DataAccessObjectStock:
 
                             ''' % (date, usercode, orderby, orderhow, limit)
 
+        elif report_only:
+            queryend = '''
+
+                                AND A.DATE = "%s"
+                                AND ((I1 BETWEEN -10 AND 10) OR (F1 BETWEEN -10 AND 10))
+                                AND  J.MC > 0.62  # 2021-02-15기준 2000종목
+                                ORDER BY RDATE DESC, %s %s
+                                LIMIT %s
+
+
+                            ''' % (date, orderby, orderhow, limit)
+
         else:
 
             queryend = '''
@@ -198,8 +210,8 @@ class DataAccessObjectStock:
 
 
     # 수급테이블
-    def sndRankHtml(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='dataframe', limit=50, usercode=0, fav_only=False, date_idx=0):
-        rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode, fav_only=fav_only, date_idx=date_idx)
+    def sndRankHtml(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='dataframe', limit=50, usercode=0, fav_only=False,  report_only=False, date_idx=0):
+        rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode, fav_only=fav_only, date_idx=date_idx, report_only=report_only)
         float_columns = []
 
         for target in targets:

@@ -153,6 +153,7 @@ tab_initialized['table_samofor']=false
 tab_initialized['table_custom']=false
 tab_initialized['table_full']=false
 tab_initialized['table_fav']=false
+tab_initialized['table_rep']=false
 
 let stockcode_favorite = []
 let recent_trading_days = []
@@ -160,7 +161,7 @@ let user_loggedin = false
 let user_expiration_date = '1970-01-01'
 let column_spec_list = []
 let recent_tab = 'tab_insfor'
-let tab_array = ["tab_insfor", "tab_forins", "tab_ygfor", "tab_samofor", "tab_custom", "tab_fav", "tab_full"]
+let tab_array = ["tab_insfor", "tab_forins", "tab_ygfor", "tab_samofor", "tab_custom", "tab_fav", "tab_rep", "tab_full"]
 
 $.fn.dataTable.ext.order['dom-checkbox'] = function  ( settings, col )
 {
@@ -194,7 +195,7 @@ $(document).ready(function(){
 
 
     // function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=false)
-    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, 0);
+    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
 
     array_filter.forEach(function (filter_id, index) {
 
@@ -455,7 +456,7 @@ function isJsonString(str) {
     return true;
 }
 
-function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_only=false, init=false, only_supporter=false, date_idx=0)
+function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_only=false, init=false, only_supporter=false, report_only=false, date_idx=0)
 {
 
     // console.log(' * get table...', tableId, tab_initialized[tableId])
@@ -495,7 +496,7 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
 
         req.open('POST', '/ajaxTable')
         req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-        req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit  + "&fav_only=" + fav_only + "&only_supporter="+ only_supporter + "&date_idx=" + date_idx)
+        req.send('targets=' + targets + '&intervals=' + intervals + "&orderby=" + orderby + "&orderhow=" + orderhow + "&limit=" + limit  + "&fav_only=" + fav_only + "&report_only=" + report_only + "&only_supporter="+ only_supporter + "&date_idx=" + date_idx)
     }
 
     else{
