@@ -119,7 +119,7 @@ class DataAccessObjectStock:
                             SELECT STOCKCODE, EPSC, BPS, ROE
                             FROM jazzdb.T_STOCK_FINAN E
                             WHERE 1=1
-                            AND DATE = '2012'
+                            AND DATE = '2103'
                             AND TYPE = 'C'
 
                 )F ON (A.STOCKCODE = F.STOCKCODE)
@@ -199,7 +199,9 @@ class DataAccessObjectStock:
 
         fullquery = queryhead + querytarget + queryrank + querycont + querytail + queryend
 
-        # print(fullquery)
+
+        if debug:
+            print(fullquery)
 
         df = db.selectpd(fullquery)
         rtdf = df[df.columns[2:]].round(4)
