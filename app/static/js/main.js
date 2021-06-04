@@ -1076,7 +1076,9 @@ function getTableCustom(){
     let select_custom_b = document.getElementById("select_custom_b").value
     let select_custom_order_by = document.getElementById("select_custom_order_by").value
     let select_custom_order_how = document.getElementById("select_custom_order_how").value
-    getTable('table_custom',  ['P', select_custom_a, select_custom_b], [1,5,20,60], [select_custom_a + select_custom_order_by], select_custom_order_how, 100, false, false, true, select_custom_date_idx);
+
+
+    getTable('table_custom',  ['P', select_custom_a, select_custom_b], [1,5,20,60], [select_custom_a + select_custom_order_by], select_custom_order_how, 100, false, false, true, false, select_custom_date_idx);
 
 }
 
