@@ -330,29 +330,164 @@ class DataAccessObjectStock:
         return ret
 
 
+    def ohlcDay(self, code):
+        query = '''
+                                    SELECT A.STOCKCODE, A.STOCKNAME
+                                       , CAST(A.DATE AS char) AS DATE
+                                       , CNT
+                                       , B.OPEN, B.HIGH, B.LOW, B.CLOSE, C.VOLUME
+                                       , D.MA5 AS MA_W
+                                       , D.MA20 AS MA_M 
+                                       , D.MA60 AS MA_Q
+                                       , D.MA120 AS MA_HY
+                                       
+
+                                    FROM
+                                    (
+                                       SELECT A.STOCKNAME, A.STOCKCODE, DIX.DATE, DIX.CNT
+                                       FROM jazzdb.T_STOCK_CODE_MGMT A
+
+                                       JOIN (
+
+                                         SELECT DATE, CNT   
+                                          FROM jazzdb.T_DATE_INDEXED
+                                         WHERE CNT BETWEEN 0 AND 259
+
+                                       ) DIX 
+
+                                       WHERE 1=1
+                                       AND (STOCKCODE = '%s' OR STOCKNAME = '%s')
+                                    ) A
+
+
+                                    JOIN (
+                                       SELECT STOCKCODE, DATE, OPEN, HIGH, LOW, CLOSE, ADJCLASS, ADJRATIO
+                                       FROM jazzdb.T_STOCK_OHLC_DAY
+                                    ) B ON (A.STOCKCODE = B.STOCKCODE AND A.DATE = B.DATE )
+                                    
+                                    JOIN (
+                                       SELECT STOCKCODE, DATE, VOLUME
+                                       FROM jazzdb.T_STOCK_SND_DAY
+                                    ) C ON (A.STOCKCODE = C.STOCKCODE AND A.DATE = C.DATE )
+                                    
+                                    
+                                    
+                                    JOIN (
+                                       SELECT STOCKCODE, DATE, MA5, MA20, MA60, MA120
+                                       FROM jazzdb.T_STOCK_MA
+                                    ) D ON (A.STOCKCODE = D.STOCKCODE AND A.DATE = D.DATE )
+
+
+
+
+
+                ''' % (code, code)
+
+        df = db.selectpd(query)
+        ret = {'result': df.to_dict("list")}
+
+        print(ret)
+
+        '''
+        {'result': [
+        {'STOCKCODE': '213090', 'STOCKNAME': '미래테크놀로지', 'DATE': '2021-07-02', 'CNT': 0, 'OPEN': 12600, 'HIGH': 12650, 'LOW': 12350, 'CLOSE': 12450}, 
+        {'STOCKCODE': '213090', 'STOCKNAME': '미래테크놀로지', 'DATE': '2021-07-01', 'CNT': 1, 'OPEN': 12750, 'HIGH': 12750, 'LOW': 12500, 'CLOSE': 12600}, 
+        {'STOCKCODE': '213090', 'STOCKNAME': '미래테크놀로지', 'DATE': '2021-06-30', 'CNT': 2, 'OPEN': 12950, 'HIGH': 13050, 'LOW': 12550, 'CLOSE': 12800}, 
+        {'STOCKCODE': '213090', 'STOCKNAME': '미래테크놀로지', 'DATE': '2021-06-29', 'CNT': 3, 'OPEN': 14650, 'HIGH': 14650, 'LOW': 12950, 'CLOSE': 12950}
+        ]
+        '''
+
+        return ret
+
+    def sndDay(self, code):
+
+        query = '''
+                            SELECT A.STOCKCODE, A.STOCKNAME
+                               , CAST(A.DATE AS char) AS DATE
+                               , C.FOREI
+                               , C.INS, C.PER, C.YG, C.SAMO, C.TUSIN, C.FINAN, C.BANK
+                               , C.NATION, C.INSUR, C.OTHERCORPOR, C.OTHERFOR, C.OTHERFINAN
+                               , IFNULL(MG,0) 'MG' 
+                               , IFNULL(GM,0) 'GM'
+                               , IFNULL(CS,0) 'CS'
+                               , IFNULL(MR,0) 'MR'
+                               , IFNULL(MQ,0) 'MQ'
+                               , IFNULL(CL,0) 'CL'
+                               , IFNULL(UB,0) 'UB'
+                               , IFNULL(NM,0) 'NM'
+                               , IFNULL(DC,0) 'DC'
+                               , IFNULL(DW,0) 'DW'
+                               , IFNULL(JP,0) 'JP'
+                               , IFNULL(CT,0) 'CT'
+                               , IFNULL(SY,0) 'SY'
+                               , IFNULL(HT,0) 'HT'
+
+                            FROM
+                            (
+                               SELECT A.STOCKNAME, A.STOCKCODE, DIX.DATE, DIX.CNT
+                               FROM jazzdb.T_STOCK_CODE_MGMT A
+
+                               JOIN (
+
+                                 SELECT DATE, CNT   
+                                  FROM jazzdb.T_DATE_INDEXED
+                                 WHERE CNT BETWEEN 0 AND 259
+
+                               ) DIX 
+
+                               WHERE 1=1
+                               AND (STOCKCODE = '%s' OR STOCKNAME = '%s')
+                            ) A
+
+                            JOIN (
+                               SELECT STOCKCODE, DATE, VOLUME
+                               , FOREI, INS, PER, YG, SAMO, TUSIN, FINAN, BANK, INSUR, NATION, OTHERCORPOR, OTHERFOR, OTHERFINAN
+                               FROM jazzdb.T_STOCK_SND_DAY
+                            ) C ON (A.STOCKCODE = C.STOCKCODE AND A.DATE = C.DATE )
+
+                            LEFT JOIN (
+                               SELECT STOCKCODE, DATE, MG, GM, CS, MR, MQ, CL, UB, NM, DC, DW, JP, CT, SY, HT
+                               FROM jazzdb.T_STOCK_SND_WINDOW_MERGED
+                            ) D ON (A.STOCKCODE = D.STOCKCODE AND A.DATE = D.DATE )
+
+
+
+        ''' % (code, code)
+
+        df = db.selectpd(query)
+        ret = {'result': df.to_dict("list")}
+
+
+        return ret
+
     def finanTable(self, code):
 
         query = '''
         
-        SELECT DATE, PER, PBR, ROE, EPSC, BPS
+        SELECT DATE, PER, PBR, ROE, EPSC, BPS, NPR, OPR
         FROM jazzdb.T_STOCK_FINAN A
         JOIN jazzdb.T_STOCK_CODE_MGMT B USING (STOCKCODE)
         WHERE 1=1
         AND (STOCKCODE = '%s' OR STOCKNAME = '%s')
         AND TYPE = 'C'
-        ORDER BY DATE DESC
+        ORDER BY DATE ASC
         
         '''%(code,code)
 
         df = db.selectpd(query)
+
+        # df.index = df.DATE
+        # df = df[['PER', 'PBR', 'ROE', 'NPR', 'OPR']]
+        # df = df.transpose()
+        column_list= df.columns.tolist()
         html = (
             df.style
-                .hide_index()
-                # .applymap(color_negative_red, subset=float_columns)
                 .highlight_null('grey')
                 .render())
 
-        return html
+
+
+        return df.to_dict("list"), html, column_list
 
 
 

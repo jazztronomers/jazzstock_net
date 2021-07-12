@@ -115,21 +115,28 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
 function renderTable(tableId, response, columnList){
 
     document.getElementById(tableId).innerHTML = response
-    console.log(' * Table rendering start', tableId, now())
+    // console.log(' * Table rendering start', tableId, now())
+    let ratio = 0.9
+    if (device_type == "mobile"){
+        ratio = 0.85
+        // alert(ratio)
 
+    }
 
     // 서버사이드에서 받아온 HTML테이블객체를 DATATABLE형태로 INITIALIZE
     $('#'+tableId).dataTable( {
         aaSorting: [],
         // stateSave:true,
         sScrollX:"100%",
+        scrollY: canvas_height * ratio +  'px',
         autoWidth:false,
-        aLengthMenu: [ 15, 25, 35, 50, 100 ],
-        iDisplayLength: 25,
+        autoHeight:false,
+        aLengthMenu: [ 50, 100 ],
+        iDisplayLength: 100,
         //fixedHeader: true,
         columnDefs: getColumnDefs(columnList),
         scrollCollapse: true,
-        fixedColumns : {//关键是这里了，需要第一列不滚动就设置1
+        fixedColumns : {
             leftColumns : 3
         },
         colReorder: {
@@ -168,7 +175,7 @@ function renderTable(tableId, response, columnList){
         }
     } );
 
-    console.log(' * Table rendering done', now())
+    // console.log(' * Table rendering done', now())
     // hideColumn(tableId)
     var table = $('#'+tableId).DataTable();
     $('#mc_min, #mc_max').on("keyup input change propertychange", function() {

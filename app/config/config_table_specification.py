@@ -454,6 +454,27 @@ table_column_specification_report = [
 ]
 
 
+
+table_column_specification_finan_summary = [
+
+        {
+        "column_name": "FINAN",
+        "column_childs": ['1603', '1606', '1609', '1612',
+                          '1703', '1706', '1709', '1712',
+                          '1803', '1806', '1809', '1812',
+                          '1903', '1906', '1909', '1912',
+                          '2003', '2006', '2009', '2012',
+                          '2103', '2106', '2109', '2112',],
+        "column_name_full": "FINAN",
+        "column_description": "FINAN TRANSPOSED",
+        "data_type": 'str',
+        "column_def": {"width": 40, "render":2}
+
+        }
+,
+
+]
+
 table_column_specification_realtime = [
 
         {
@@ -486,6 +507,7 @@ spec  = table_column_specification + \
         table_column_specification_realtime +\
         table_column_specification_other
 
+# table_column_specification_finan +\
 
 if __name__=="__main__":
 

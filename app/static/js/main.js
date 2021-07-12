@@ -190,7 +190,32 @@ $.fn.dataTable.ext.search.push(
 );
 
 
-$(document).ready(function(){
+document.addEventListener("DOMContentLoaded", function(event) {
+
+
+    elemnt = document.getElementById("grid_field_stock")
+    new Sortable(elemnt, {
+        // direction: 'vertical',
+        animation: 150,
+	    ghostClass: 'blue-background-class',
+	    onUpdate: function (/**Event*/evt) {
+		    console.log(evt.item.id)
+		    console.log(evt.oldIndex, evt.newIndex)
+
+
+
+
+		    console.log(stockQueue)
+		    item = stockQueue[evt.oldIndex]
+		    stockQueue.splice(evt.oldIndex, 1);
+            stockQueue.splice(evt.newIndex, 0, item);
+		    console.log(stockQueue)
+
+
+
+
+	    },
+    });
 
 
 
@@ -203,11 +228,17 @@ $(document).ready(function(){
         document.getElementById(filter_id).value=filter_value
 
     });
-    getFavorite()
+
+    gridRender()
     getUserInfo()
+    getFavorite()
     getSpecification()
     getRecentTradingDays()
     console.log(' * Document initialized', now())
+    window.onresize = gridRender;
+
+    // document.getElementById("jazzstock").innerHTML = window.innerWidth + "x" + window.innerHeight
+
 
 })
 
@@ -231,7 +262,6 @@ function handleChange(row){
     }
 
 }
-
 
 
 function setFavorite(){
@@ -511,7 +541,7 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
 
 function clearTable(tableId){
 
-    console.log("clear table", tableId)
+    // console.log("clear table", tableId)
 
       let table = $('#'+tableId).DataTable();
       table.destroy()
@@ -522,269 +552,120 @@ function clearTable(tableId){
 }
 
 
-function removeall(){
 
-    let chartlist = document.getElementsByClassName('sndChart');
-    let infolist = document.getElementsByClassName('infoTable');
-    for (let i = 0; i < chartlist.length; i++)
-    {
 
-        let tempid = chartlist[i].id
 
-      if(null!=document.getElementById(chartlist[i].id.replace('chart','related'))){
 
-          if($.fn.DataTable.isDataTable('#'+chartlist[i].id.replace('chart','related'))){
-            $('#'+chartlist[i].id.replace('chart','related')).DataTable().destroy();
-          }
-          document.getElementById(chartlist[i].id.replace('chart','related')).innerHTML=''
-      }
+function showTableTab(tabName, elmnt, color) {
 
-    if(null!=document.getElementById(chartlist[i].id.replace('chart','info'))){
+    grid_field_table = document.getElementById("grid_field_table")
 
-          if($.fn.DataTable.isDataTable('#'+chartlist[i].id.replace('chart','info'))){
-            $('#'+chartlist[i].id.replace('chart','info')).DataTable().destroy();
-          }
-          document.getElementById(chartlist[i].id.replace('chart','info')).innerHTML=''
-      }
+    if (device_type=="mobile" && grid_field_table.style.display=="none"){
 
-  if(null!=document.getElementById(chartlist[i].id.replace('chart','finan'))){
+        grid_field_stock = document.getElementById("grid_field_stock")
+        grid_field_summary = document.getElementById("grid_field_summary")
 
-          if($.fn.DataTable.isDataTable('#'+chartlist[i].id.replace('chart','finan'))){
-            $('#'+chartlist[i].id.replace('chart','finan')).DataTable().destroy();
-          }
-          document.getElementById(chartlist[i].id.replace('chart','finan')).innerHTML=''
-      }
 
-        let myNode = document.getElementById(tempid);
-        while (myNode.firstChild) {
-            myNode.removeChild(myNode.firstChild);
-        }
-
-        chartlist[i].removeAttribute('_echarts_instance_')
-        chartlist[i].setAttribute("style","height: 1px")
-
+        grid_field_table.style.display="block"
+        grid_field_stock.style.display="none"
+        grid_field_summary.style.display="none"
 
     }
+
+    tabtables = document.getElementsByClassName("tabtable");
+    for (i = 0; i < tabtables.length; i++) {
+        tabtables[i].style.display = "none";
+    }
+
+
+    document.getElementById(tabName).style.display="block"
 
 
 }
 
-
-function removeChart(id){
-
-    console.log(" * CHART TO REMOVE", id)
-    let chartlist = [document.getElementById(id)];
-    for (let i = 0; i < chartlist.length; i++)
-    {
-
-        let tempid = chartlist[i].id
-
-      if(null!=document.getElementById(chartlist[i].id.replace('chart','related'))){
-
-          if($.fn.DataTable.isDataTable('#'+chartlist[i].id.replace('chart','related'))){
-            $('#'+chartlist[i].id.replace('chart','related')).DataTable().destroy();
-          }
-          document.getElementById(chartlist[i].id.replace('chart','related')).innerHTML=''
-      }
-
-    if(null!=document.getElementById(chartlist[i].id.replace('chart','info'))){
-
-          if($.fn.DataTable.isDataTable('#'+chartlist[i].id.replace('chart','info'))){
-            $('#'+chartlist[i].id.replace('chart','info')).DataTable().destroy();
-          }
-          document.getElementById(chartlist[i].id.replace('chart','info')).innerHTML=''
-      }
-
-  if(null!=document.getElementById(chartlist[i].id.replace('chart','finan'))){
-
-          if($.fn.DataTable.isDataTable('#'+chartlist[i].id.replace('chart','finan'))){
-            $('#'+chartlist[i].id.replace('chart','finan')).DataTable().destroy();
-          }
-          document.getElementById(chartlist[i].id.replace('chart','finan')).innerHTML=''
-      }
-
-        let myNode = document.getElementById(tempid);
-        while (myNode.firstChild) {
-            myNode.removeChild(myNode.firstChild);
-        }
-
-        chartlist[i].removeAttribute('_echarts_instance_')
-        chartlist[i].setAttribute("style","height: 1px")
-
-
-    }
-
-
-}
-
-function removeRelated(relatedId){
-
-      var table = $('#'+relatedId).DataTable();
-      table.destroy()
-      if(null!=document.getElementById(relatedId)){
-           document.getElementById(relatedId).innerHTML=''
-      }
-}
-
-
-
-function openPage(pageName, elmnt, color) {
-
-    console.log(" * openPage... ", pageName)
-
-
-
-    if (tab_array.includes(pageName)){
-
-        recent_tab = pageName
-        prevTab = document.getElementById("prev_tab")
-        prevTab.style.display = "none";
-
-    }
-
-    else {
-
-        prevTab = document.getElementById("prev_tab")
-        prevTab.style.display = "block";
-        prevTab.style.backgroundColor = "#F9A602";
-    }
-
-    let i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-
-    tablinks = document.getElementsByClassName("tablink");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].style.backgroundColor = "";
-        tablinks[i].style.color = "white";
-    }
-
-
-    document.getElementById(pageName).style.display = "block";
-
-    if (tab_array.includes(elmnt)){
-
-        let tab_link = document.getElementById(elmnt+'_link')
-        tab_link.style.backgroundColor = "#F9A602";
-        tab_link.style.color = "black";
-
-    }
-
-//    else if (elmnt.endsWith("_link")){
-//        // 이미조회했던 종목인 경우
-//        console
-//        let tab_link = document.getElementById(elmnt+'_link')
-//        tab_link.style.backgroundColor = "#F9A602";
-//        tab_link.style.color = "black";
-//
-//    }
-
-    else {
-        // this 인경우
-        elmnt.style.backgroundColor = "#F9A602";
-        elmnt.style.color = "black";
-    }
-
-}
-
-var stockQueue = [];
-
-function getRealtime(){
-    alert("개발중인 기능입니다.")
-}
+let stockQueue = []
+let stockMap = {}
 
 
 
 
-function addTabToQueue(stockcode, stockname){
+function addStockToQueue(stockcode, stockname){
 
-
-    console.log(" * addTabToQueue...", stockcode, stockname)
     // var min = new Date().getSeconds()
-    if(stockQueue.length < 5){
+    if(stockQueue.length < 6){
         stockQueue.push(stockcode)
-        addTabToPage(stockcode, stockname)
+        getOhlcChartData(stockcode)
+
     }
     else {
-        stockQueue.shift()
-        removeOldestTab()
+
+        stockcode_to_delete = stockQueue.pop()
+        delete stockMap[stockcode_to_delete]
         stockQueue.push(stockcode)
-        addTabToPage(stockcode, stockname)
+        getOhlcChartData(stockcode)
     }
 
     console.log(' * CURRENT STOCK QUEUE', stockQueue)
 }
 
-function addTabToPage(stockcode, stockname){
 
 
 
-    let tabMenu= document.getElementById('navigation_stock') // tabMenu
 
-    let prevTab = document.getElementById("prev_tab")
-    prevTab.setAttribute("style", "display:block");
-    prevTab.setAttribute("onclick", "openPage('"+recent_tab+"', '" + recent_tab + "', '#F9A602')");
+function queueRender(all=false){
 
+    grid_field_summary = document.getElementById("grid_field_summary")
 
-    let tablink = document.createElement("a")
-
-
-    tablink.setAttribute("class", "tablink");
-    tablink.setAttribute("id", "tablink_"+stockcode);
-    tablink.setAttribute("onclick", "openPage('tab_"+stockcode+"', this, 'red')");
-    tablink.innerHTML=stockname;
-
-    tabMenu.appendChild(tablink)
-
-    let tabConts= document.getElementById('tabConts')
-
-        let tabCont = document.createElement("div")
-        tabCont.setAttribute("class", "tabcontent");
-        tabCont.setAttribute("id", "tab_"+stockcode);
-        tabCont.setAttribute("style", "display:block");
-
-            let table_finan =document.createElement("table")
-
-            table_finan.setAttribute("class", "finanTable");
-            table_finan.setAttribute("id", "finan"+stockcode);
-            table_finan.setAttribute("style", "width:100%");
+    grid_field_stock = document.getElementById("grid_field_stock")
+    if (device_type=="mobile" && grid_field_summary.style.display=="block"){
+        grid_field_stock.style.display="block"
+        grid_field_summary.style.display="none"
+    }
+    else if (device_type=="non-mobile" && grid_field_summary.style.display=="inline-block"){
+        grid_field_stock.style.display="inline-block"
+        grid_field_summary.style.display="none"
+    }
 
 
-            let chart = document.createElement("div");
+    // 특정 차트를 삭제한 경우...
+    if (all==true){
+        grid_layer_b_stock_elements = document.getElementsByClassName("grid_layer_b")
 
-            chart.setAttribute("id", "chart"+stockcode);
-            chart.setAttribute("class", "sndChart");
+        // 차트요소 싹다 날리고
+        for (let i = 0; i<grid_layer_b_stock_elements.length; i++){
+            removeGridStockElementChart(grid_layer_b_stock_elements[i].id, false)
+        }
 
-        tabCont.appendChild(table_finan);
-        tabCont.appendChild(document.createElement("br"));
-        tabCont.appendChild(chart);
+        // 위에서 부터 새로 표시
+        for (let i = 0; i<stockQueue.length; i++){
+            stockcode = stockQueue[i]
+            renderOhlcChart(stockcode, stockMap[stockcode], grid_layer_b_stock_elements[i].id+"")
+        }
 
-    console.log(tabCont)
+    }
 
-    tabConts.appendChild(prevTab);
-    tabConts.appendChild(tabCont);
+    // 개별종목의 a tag를 클릭해서 들어오는 경우
+    else {
+
+        i = stockQueue.length-1
+        grid_layer_b_stock_elements = document.getElementsByClassName("grid_layer_b")
+        // console.log(' ** queueRender', i, stockQueue[i], grid_layer_b_stock_elements[i].id)
+        stockcode = stockQueue[i]
+        renderOhlcChart(stockcode, stockMap[stockcode], grid_layer_b_stock_elements[i].id+"")
+
+
+    }
+
+
+    // console.log("RENDER FINISH, SQ LEN:", stockQueue.length, stockQueue)
 
 
 }
 
-function removeOldestTab(){
+function login(is_auto=false){
 
-    let tabMenu= document.getElementById('navigation_stock')
-    tabMenu.removeChild(tabMenu.getElementsByTagName('a')[0])
+    if(event.key === 'Enter' || null == event.key || is_auto == true) {
 
-    let tabConts = document.getElementById('tabConts')
-    tabConts.removeChild(tabConts.getElementsByTagName('div')[0])
-
-}
-
-
-function login(){
-
-    if(event.key === 'Enter' || null == event.key) {
-        let email = document.getElementById('email').value
-        let pw = SHA256(document.getElementById('pw').value)
         let req = new XMLHttpRequest()
         req.responseType = 'json';
         req.onreadystatechange = function()
@@ -798,7 +679,14 @@ function login(){
                         alert("존재하지 않는 계정이거나 비밀번호가 잘못되었습니다")
                     }
                     else {
-                        alert("환영합니다!")
+
+                        if (auto_login_checked == true && is_auto == false){
+                            alert("자동로그인 처리되었습니다")
+                            localStorage.setItem('jazzstock_auto_login', true);
+                            localStorage.setItem('jazzstock_auto_login_email', email);
+                            localStorage.setItem('jazzstock_auto_login_pw', pw);
+                        }
+
                         checkUuid()
                         window.location = "/";
                     }
@@ -808,10 +696,29 @@ function login(){
 
         req.open('POST', '/login')
         req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-        req.send('email='+email+'&pw='+pw)
+
+
+        let email = document.getElementById('email').value
+        let auto_login_checked = document.getElementById('auto_login').checked
+
+        if (is_auto == true){
+            req.send('email='+localStorage.getItem('jazzstock_auto_login_email')+'&pw='+localStorage.getItem('jazzstock_auto_login_pw'))
+        }
+
+        else {
+            pw = SHA256(document.getElementById('pw').value)
+            req.send('email='+email+'&pw='+pw)
+        }
     }
 }
 
+
+function autologin(){
+    have_to_login = localStorage.getItem('jazzstock_auto_login');
+    if (have_to_login == 'true' && user_loggedin == false){
+        login(true)
+    }
+}
 
 
 function logout(){
@@ -822,7 +729,10 @@ function logout(){
         {
             if (req.status == 200)
             {
-                console.log(' * LOGOUT, ', req.status)
+                // console.log(' * LOGOUT, ', req.status)
+                localStorage.removeItem('jazzstock_auto_login');
+                localStorage.removeItem('jazzstock_auto_login_email');
+                localStorage.removeItem('jazzstock_auto_login_pw');
                 window.location = "/";
             }
 
@@ -869,7 +779,7 @@ function getSpecification(){
 function drawSpecification(opt){
 
     content_field = document.getElementById('specification_content')
-    content_field.innerHTML  =  opt.value
+    content_field.innerHTML = opt.value
 }
 
 function getUserInfo(){
@@ -885,6 +795,7 @@ function getUserInfo(){
                 user_expiration_date = req.response.expiration_date
                 user_loggedin = req.response.loggedin
                 setMenu()
+                autologin()
             }
         }
     }
@@ -901,6 +812,8 @@ function setMenu(){
     if (user_loggedin==true){
         document.getElementById('notloggedin').style.display = "none";
         document.getElementById('loggedin').style.display = "block";
+
+
         document.getElementById('userinfo').style.display = "block";
         document.getElementById('induce_signin').style.display = "none";
 
@@ -1082,13 +995,31 @@ function getTableCustom(){
 
 }
 
+function showStock(tabName, elmnt, color) {
+
+    // QUEUE 확인
+
+    // APPEND
+
+    // POP
+
+    // SHOW
+
+
+
+
+
+
+}
+
 
 function getChartData(stockcode, stockname){
 
 
     if (stockQueue.includes(stockcode)){
-        openPage("tab_"+stockcode, document.getElementById("tablink_"+stockcode), "yellow");
+        // showStock("tab_"+stockcode, document.getElementById("tablink_"+stockcode), "yellow");
         // document.getElementById("tabcontent"+stockcode).innerHTML=stockname
+        alert(stockname + " 는(은) 이미 표시중입니다!")
     }
     else {
 
@@ -1105,67 +1036,10 @@ function getChartData(stockcode, stockname){
                 else
                 {
 
-                    addTabToQueue(stockcode, stockname)
+                    addStockToQueue(stockcode, stockname)
                     chartId = "chart"+stockcode
 
 
-                    if(req.response.sampledata!=null){
-                        openPage("tab_"+stockcode, document.getElementById("tablink_"+stockcode), "yellow");
-                        // document.getElementById("tabcontent"+stockcode).innerHTML=stockcode
-
-                        if(document.body.clientWidth<500){
-                            document.getElementById(chartId).style.height = "600px"
-                        }
-
-                        else{
-                            document.getElementById(chartId).style.height = "1200px"
-                        }
-
-
-                        document.getElementById(chartId.replace('chart','finan')).innerHTML = req.response.finantable
-
-                        $('#'+chartId.replace('chart','finan')).dataTable( {
-                        aLengthMenu: [ 4, 12, 24 ],
-                        aaSorting: [],
-                        sScrollX:"100%",
-                        autoWidth:false,
-
-                        columnDefs: [
-                                { width: 30, targets: 0 },
-                                { width: 30, targets: 1 },
-                                { width: 30, targets: 2 },
-                                { width: 30, targets: 3 },
-                                { width: 30, targets: 4 },
-                                { width: 30, targets: 5 },
-                                            ],
-                        scrollCollapse: true,
-                        fixedColumns : {//关键是这里了，需要第一列不滚动就设置1
-                            leftColumns : 1
-                        },
-
-                        initComplete: function(settings){
-                                $('#'+chartId.replace('chart','finan') +' thead th').each(function () {
-                                   var $td = $(this);
-                                  $td.attr('title', $td.attr('custom-title'));
-                                });
-
-                                /* Apply the tooltips */
-                                $('#'+chartId.replace('chart','finan') +' thead th[title]').tooltip(
-                                {
-                                   "container": 'body'
-                                });
-                            }
-                        } );
-
-
-
-                        search(req.response.sampledata.result,'merge','chart'+stockcode)
-                    }
-
-                    else {
-                        alert('해당 종목 데이터가 없습니다.')
-                        removeall()
-                    }
                 }
             }
         }
@@ -1174,7 +1048,6 @@ function getChartData(stockcode, stockname){
 
         req.open('POST', '/ajaxChart')
         req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-
         req.send('stockcode="'+encodeURIComponent(stockcode)+'"')
         return false
     }

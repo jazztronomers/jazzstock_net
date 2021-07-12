@@ -96,7 +96,7 @@ var ct = new Array;
 
 
 
-console.log(' * CHART RENDERING...' , data[0].STOCKCODE, data.length)
+// console.log(' * CHART RENDERING...' , data[0].STOCKCODE, data.length)
 for(var i = 0; i <data.length; i++){
 
     data_array.push([data[i].OPEN, data[i].CLOSE, data[i].LOW, data[i].HIGH, data[i].VOLUME, data[i].DATE]);
@@ -176,7 +176,6 @@ yg = separatePlusMinus(yg)
 samo = separatePlusMinus(samo)
 tusin = separatePlusMinus(tusin)
 finan = separatePlusMinus(finan)
-
 
 othercorpor = separatePlusMinus(othercorpor)
 bank = separatePlusMinus(bank)
@@ -283,7 +282,8 @@ var myChart = echarts.init(document.getElementById(chartId));
             ,'모건','골드만','CS','메릴',''
             ,'맥쿼리','CLSA','UBS',''
             ,'노무라','도이치','다이와',''
-            ,'제이피','씨티','한투','신영']
+            ,'제이피','씨티','한투','신영'],
+            icon:"circle"
         },
         tooltip: {
 

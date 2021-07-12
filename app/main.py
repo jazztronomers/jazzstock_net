@@ -415,14 +415,43 @@ def ajax_getSndChart():
     '''
 
     stockcode = request.form['stockcode'].replace('"', '')
-
     start = datetime.now()
 
-    dao = DataAccessObjectStock()
-    chartData = dao.sndChart(stockcode)
-    finantable = dao.finanTable(stockcode)
 
-    return jsonify(sampledata=chartData, finantable=finantable)
+    return jsonify()
+
+@application.route('/getTableForOhlcDay', methods=['POST'])
+def getTableForOhlcDay():
+    '''
+    CHART데이터는 Javascript단에서 최대한 빠르게 RENDERING 할 수 있는 자료구조로 처리해서 반환한다
+    빠른반복과 적은 트래픽이 오가는게 관건
+    '''
+
+    stockcode = request.form['stockcode'].replace('"', '')
+
+    dao = DataAccessObjectStock()
+    ohlc_day_data = dao.ohlcDay(stockcode)
+
+    return jsonify(ohlc_day_data=ohlc_day_data)
+
+@application.route('/getTableForSummary', methods=['POST'])
+def getTableForSummary():
+    '''
+    CHART데이터는 Javascript단에서 최대한 빠르게 RENDERING 할 수 있는 자료구조로 처리해서 반환한다
+    빠른반복과 적은 트래픽이 오가는게 관건
+    '''
+
+    stockcode = request.form['stockcode'].replace('"', '')
+
+    dao = DataAccessObjectStock()
+    snd_day_data = dao.sndDay(stockcode)
+    finan_data, finan_html_table, column_list = dao.finanTable(stockcode)
+
+
+    return jsonify(snd_day_data=snd_day_data, finan_data=finan_data,
+                   finan_html_table=finan_html_table, column_list=column_list)
+
+
 
 
 @application.route('/ajaxRelated', methods=['POST'])
