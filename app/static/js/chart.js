@@ -6,6 +6,8 @@ function getOhlcChartData(stockcode){
 
     // 개별종목 챠트용 데이터를 받아오는 함수
 
+    grid_field_stock = document.getElementById("grid_field_stock")
+
     let req = new XMLHttpRequest()
     req.responseType = 'json';
     req.onreadystatechange = function()
@@ -24,6 +26,10 @@ function getOhlcChartData(stockcode){
                 stockMap[stockcode]= ohlc_day_data
 
                 if (window.innerWidth < 800){
+                    toggleTableAndStock()
+                }
+
+                else if (grid_field_stock.style.display="none"){
                     toggleTableAndStock()
                 }
 

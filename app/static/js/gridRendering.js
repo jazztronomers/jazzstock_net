@@ -17,13 +17,12 @@ function gridRender(){
 
     if (device_type == "mobile"){
         canvas_height = window.innerHeight * 9 / 10
-        console.log("changeRenderDirection - mobile - ", canvas_height)
         headerAbbreviation()
-        grid_field_table.style.width = Math.min(window.innerWidth, 1800) * 0.98 +'px'
-        grid_field_stock.style.width = Math.min(window.innerWidth, 1800) * 0.98 +'px'
+        grid_field_table.style.width = Math.min(window.innerWidth, 2000) * 0.98 +'px'
+        grid_field_stock.style.width = Math.min(window.innerWidth, 2000) * 0.98 +'px'
         grid_field_stock.style.height = canvas_height + 'px'
 
-        grid_field_summary.style.width = Math.min(window.innerWidth, 1800) * 0.98 +'px'
+        grid_field_summary.style.width = Math.min(window.innerWidth, 2000) * 0.98 +'px'
         grid_field_summary.style.height = canvas_height + 'px'
 
         grid_element_stocks = document.getElementsByClassName("grid_layer_b")
@@ -32,19 +31,22 @@ function gridRender(){
             grid_element_stocks[i].style.height = canvas_height * 0.16 + 'px'
         }
 
+        button_toggle = document.getElementsByClassName("button_toggle")
+        for (let i = 0; i<button_toggle.length; i++){
+            button_toggle[i].style.top = canvas_height * 0.9 + 'px'
+        }
+        document.getElementById("grid_table_expand").style.display="none"
+
         grid_field_table.style.display = "block"
         grid_field_stock.style.display = "none"
         grid_field_summary.style.display = "none"
     }
 
     else {
-        console.log("changeRenderDirection - non-mobile - ", canvas_height)
 
-
-        grid_field_table.style.width = window.innerWidth * 0.48 + 'px'
+        grid_field_table.style.width = Math.min(window.innerWidth, 2000) + 'px'
         grid_field_stock.style.width = window.innerWidth * 0.48 + 'px'
         grid_field_stock.style.height = canvas_height + 'px'
-
 
         grid_field_summary.style.width = window.innerWidth * 0.48 + 'px'
         grid_field_summary.style.height = canvas_height + 'px'
@@ -55,19 +57,29 @@ function gridRender(){
             grid_element_stocks[i].style.height = canvas_height * 0.15 + 'px'
         }
 
+
+        button_toggle = document.getElementsByClassName("button_toggle")
+        for (let i = 0; i<button_toggle.length; i++){
+            button_toggle[i].style.top = canvas_height * 0.9 + 'px'
+        }
+
+        document.getElementById("grid_stock_back").style.display="none"
+
         grid_field_table.style.display = "inline-block"
-        grid_field_stock.style.display = "inline-block"
+        grid_field_stock.style.display = "none"
         grid_field_summary.style.display = "none"
     }
 
 
 }
 
+
+
 function toggleTableAndStock(){
 
     grid_field_stock = document.getElementById("grid_field_stock")
     grid_field_table  = document.getElementById("grid_field_table")
-
+    grid_field_summary = document.getElementById("grid_field_summary")
 
     if (device_type == "mobile"){
 
@@ -90,11 +102,27 @@ function toggleTableAndStock(){
     }
     else if (device_type == "non-mobile"){
 
-        alert("nop!")
+
+        if (grid_field_stock.style.display=="inline-block" || grid_field_summary.style.display == 'inline-block'){
+
+            // 확장
+            grid_field_table.style.display="inline-block"
+            grid_field_stock.style.display="none"
+            grid_field_table.style.width = Math.min(window.innerWidth, 2000) + 'px'
+            grid_field_summary.style.display= "none"
+        }
 
 
+        else {
+
+            // 축소
+            grid_field_table.style.display="inline-block"
+            grid_field_stock.style.display="inline-block"
+            grid_field_table.style.width = window.innerWidth * 0.48 + 'px'
+            grid_field_summary.style.display= "none"
+
+        }
     }
-
 
 
 

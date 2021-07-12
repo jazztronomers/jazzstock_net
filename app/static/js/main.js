@@ -220,8 +220,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
     // function getTable(tableId, targets, intervals, orderby, orderhow, limit, init=false)
-    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
-
     array_filter.forEach(function (filter_id, index) {
 
         filter_value = localStorage.getItem("jazzstock_" + filter_id)
@@ -231,6 +229,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     gridRender()
     getUserInfo()
+
+    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
     getFavorite()
     getSpecification()
     getRecentTradingDays()
@@ -503,7 +503,10 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
             {
                 if (req.status != 200)
                 {
-                    alert("테이블을 가져오는데 실패하였습니다, 다시 시도해주세요")
+                    have_to_login = localStorage.getItem('jazzstock_auto_login');
+                    if (have_to_login != 'true'){
+                        alert("테이블을 가져오는데 실패하였습니다, 다시 시도해주세요 [" + req.status +"]")
+                    }
                 }
                 else
                 {
