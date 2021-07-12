@@ -1,10 +1,10 @@
 body{
-  max-width: 1920px;
+  max-width: 100%;
   margin: auto;
   background: white;
   padding: 0px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-
+  overflow: hidden;
   }
 
 /**/
@@ -72,7 +72,7 @@ border-radius: 10px;
 border: 1px solid #999;
 margin-left: 20px;
 }
-
+**/
 
 
 /**
@@ -178,7 +178,8 @@ div.scrollmenu#navigation_bottom {
 div#footer {
 
     overflow: hidden;
-    position: relative;
+    position: fixed;
+    bottom:0;
     white-space: nowrap;
     float: center;
     width: 100%;
@@ -390,10 +391,7 @@ table.DTFC_Cloned {
     }
 }
 
-.sndChart {
-    height: 1000px;
-    position: relative;
-}
+
 
 input[type=checkbox] {
     height: 10px;
@@ -691,4 +689,93 @@ input[type="button"] {
 /* Add some hover effects to buttons */
 .form-container .btn:hover, .open-button:hover {
   opacity: 1;
+}
+
+
+#grid_canvas {
+    position: absolute;
+    justify-content: center;
+    background-color: white;
+    align-items: center;
+    height: 100%;
+    grid-auto-flow: column;
+
+	/*
+	background-color: #BCDCB7;
+	*/
+}
+
+
+
+
+.grid_layer_a {
+	display: inline-block;
+	border: solid 0px rgb(0,0,0,0.2);
+	padding: 5px;
+	margin: 0px;
+	overflow-y: auto;
+	background-color: white;
+	vertical-align: top;
+	position: relative;
+	/*
+	background-color: #B7D1DC;
+	*/
+}
+
+.closestock {
+
+    top: 50%;
+    right: 50%;
+    position: absolute;
+    background-color: white;
+}
+
+.grid_layer_b {
+	background-color: white;
+	border: solid 1px rgb(0,0,0,0.2);
+    position: relative;
+	width: 100%;
+	display: block;
+	padding: 0px;
+	margin: 1px;
+	overflow-y: auto;
+	/*
+	background-color: #D7B7DC;
+	height: 100px;
+	overflow-y: auto;
+	resize: horizontal;
+	display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    grid-auto-rows: minmax(100px, auto);
+    */
+}
+
+
+
+.ohlc_chart {
+    position:absolute;
+    color: #D6D6D6;
+}
+
+.button_back_arrow {
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background-color: #D6D6D6;
+    position:absolute;
+    bottom:80px;
+    left:20px;
+    opacity:50%;
+}
+
+.button_menu {
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background-color: #D6D6D6;
+    position:absolute;
+    bottom:80px;
+    right:20px;
+    opacity:50%;
 }
