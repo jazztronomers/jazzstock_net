@@ -7,18 +7,23 @@ function headerAbbreviation(){
     document.getElementById("userinfo").innerHTML=''
 }
 
+
+// 화면사이즈가 resize 될때마다 실행되는 함수, 반응형 구현
 function gridRender(){
 
     grid_field_stock = document.getElementById("grid_field_stock")
     grid_field_table  = document.getElementById("grid_field_table")
+    button_height = 40
 
     device_type = window.innerWidth > 800 ? "non-mobile" : "mobile"
-    console.log("gridRender...", device_type, window.innerWidth)
+    console.log("gridRender...", device_type, window.innerWidth, window.innerHeight)
 
     if (device_type == "mobile"){
-        canvas_height = window.innerHeight * 9 / 10
+        canvas_height = window.innerHeight * 0.90
         headerAbbreviation()
         grid_field_table.style.width = Math.min(window.innerWidth, 2000) * 0.98 +'px'
+        grid_field_table.style.height = canvas_height + 'px'
+
         grid_field_stock.style.width = Math.min(window.innerWidth, 2000) * 0.98 +'px'
         grid_field_stock.style.height = canvas_height + 'px'
 
@@ -31,11 +36,12 @@ function gridRender(){
             grid_element_stocks[i].style.height = canvas_height * 0.16 + 'px'
         }
 
-        button_toggle = document.getElementsByClassName("button_toggle")
-        for (let i = 0; i<button_toggle.length; i++){
-            button_toggle[i].style.top = canvas_height * 0.9 + 'px'
-        }
-        document.getElementById("grid_table_expand").style.display="none"
+        button_group_table_mobile = document.getElementById("button_group_table_mobile")
+        button_group_table_mobile.style.display = 'block'
+        button_group_table_mobile.style.bottom = button_height * Math.round(canvas_height * 0.1/button_height) + 'px'
+
+        button_group_table_non_mobile = document.getElementById("button_group_table_non_mobile")
+        button_group_table_non_mobile.style.display = 'none'
 
         grid_field_table.style.display = "block"
         grid_field_stock.style.display = "none"
@@ -43,8 +49,10 @@ function gridRender(){
     }
 
     else {
-
+        canvas_height = window.innerHeight * 0.94
         grid_field_table.style.width = Math.min(window.innerWidth, 2000) + 'px'
+        grid_field_table.style.height = canvas_height + 'px'
+
         grid_field_stock.style.width = window.innerWidth * 0.48 + 'px'
         grid_field_stock.style.height = canvas_height + 'px'
 
@@ -57,18 +65,26 @@ function gridRender(){
             grid_element_stocks[i].style.height = canvas_height * 0.15 + 'px'
         }
 
+        button_group_table_non_mobile = document.getElementById("button_group_table_non_mobile")
+        button_group_table_non_mobile.style.display = 'block'
+        button_group_table_non_mobile.style.bottom = button_height * Math.round(canvas_height * 0.1/button_height) + 'px'
 
-        button_toggle = document.getElementsByClassName("button_toggle")
-        for (let i = 0; i<button_toggle.length; i++){
-            button_toggle[i].style.top = canvas_height * 0.9 + 'px'
-        }
 
-        document.getElementById("grid_stock_back").style.display="none"
+        button_group_table_mobile = document.getElementById("button_group_table_mobile")
+        button_group_table_mobile.style.display = 'none'
 
         grid_field_table.style.display = "inline-block"
         grid_field_stock.style.display = "none"
         grid_field_summary.style.display = "none"
     }
+
+    button_group_stock_mobile = document.getElementById("button_group_stock_mobile")
+    button_group_stock_mobile.style.display = 'block'
+    button_group_stock_mobile.style.bottom = button_height * Math.round(canvas_height * 0.1/button_height) + 'px'
+
+    button_group_summary_mobile = document.getElementById("button_group_summary_mobile")
+    button_group_summary_mobile.style.display = 'block'
+    button_group_summary_mobile.style.bottom = button_height * Math.round(canvas_height * 0.1/button_height) + 'px'
 
 
 }

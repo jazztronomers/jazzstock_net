@@ -1,6 +1,8 @@
 let upColor = '#0008ff';
 let downColor = '#ec0000';
 
+let timePeriod = [100/6*3, 100/6*2, 100/6, 100/6*5, 100/6*4 ]
+
 
 function getOhlcChartData(stockcode){
 
@@ -45,6 +47,7 @@ function getOhlcChartData(stockcode){
 
 }
 
+
 function renderOhlcChart(stockcode, ohlc_day_data, element_id){
 
 
@@ -86,18 +89,31 @@ function renderOhlcChart(stockcode, ohlc_day_data, element_id){
 
     option = {
         animation: false,
-
         toolbox: {
+            itemSize:height_unit*1.5,
             feature: {
                 myTool2: {
                     show: true,
+                    showTitle: false,
                     tooltip: false,
-                    Title: 'Remove',
+                    title: 'Remove',
                     icon: 'image://static/images/icon_close.png',
                     onclick: function (){
                         removeGridStockElement(element_id)
                     }
+                },
+
+                myTool3: {
+                    show: true,
+                    showTitle: false,
+                    tooltip: false,
+                    title: 'Expand',
+                    icon: 'image://static/images/icon_expand.png',
+                    onclick: function (){
+                        renderSummary(stockcode)
+                    }
                 }
+
             }
         },
         title: {
@@ -179,7 +195,7 @@ function renderOhlcChart(stockcode, ohlc_day_data, element_id){
         dataZoom: [{
             type: 'inside',
             xAxisIndex: [0, 1],
-            start: 75,
+            start: 100/6*4,
             end: 100,
             top: 0,
             height: height_unit * 8
@@ -578,7 +594,7 @@ function renderSummaryChart(stockcode, ohlc_day_data, snd_day_data, element_id){
             left: width_unit*3,
             right: width_unit*1.5,
             top: height_unit * 25,
-            height: height_unit * 12,
+            height: height_unit * 11,
             borderColor:'#D6D6D6',
             show: true
         }],
@@ -586,14 +602,13 @@ function renderSummaryChart(stockcode, ohlc_day_data, snd_day_data, element_id){
 
             left: width_unit*3,
             right: width_unit*1.5,
-            top: height_unit * 38,
+            top: height_unit * 37,
             height: height_unit * 4,
             borderColor:'#D6D6D6',
             show: true,
             align:'center',
             itemgap: height_unit*5,
-            itemwidth: height_unit*2,
-            itemheight: height_unit*2,
+            itemSize:height_unit*2,
             textStyle:{
                 fontSize: height_unit*0.5,
                 fontWeight:'bold'
@@ -1402,6 +1417,27 @@ function renderSummaryFinanChart(stockcode, finan_data, element_id){
 };
 
 
+
+function changeGlobalX(){
+
+
+
+    grid_stock_charts = document.getElementsByClassName("grid_stock_chart")
+
+    console.log(timePeriod)
+    curr = timePeriod.splice(0,1)
+
+    console.log(timePeriod)
+    for (let i=0; i<grid_stock_charts.length; i++){
+        if (grid_stock_charts[i].hasAttribute('_echarts_instance_')){
+            chart = echarts.init(grid_stock_charts[i])
+            chart.setOption({"dataZoom":[{"start":Math.round(curr)}]})
+        }
+    }
+
+    timePeriod.push(curr)
+
+}
 
 
 

@@ -156,6 +156,7 @@ tab_initialized['table_fav']=false
 tab_initialized['table_rep']=false
 
 let stockcode_favorite = []
+let stockcode_favorite_dirty = false
 let recent_trading_days = []
 let user_loggedin = false
 let user_expiration_date = '1970-01-01'
@@ -229,15 +230,25 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     gridRender()
     getUserInfo()
-
-    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
-    getFavorite()
     getSpecification()
+
+    // ===========================================
+    // PROD !
+    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
+    // ===========================================
+    // DEV !
+    showTableTab('tab_simulation', this, 'red');
+    renderSimulationTab()
+    // ===========================================
+
+
+    getFavorite()
     getRecentTradingDays()
     console.log(' * Document initialized', now())
     window.onresize = gridRender;
 
     // document.getElementById("jazzstock").innerHTML = window.innerWidth + "x" + window.innerHeight
+    document.getElementById("jazzstock").innerHTML = window.screen.width + "x" + window.screen.height
 
 
 })
@@ -251,6 +262,8 @@ function now(){
 
 
 function handleChange(row){
+
+    stockcode_favorite_dirty = true
 
     if (stockcode_favorite.includes(row.value)){
         stock_idx = stockcode_favorite.indexOf(row.value)
@@ -266,36 +279,41 @@ function handleChange(row){
 
 function setFavorite(){
 
-    let req = new XMLHttpRequest()
+    if (stockcode_favorite_dirty == false){
+        alert("즐겨찾기 종목이 추가, 또는 제거되지 않았습니다.")
+    }
 
-    req.responseType = 'json';
-    req.onreadystatechange = function()
-    {
-        if (req.readyState == 4)
+    else{
+
+        let req = new XMLHttpRequest()
+        req.responseType = 'json';
+        req.onreadystatechange = function()
         {
-            if (req.status != 200)
+            if (req.readyState == 4)
             {
-                console.log('hello')
-            }
-            else
-            {
-                if (req.response.result == false){
-                    alert(req.response.message)
+                if (req.status != 200)
+                {
+                    console.log('hello')
                 }
-                else{
+                else
+                {
+                    if (req.response.result == false){
+                        alert(req.response.message)
+                    }
+                    else{
 
-                    response = req.response.result
-                    alert("즐겨찾기리스트가 업데이트되었습니다.")
+                        response = req.response.result
+                        alert("즐겨찾기 종목이 체크된 상태로 업데이트되었습니다.")
+                    }
                 }
             }
         }
+
+        console.log(" * Update favorite..")
+        req.open('POST', '/setFavorite')
+        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+        req.send('stockcode_favorite=' + encodeURIComponent(stockcode_favorite))
     }
-
-    console.log(" * Update favorite..")
-    req.open('POST', '/setFavorite')
-    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-    req.send('stockcode_favorite=' + encodeURIComponent(stockcode_favorite))
-
 }
 
 function getFavorite(){
@@ -505,7 +523,7 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
                 {
                     have_to_login = localStorage.getItem('jazzstock_auto_login');
                     if (have_to_login != 'true'){
-                        alert("테이블을 가져오는데 실패하였습니다, 다시 시도해주세요 [" + req.status +"]")
+                        alert("테이블을 가져오는데 실패하였습니다, 다시 시도해주세요 [" + req.status +"]"  )
                     }
                 }
                 else
@@ -533,7 +551,6 @@ function getTable(tableId, targets, intervals, orderby, orderhow, limit, fav_onl
     }
 
     else{
-        // console.log(tableId, "already")
         let table = $('#'+tableId).DataTable();
         table.draw();
     }
@@ -825,16 +842,16 @@ function setMenu(){
     expdate = new Date(user_expiration_date).setHours(0,0,0,0)
     curdate = new Date().setHours(0,0,0,0)
 
-    if (expdate>=curdate){
-
-        console.log(" * Supporter function rendering....")
-        let class_for_supporter = document.getElementsByClassName('only_supporter')
-        for (i = 0; i < class_for_supporter.length; i++) {
-            class_for_supporter[i].style.display="block"
-        }
-        // document.getElementById('only_supporter').style.display = "block";
-        // document.getElementById('builtinFilter').style.display = "block";
-    }
+//    if (expdate>=curdate){
+//
+//        console.log(" * Supporter function rendering....")
+//        let class_for_supporter = document.getElementsByClassName('only_supporter')
+//        for (i = 0; i < class_for_supporter.length; i++) {
+//            class_for_supporter[i].style.display="inline-block"
+//        }
+//        // document.getElementById('only_supporter').style.display = "block";
+//        // document.getElementById('builtinFilter').style.display = "block";
+//    }
 }
 
 
@@ -860,12 +877,17 @@ function foldSearchingOption(){
 }
 
 
-function openForm() {
-    document.getElementById("myForm").style.display = "block";
+function toggleElement(element_id) {
+    let content = document.getElementById(element_id);
+    if (content.style.display === "block") {
+        content.style.display = "none";
+    } else {
+        content.style.display = "block";
+    }
 }
 
-function closeForm() {
-    document.getElementById("myForm").style.display = "none";
+function closeForm(element_id) {
+    document.getElementById(element_id).style.display = "none";
 }
 
 
@@ -883,9 +905,9 @@ function description(){
 }
 
 
-function openExpandFunction(){
+function openExpandFunctionMenu(){
 
-    let content = document.getElementById('function_expanded');
+    let content = document.getElementById('popup_menu');
 
     if (content.style.display === "block") {
       content.style.display = "none";

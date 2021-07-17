@@ -56,10 +56,7 @@ p#notice a {
   width: 11px;
   border: 2px solid #d5d5d5;
 }
-
-
 **/
-
 
 ::-webkit-scrollbar{
 height: 8px;
@@ -72,7 +69,7 @@ border-radius: 10px;
 border: 1px solid #999;
 margin-left: 20px;
 }
-**/
+
 
 
 /**
@@ -118,7 +115,7 @@ a#prev_tab {
   text-align: center;
   padding: 10px 10px 10px 10px; /* U R D L */
   text-decoration: none;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* Change the color of links on hover */
@@ -136,6 +133,7 @@ a#prev_tab {
 /* Right-aligned section inside the top navigation */
 .navigation_top_right {
   float: right;
+  color:white;
 }
 
 
@@ -153,6 +151,29 @@ a#prev_tab {
     margin:0 0;
 }
 
+
+
+div.scrollmenu {
+  background-color: #333;
+  overflow: auto;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+div.scrollmenu a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  text-decoration: none;
+}
+
+div.scrollmenu a:hover {
+  background-color: #777;
+}
+
+/*
+
 div.scrollmenu#navigation_table {
     background-color: #333;
     overflow: hidden;
@@ -160,20 +181,31 @@ div.scrollmenu#navigation_table {
     width: 100%;
     position:  relative;
     font-size: 13px;
-
 }
 
-div.scrollmenu#navigation_bottom {
-  background-color: #555;
-  overflow: auto;
-  white-space: nowrap;
-  position: fixed;
-  bottom:0;
-  font-size: 13px;
-  padding: 2px;
-  width:100%
-
+div.scrollmenu {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 0px;
+  text-decoration: none;
 }
+
+div.scrollmenu a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  text-decoration: none;
+  float: left;
+}
+
+div.scrollmenu a:hover {
+  color: black;
+  background-color: #FABD02;
+}
+*/
+
 
 div#footer {
 
@@ -258,30 +290,6 @@ div.tabcontent  {
     width:100%;
 
 }
-
-div.scrollmenu a {
-  display: inline-block;
-  color: white;
-  text-align: center;
-  padding: 10px;
-  text-decoration: none;
-  float: left;
-}
-
-div.scrollmenu a:hover {
-  color: black;
-  background-color: #FABD02;
-}
-
-
-div.scrollmenu {
-  display: inline-block;
-  color: white;
-  text-align: center;
-  padding: 0px;
-  text-decoration: none;
-}
-
 
 
 
@@ -638,24 +646,43 @@ input[type="button"] {
 }
 
 /* The popup form - hidden by default */
-.form-popup {
-  display: none;
+.popup {
   position: fixed;
-  bottom: 37px;
-  right: 0px;
-  border: 3px solid #f1f1f1;
+  bottom: 0px;
   z-index: 9;
 }
 
+#popup_login {
+    right: 0px;
+}
+
+.popup_menu {
+    left: 0px;
+    background-color: white;
+    width:40%;
+    padding:10px;
+    opacity:90%;
+    font-size: 12px;
+	border: solid 1px rgb(0,0,0,0.2);
+
+}
+
+.popup_menu input[type=text] {
+
+    margin: 1px 0 1px 0;
+    font-size: 12px;
+    width:200px;
+}
+
 /* Add styles to the form container */
-.form-container {
+.popup_container {
   max-width: 300px;
   padding: 10px;
   background-color: white;
 }
 
 /* Full-width input fields */
-.form-container input[type=text], .form-container input[type=password] {
+.popup_container input[type=text], .popup_container input[type=password] {
   width: 100%;
   padding: 15px;
   margin: 5px 0 22px 0;
@@ -664,13 +691,13 @@ input[type="button"] {
 }
 
 /* When the inputs get focus, do something */
-.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+.popup_container input[type=text]:focus, .popup_container input[type=password]:focus {
   background-color: #ddd;
   outline: none;
 }
 
 /* Set a style for the submit/login button */
-.form-container .btn {
+.popup_container .btn {
   background-color: #4CAF50;
   color: white;
   padding: 16px 20px;
@@ -682,12 +709,12 @@ input[type="button"] {
 }
 
 /* Add a red background color to the cancel button */
-.form-container .cancel {
+.popup_container .cancel {
   background-color: red;
 }
 
 /* Add some hover effects to buttons */
-.form-container .btn:hover, .open-button:hover {
+.popup_container .btn:hover, .open-button:hover {
   opacity: 1;
 }
 
@@ -758,15 +785,8 @@ input[type="button"] {
     color: #D6D6D6;
 }
 
-.button_toggle {
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    background-color: #D6D6D6;
-    position:absolute;
-    opacity:75%;
-}
 
+/*
 .button_toggle_left {
     left:20px
 }
@@ -774,4 +794,52 @@ input[type="button"] {
 
 .button_toggle_right {
     right:20px
+}
+*/
+
+.button_area_right {
+
+    background-color: #D6D6D6;
+    width: 40px;
+    right: 30px;
+    position: absolute;
+    opacity:50%;
+    border-radius: 5px;
+}
+
+.button_area_left {
+
+    background-color: #D6D6D6;
+    width: 40px;
+    left: 15px;
+    position: absolute;
+    opacity:50%;
+    border-radius: 5px;
+}
+
+
+.button_toggle {
+    width:40px;
+    height:40px;
+    position:relative;
+}
+
+
+.button_simulation_features {
+    width: 70px;
+    overflow: hidden;
+}
+
+
+.button_simulation_input {
+    width: 70px;
+    overflow: hidden;
+    float:right;
+}
+
+.table_simulation {
+
+    max-width: 50%;
+    table-layout: fixed;
+    white-space:pre-wrap;
 }
