@@ -93,11 +93,12 @@ function renderAllFeatures(){
                 if (features_map[feature].column_name_short != undefined & features_map[feature].column_name_full != undefined){
 
                     cell_b_content.value= feature.replace(features_map[feature].column_name_short, features_map[feature].column_name_full)
-
+                    cell_b_content.setAttribute("feature_display", feature)
 
                 }
                 else {
                     cell_b_content.value= feature
+                    cell_b_content.setAttribute("feature_display", feature)
                 }
 
                 // cell_b_content.setAttribute("hidden", feature)
@@ -177,11 +178,11 @@ function getConditionInputRowId(){
 
 }
 
-function addConditionInputRow(feature_name, feature_value){
+function addConditionInputRow(feature_name_display, feature_name_db, preset_operation=null, preset_target_value=null){
 
     row_id = getConditionInputRowId()
 
-    console.log(feature_name, feature_value)
+    console.log('addConditionInputRow:', feature_name_display, feature_name_db, preset_operation, preset_target_value)
 
 
     simulation_condition_generation_tbody = document.getElementById("simulation_condition_generation_tbody")
@@ -198,12 +199,13 @@ function addConditionInputRow(feature_name, feature_value){
     cell_c.setAttribute("id", row_id+"_cell_c")
     cell_d.setAttribute("id", row_id+"_cell_d")
 
-    cell_a.innerHTML=feature_name
-    cell_a.value=feature_value
+    cell_a.innerHTML=feature_name_display
+    cell_a.value=feature_name_db
 
     button_get_distribution =document.createElement("button")
     button_get_distribution.innerHTML= "distrib."
     button_get_distribution.setAttribute("class", "button_simulation_input")
+    button_get_distribution.setAttribute("onclick", "getDistribution('"+feature_name+"')")
 
 
     button_delete =document.createElement("button")
@@ -224,7 +226,13 @@ function addConditionInputRow(feature_name, feature_value){
         option = document.createElement("option")
         option.value = operation
         option.innerHTML = operation
-        if (operation == ">"){
+
+
+        if (operation == preset_operation){
+            console.log("jazz!")
+            option.setAttribute("selected",true)
+        }
+        else if (operation == ">"){
             option.setAttribute("selected",true)
         }
         select_box_operation.appendChild(option)
@@ -248,7 +256,7 @@ function addConditionInputRow(feature_name, feature_value){
         select_box_target.appendChild(option)
     }
 
-    select_box_target.setAttribute("onchange","changeTargetInputArea(this.value, '"+ row_id + "')")
+    select_box_target.setAttribute("onchange","changeTargetInputArea(this.value, '"+ row_id + "', '" + preset_target_value + "')")
     cell_c.appendChild(select_box_target)
 
     // ======================================================================================
@@ -264,20 +272,19 @@ function addConditionInputRow(feature_name, feature_value){
     simulation_condition_generation_tbody.appendChild(row)
 
     // 초기화할때 한번 돌려줌
-    changeTargetInputArea("value", row_id)
+    changeTargetInputArea("value", row_id, preset_target_value)
 
 }
 
 function deleteRow(row_id){
 
     console.log(row_id)
-
     let row = document.getElementById(row_id);
     console.log(row)
     row.parentNode.removeChild(row);
 }
 
-function changeTargetInputArea(target, row_id) {
+function changeTargetInputArea(target, row_id, preset_target_value=null) {
 
     cell_d = document.getElementById(row_id + "_cell_d")
 
@@ -286,11 +293,9 @@ function changeTargetInputArea(target, row_id) {
     }
 
 
-    if (target == "value"){
-        target_value = document.createElement("input")
-        cell_d.appendChild(target_value)
-    }
-    else if (target == "feature"){
+    console.log("bird!!", preset_target_value)
+
+    if (target == "feature"){
         target_value_coeff = document.createElement("input")
         target_value = document.createElement("select")
 
@@ -304,6 +309,19 @@ function changeTargetInputArea(target, row_id) {
         }
 
         cell_d.appendChild(target_value_coeff)
+        cell_d.appendChild(target_value)
+    }
+
+    else if (preset_target_value != null){
+        console.log("stock!!", preset_target_value)
+        target_value = document.createElement("input")
+        target_value.value = preset_target_value
+        cell_d.appendChild(target_value)
+    }
+
+
+    else if (target == "value"){
+        target_value = document.createElement("input")
         cell_d.appendChild(target_value)
     }
 }
@@ -321,13 +339,24 @@ function simulationRequest(){
         {
             if (req.status != 200)
             {
-                console.log('hello')
+                alert('simulationRequest ERROR!')
             }
             else
             {
 
 
-                console.log(req.response)
+                html = req.response.simulation_result_table_html
+                column_list = req.response.simulation_result_column_list
+                console.log(html)
+                console.log(column_list)
+                console.log(feature_rows)
+                setFeaturesToLocalStorage(JSON.stringify(feature_rows))
+
+                if (document.getElementById("table_simulation").hasAttribute("aria-describedby") == true){
+                    clearTable("table_simulation")
+                }
+
+                renderTable("table_simulation", html, column_list, ratio=0.5, fixedLeft=2)
 
             }
         }
@@ -339,7 +368,7 @@ function simulationRequest(){
     from_date = document.getElementById('simulation_from_date').value
     to_date = document.getElementById('simulation_to_date').value
 
-    rows = []
+    feature_rows = []
 
     console.log(simulation_condition_generation_tbody.children.length)
 
@@ -348,7 +377,10 @@ function simulationRequest(){
 
         row_id = simulation_condition_generation_tbody.children[i].id
 
-        feature   = document.getElementById(row_id + "_cell_a").value
+        feature_name   = document.getElementById(row_id + "_cell_a").value
+
+        feature_name_display   = document.getElementById(row_id + "_cell_a").getAttribute
+
         operation = document.getElementById(row_id + "_cell_b").childNodes[0].value
 
         target_type = document.getElementById(row_id +  "_cell_c").childNodes[0].value
@@ -363,18 +395,29 @@ function simulationRequest(){
             target_value = target_value + document.getElementById(row_id + "_cell_d").childNodes[1].value
         }
 
-        console.log(i, feature, operation, target_value)
-        rows.push({"feature":feature, "operation":operation, "target_value":target_value})
+        console.log(i, feature_name, operation, target_value)
+        feature_rows.push({"feature_name":feature_name, "operation":operation, "target_value":target_value})
     }
 
-    params = JSON.stringify({"input":rows, "from_date":from_date, "to_date":to_date})
+    features = JSON.stringify({"input":feature_rows, "from_date":from_date, "to_date":to_date})
 
 
     req.open('POST', '/getSimulationResult')
     req.setRequestHeader("Content-type", "application/json")
-    req.send(params)
+    req.send(features)
 
 }
+
+
+
+
+
+function setFeaturesToLocalStorage(feature_rows){
+
+    localStorage.setItem("jazzstock_recent_features_simulation", feature_rows)
+
+}
+
 
 
 function renderSpecificFeatureStats(feature_name, stats){
@@ -417,5 +460,140 @@ function renderRecentTradingDays(){
 
     simulation_target_date_area.appendChild(select_box_from)
     simulation_target_date_area.appendChild(select_box_to)
+
+}
+
+
+function getDistribution(feature_name){
+
+    from_date = document.getElementById('simulation_from_date').value
+    to_date = document.getElementById('simulation_to_date').value
+
+    let req = new XMLHttpRequest()
+    req.responseType = 'json';
+    req.onreadystatechange = function()
+    {
+        if (req.readyState == 4)
+        {
+            if (req.status != 200)
+            {
+                console.log('hello')
+            }
+            else
+            {
+
+
+                console.log(req.response)
+
+            }
+        }
+    }
+
+    console.log()
+    params = JSON.stringify({"feature_name":feature_name, "from_date":from_date, "to_date":to_date, "origin_table":features_map[feature_name].origin_table})
+    req.open('POST', '/test')
+    req.setRequestHeader("Content-type", "application/json")
+    req.send(params)
+
+
+}
+
+function getFeatureRowsRecent(){
+
+
+    feature_rows = localStorage.getItem("jazzstock_recent_features_simulation")
+
+    if (feature_rows == undefined){
+        alert("no saved features on local storage")
+    }
+
+    else {
+
+        renderFeatures(JSON.parse(feature_rows))
+    }
+
+}
+
+
+function renderFeatures(feature_rows){
+
+    simulation_condition_generation_tbody = document.getElementById("simulation_condition_generation_tbody")
+    while (simulation_condition_generation_tbody.firstChild){
+        simulation_condition_generation_tbody.removeChild(simulation_condition_generation_tbody.lastChild)
+    }
+
+    for (let i=0; i< feature_rows.length; i++){
+        addConditionInputRow(feature_rows[i].feature_name, feature_rows[i].feature_name, feature_rows[i].operation, feature_rows[i].target_value)
+    }
+
+
+}
+
+
+function getFeaturesFromServer(){
+
+    from_date = document.getElementById('simulation_from_date').value
+    to_date = document.getElementById('simulation_to_date').value
+
+    let req = new XMLHttpRequest()
+    req.responseType = 'json';
+    req.onreadystatechange = function()
+    {
+        if (req.readyState == 4)
+        {
+            if (req.status != 200)
+            {
+                console.log('hello')
+            }
+            else
+            {
+
+
+                console.log(req.response)
+
+            }
+        }
+    }
+
+    console.log()
+    params = JSON.stringify({"feature_name":feature_name, "from_date":from_date, "to_date":to_date, "origin_table":features_map[feature_name].origin_table})
+    req.open('POST', '/test')
+    req.setRequestHeader("Content-type", "application/json")
+    req.send(params)
+
+}
+
+
+
+function saveFeaturesToServer(){
+
+    from_date = document.getElementById('simulation_from_date').value
+    to_date = document.getElementById('simulation_to_date').value
+
+    let req = new XMLHttpRequest()
+    req.responseType = 'json';
+    req.onreadystatechange = function()
+    {
+        if (req.readyState == 4)
+        {
+            if (req.status != 200)
+            {
+                console.log('hello')
+            }
+            else
+            {
+
+
+                console.log(req.response)
+
+            }
+        }
+    }
+
+    console.log()
+    params = JSON.stringify({"feature_name":feature_name, "from_date":from_date, "to_date":to_date, "origin_table":features_map[feature_name].origin_table})
+    req.open('POST', '/test')
+    req.setRequestHeader("Content-type", "application/json")
+    req.send(params)
 
 }

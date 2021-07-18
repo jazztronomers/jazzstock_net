@@ -237,8 +237,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
     // ===========================================
     // DEV !
-    showTableTab('tab_simulation', this, 'red');
-    renderSimulationTab()
+    // showTableTab('tab_simulation', this, 'red');
+    // renderSimulationTab()
     // ===========================================
 
 

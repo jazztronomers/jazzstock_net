@@ -1,5 +1,6 @@
 from jazzstock_net.app.dao.dao_stock import DataAccessObjectStock
 from jazzstock_net.app.dao.dao_user import DataAccessObjectUser
+from jazzstock_net.app.dao.dao_simulation import DataAccessObjectSimulation
 from jazzstock_net.app.common.mail import send_mail
 import jazzstock_net.app.config.config as cf
 from jazzstock_net.app.config.config_message import alert_message
@@ -584,6 +585,41 @@ def fetchRowsRealtime():
             print(" * 최근거래일 일자로 fetch")
             ret = dao.fetch(the_date = the_date, seq=seq_max)
         return jsonify(ret)
+
+@application.route('/getSimulationResult', methods=['POST'])
+def getSimulationResult():
+    '''
+    최근거래일 총 데이터건수를 가져오는 함수
+    '''
+
+    if request.method == 'POST':
+
+        from_date = request.json.get("from_date")
+        to_date = request.json.get("to_date")
+
+        conditions = []
+        for i, row in enumerate(request.json.get("input")):
+
+            # feature = row.get("feature")
+            # operation = row.get("operation")
+            # target_value = row.get("target_value")
+            conditions.append(row)
+
+        dao = DataAccessObjectSimulation()
+        html, column_list = dao.get_simulation_result_direct(from_date, to_date, conditions)
+
+
+        return jsonify(simulation_result_table_html=html, simulation_result_column_list=column_list)
+
+
+@application.route('/test', methods=['POST'])
+def test():
+    '''
+    최근거래일 총 데이터건수를 가져오는 함수
+    '''
+
+    print(request.json)
+    return jsonify({"yo":"yo"})
 
 
 # @application.route('/getReportHK', methods=['GET'])

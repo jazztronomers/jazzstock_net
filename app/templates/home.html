@@ -10,11 +10,13 @@
 <script type="text/javascript" charset="utf8" src="/static/js/dataTables.colReorder.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.22/sorting/natural.js"></script>
+<script type="text/javascript" charset="utf8" src='https://cdn.plot.ly/plotly-2.2.0.min.js'></script>
 <script type="text/javascript" charset="utf8" src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
 <!--JAZZSTOCK JS -->
 
 <script type="text/javascript" src="static/js/open.js"></script>
 <script type="text/javascript" src="static/js/gridRendering.js"></script>
+<script type="text/javascript" src="static/js/simulation.js"></script>
 <script type="text/javascript" src="static/js/main.js"></script>
 <script type="text/javascript" src="static/js/tableDaily.js"></script>
 <script type="text/javascript" src="static/js/tableRealtime.js"></script>
@@ -64,19 +66,16 @@
             <a class="active" href="/" id="jazzstock"><b>Jazzstock</b></a>
             <div class="navigation_top_right" id="menu_loggedin">
                 <div id="notloggedin">
-                    <a href="#" onclick="description()">공지</a>
-                    <a href="/register">회원가입</a>
-                    <a href="#" onclick="openForm()">로그인</a>
-                    <a href="#" onclick="openColumnSpec()">설명</a>
+                    <a href="#" onclick="description()">Notice</a>
+                    <a href="/register">SignUp</a>
+                    <a href="#" onclick="toggleElement('popup_login')">Login</a>
+                    <a href="#" onclick="openColumnSpec()">Manual</a>
                 </div>
                 <div id="loggedin" style="display: none">
-
-                    <a href="#" onclick="setFavorite()">즐업</a>
-                    <a href="#" onclick="openDownload()">다운</a>
-                    <a href="#" onclick="description()">공지</a>
-                    <a href="/profile">프로필수정</a>
-                    <a href="#" onclick="logout()">로그아웃</a>
-                    <a href="#" onclick="openColumnSpec()">설명</a>
+                    <a href="#" onclick="description()">Notice</a>
+                    <a href="/profile">Profile</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                    <a href="#" onclick="openColumnSpec()">Manual</a>
                 </div>
             </div>
         </div>
@@ -90,6 +89,7 @@
             <a href="#" id='tab_rep_link' class="tablink only_supporter" onclick="showTableTab('tab_rep', this, 'red'); getTable('table_rep',  ['P','I','F'], [1,5,20,60], ['I1','F1'], 'DESC', 200, false, true, true, true, 0);">레포트</a>
             <a href="#" id='tab_fav_link' class="tablink only_supporter" onclick="showTableTab('tab_fav', this, 'red'); getTable('table_fav',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 100, true, true, true, false, 0);">즐겨찾기</a>
             <a href="#" id='tab_full_link' class="tablink only_supporter" onclick="showTableTab('tab_full', this, 'red'); getTable('table_full',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 2500, false, true, true, false, 0);">전종목</a>
+            <!-- <a href="#" id='tab_simulation_link' class="tablink" onclick="showTableTab('tab_simulation', this, 'red'); renderSimulationTab()">시뮬</a> -->
 
             <!-- <a href="#" id='tab_realtime_link' class="tablink" onclick="openPage('tab_realtime', this, 'red'); getRealtime()">실시간</a> -->
             <div id="userinfo" class="navigation_top_right" style="display: none">
@@ -108,59 +108,10 @@
             </div>
             <hr>
         </div>
-        <div id="download" style="display:None">
-            <br>
-            <hr>
-            <p><u>다운로드 샘플입니다. <br>ROW수는 전종목이며, 일자는 선택가능하게 수정할 예정입니다.</u><br>
-            <a href="/getTableCsv?day=0">최근 -0 거래일 전종목데이터</a><br>
-            <a href="/getTableCsv?day=1">최근 -1 거래일 전종목데이터</a><br>
-            <a href="/getTableCsv?day=2">최근 -2 거래일 전종목데이터</a><br>
-            <a href="/getTableCsv?day=3">최근 -3 거래일 전종목데이터</a><br>
-            <a href="/getTableCsv?day=4">최근 -4 거래일 전종목데이터</a><br>
-            </p>
-        </div>
 
 
-
-        <div id="function_expanded" style="display: none">
-            <div class="only_supporter" id="Filter">
-                    <b><u>FILTER</u></b><br>
-                    <div id='customFilter'>
-
-                        <label for="filter_a">Filter Keyword A:</label>
-                        <input type="text" id="filter_a" placeholder="종목 카테고리를 입력하세요">
-                        <a href="#" onclick="setCustomFilter('filter_a');">필터적용</a><br>
-
-                        <label for="filter_b">Filter Keyword B:</label>
-                        <input type="text" id="filter_b" placeholder="ex) 반도체">
-                        <a href="#" onclick="setCustomFilter('filter_b');">필터적용</a><br>
-
-                        <label for="filter_c">Filter Keyword C:</label>
-                        <input type="text" id="filter_c" placeholder="ex) 2차전지">
-                        <a href="#" onclick="setCustomFilter('filter_c');">필터적용</a><br>
-
-                        <label for="filter_d">Filter Keyword D:</label>
-                        <input type="text" id="filter_d" placeholder="ex) 삼성">
-                        <a href="#" onclick="setCustomFilter('filter_d');">필터적용</a><br>
-
-                        <label for="filter_e">Filter Keyword E:</label>
-                        <input type="text" id="filter_e" placeholder="ex) LUMUMDMU">
-                        <a href="#" onclick="setCustomFilter('filter_e');">필터적용</a><br>
-                    </div>
-                    <div id='builtinFilter'>
-                        <label for="mc_min">Filter MarketCap:</label>
-                        <input type="text" id="mc_min" class="filter_gauge_min" placeholder="시가총액 최소값">
-                        <input type="text" id="mc_max" placeholder="시가총액 최대값"><br>
-
-                    </div>
-            </div>
-
-            <hr>
-
-
-        </div>
-        <div class="form-popup" id="myForm">
-                <form id ="login" class="form-container">
+        <div class="popup" id="popup_login" style="display:none">
+            <form id ="login" class="popup_container">
                 <h1>Login</h1>
 
                 <label for="email"><b>Email</b></label>
@@ -172,47 +123,87 @@
                 <label for="auto_login"><b>AutoLogin</b></label>
                 <input type="checkbox" name="auto_login" id="auto_login">
 
+                <button type="button" class="btn" id='login_btn' onclick='login();' value="Login">Login</button>
+                <button type="button" class="btn cancel" onclick="closeForm('popup_login')">Close</button>
+            </form>
+        </div>
+        <div class="popup popup_menu only_supporter" id="filter" style="display: none">
+            <b><u>FILTER</u></b><br>
+            활성화된 테이블에 대한 client-side 필터입니다, 전종목 테이블일때 유용합니다<br><hr>
+            <div id='customFilter'>
+                <label for="filter_a">Keyword A:</label>
+                <input type="text" class="input_filter" id="filter_a" placeholder="종목 카테고리를 입력하세요">
+                <a href="#" onclick="setCustomFilter('filter_a');">필터적용</a><br>
 
-                <input type="button"  class="btn" id='login_btn' onclick='login();' value="Login">
-                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-                </form>
+                <label for="filter_b">Keyword B:</label>
+                <input type="text" class="input_filter"  id="filter_b" placeholder="ex) 반도체">
+                <a href="#" onclick="setCustomFilter('filter_b');">필터적용</a><br>
+
+                <label for="filter_c">Keyword C:</label>
+                <input type="text" class="input_filter"  id="filter_c" placeholder="ex) 2차전지">
+                <a href="#" onclick="setCustomFilter('filter_c');">필터적용</a><br>
+
+                <label for="filter_d">Keyword D:</label>
+                <input type="text" class="input_filter"  id="filter_d" placeholder="ex) 삼성">
+                <a href="#" onclick="setCustomFilter('filter_d');">필터적용</a><br>
+
+                <label for="filter_e">Keyword E:</label>
+                <input type="text" class="input_filter"  id="filter_e" placeholder="ex) LUMUMDMU">
+                <a href="#" onclick="setCustomFilter('filter_e');">필터적용</a><br>
+
+                <label for="filter_e">Keyword F:</label>
+                <input type="text" class="input_filter"  id="filter_f" placeholder="ex) 띄어쓰기로 OR조건 가능">
+                <a href="#" onclick="setCustomFilter('filter_f');">필터적용</a><br>
+
+                <label for="filter_e">Keyword G:</label>
+                <input type="text" class="input_filter"  id="filter_g" placeholder="ex) 반도체 2차전지">
+                <a href="#" onclick="setCustomFilter('filter_g');">필터적용</a><br>
+
+                <label for="filter_e">Keyword H:</label>
+                <input type="text" class="input_filter"  id="filter_h" placeholder="ex) 브라우저에 저장되어 지속사용 가능">
+                <a href="#" onclick="setCustomFilter('filter_h');">필터적용</a><br>
+            </div>
+            <div id='builtinFilter'>
+                <label for="mc_min">Filter MarketCap:</label>
+                <input type="text" id="mc_min" class="filter_gauge_min" placeholder="시가총액 최소값">
+                <input type="text" id="mc_max" placeholder="시가총액 최대값"><br>
+            </div>
+        </div>
+        <div class="popup popup_menu only_supporter" id="download" style="display: none">
+            <p><u>다운로드 샘플입니다. <br>ROW수는 전종목이며, 일자는 선택가능하게 수정할 예정입니다.</u><br>
+            <a href="/getTableCsv?day=0">최근 -0 거래일 전종목데이터</a><br>
+            <a href="/getTableCsv?day=1">최근 -1 거래일 전종목데이터</a><br>
+            <a href="/getTableCsv?day=2">최근 -2 거래일 전종목데이터</a><br>
+            <a href="/getTableCsv?day=3">최근 -3 거래일 전종목데이터</a><br>
+            <a href="/getTableCsv?day=4">최근 -4 거래일 전종목데이터</a><br>
+            </p>
         </div>
         <div id='description' style="display: none">
 
             <p id="notice">
 
-                <b>BASIC</b><br><br>
-
-                보통 주식관련 사이트에서 제공하는 기관, 외인 순매수 상위 종목은 <u>절대금액</u>기준으로 뽑아서,<br>
-                당연히 시가총액이 큰 종목만 상위에 노출되어, 개인투자자에게 큰 도움이 되지 못합니다.<br><br>
-
-                하지만 <u><b>주체별 순매수 주식수</b></u>를 <u><b>유통주식수</b></u>로 나누어 한 테이블 안에 담으면<br>
-                시가총액의 크기와 상관없이 특정 수급주체가 어느 종목을 상대적으로 강하게 매수하였는지 한눈에 비교할 수 있습니다<br><br>
-
-                재즈스탁은 앞서말한 <u>"주체별 순매수주식수 / 유통주식수"</u>를 매 거래일마다 계산하여 보여드리고 있습니다<br>
-                이외에도 다양한 계산을 통해서 수급을 비롯한 볼린저밴드, 이동평균선간 상대 위치 등 컬럼을 한테이블에 담아서<br>
-                사용자가 <u>자기만의 분석관점에서 출발해, 직접 화면상에서 전 종목을 정렬을 해볼 수 있도록 구현하였습니다.</u><br><br>
-
-                장이 종료된후 1시간동안 데이터를 수집, 생성하여 16:45쯤 당일 데이터가 생성완료됩니다.<br>
-
-                컬럼헤더는 한눈에 보기 편하게 하기 위해서, 근본없는 약어를 사용하였습니다<br>
-                의미가 궁금하신분은 우측상단 <u>컬럼설명</u>을 사용해주세요.<br><br>
-
-                <hr>
-
                 <b>NOTICE:</b><br><br>
 
-                재즈스탁은 크롬브라우저에 최적화 되어있습니다, 크롬을 사용해주세요.<br>
+                2021.07.18:<br>
+                최근 UI개편작업으로 배포가 잦습니다<br>
+                작동하지 않을시 캐시삭제 및 강제새로고침을 해주세요<br>
 
+                재즈스탁은 크롬브라우저에 최적화 되어있습니다, 크롬을 사용해주세요.<br>
                 신규가입후 <u>7일간 후원자 전용기능이 활성화</u> 됩니다<br>
                 현재까지 개발된 후원자 전용기능은 <u>모든테이블 조회</u>, <u>기본테이블 조회건수 추가</u>, <u>즐겨찾기등록</u> 입니다.
-                후원문의는 오픈카톡방, 1:1오픈챗으로 문의주세요.<br><br>
+                후원회원 전용기능 사용 후원액은 월 4,400원으로 책정하고있습니다
+                재즈스탁에 가입하신 닉네임으로, 아래 계좌로 4,400 * 구독개월수로 입금주시면 일할계산하여 후원기간 설정해드리고 있습니다.
+                우리은행 1002-455-318806
+
+                보다 자세한 문의는 오픈카톡방, 1:1오픈챗으로 문의주세요.<br><br>
 
                 <b>LINK:</b><br><br>
                 - <a href="https://blog.naver.com/rubenchu" >개발자 블로그</a><br>
                 - <a href="https://open.kakao.com/o/sFf8ti8" >개발자 1:1 카톡문의</a><br>
                 - <a href="https://open.kakao.com/o/ge5OuYhb">재즈스탁 오픈카톡방</a> | 입장코드 : jazzz<br>
                 - <a href="https://t.me/joinchat/ScYM_CnhEPnSGu9K">재즈스탁 텔레그램 알람봇 BETA</a><br><br>
+
+
 
             </p>
             <hr>
@@ -337,6 +328,27 @@
                         </div>
                     </div>
                 </div>
+                <div id="tab_simulation" class="tabtable" style="display:none">
+                    <div class="row">
+                        <div class="card">
+                            <table id="table_simulation" class="display simulationTable" style="width:100%">
+                                <tr><td class="loading"><div class="signal"></div></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="card">
+                            <div id="simulation_feature_selection_area"></div>
+                            <div id="simulation_target_date_area"></div>
+                            <div id="simulation_condition_generation_area"></div>
+                            <button onclick="simulationRequest()">RunSimulation</button>
+                            <button onclick="saveFeaturesToServer()">Save DB</button>
+                            <button onclick="getFeatureRowsRecent()">From Local</button>
+                            <button onclick="getFeaturesSetFromServer()">From DB</button>
+                            <div id="simulation_result_area"></div>
+                        </div>
+                    </div>
+                </div>
                 <div id="tab_realtime" class="tabtable" style="display:none">
                     <div class="row">
                         <a href="#" onclick=fetchRowsDev()>fetch</a><div id="realtime_message"></div>
@@ -349,36 +361,58 @@
                 </div>
             </div>
 
-            <div id="grid_table_expand">
-            <a href="#" onclick="toggleTableAndStock()">
-                <img src="static/images/icon_expand.png" class="button_toggle button_toggle_right">
-            </a>
+            <div class="button_area_right" id="button_group_table_non_mobile">
+                <a href="#" onclick="toggleElement('download')">
+                    <img src="static/images/icon_csv.png" class="button_toggle">
+                </a>
+                <a href="#" onclick="setFavorite()">
+                    <img src="static/images/icon_listupdate.png" class="button_toggle">
+                </a>
+                <a href="#" onclick="toggleElement('filter')">
+                    <img src="static/images/icon_filter.png" class="button_toggle">
+                </a>
+                <a href="#" onclick="toggleTableAndStock()">
+                    <img src="static/images/icon_expand.png" class="button_toggle">
+                </a>
             </div>
+
+            <div class="button_area_right" id="button_group_table_mobile">
+                <a href="#" onclick="setFavorite()">
+                    <img src="static/images/icon_listupdate.png" class="button_toggle">
+                </a>
+                <a href="#" onclick="toggleTableAndStock()">
+                    <img src="static/images/icon_rightarrow.png" class="button_toggle">
+                </a>
+            </div>
+
         </div>
 
         <div class="grid_layer_a" id="grid_field_stock" style="display:none">
-            <div class="grid_layer_b" id="grid_stock_a">
+            <div class="grid_layer_b grid_stock_chart" id="grid_stock_a">
                 <div class="ohlc_chart" id="grid_stock_a_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b" id="grid_stock_b">
+            <div class="grid_layer_b grid_stock_chart" id="grid_stock_b">
                 <div class="ohlc_chart" id="grid_stock_b_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b" id="grid_stock_c">
+            <div class="grid_layer_b grid_stock_chart" id="grid_stock_c">
                 <div class="ohlc_chart" id="grid_stock_c_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b" id="grid_stock_d">
+            <div class="grid_layer_b grid_stock_chart" id="grid_stock_d">
                 <div class="ohlc_chart" id="grid_stock_d_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b" id="grid_stock_e">
+            <div class="grid_layer_b grid_stock_chart" id="grid_stock_e">
                 <div class="ohlc_chart" id="grid_stock_e_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b" id="grid_stock_f">
+            <div class="grid_layer_b grid_stock_chart" id="grid_stock_f">
                 <div class="ohlc_chart" id="grid_stock_f_chart"> undefined </div>
             </div>
 
-            <div id="grid_stock_back">
+            <div class="button_area_right" id="button_group_stock_mobile">
+                <a href="#" onclick="changeGlobalX()">
+                    <img src="static/images/icon_change_x.png" class="button_toggle" >
+                </a>
                 <a href="#" onclick="toggleTableAndStock()">
-                    <img src="static/images/icon_back.png" class="button_toggle button_toggle_left" >
+                    <img src="static/images/icon_back.png" class="button_toggle" >
                 </a>
             </div>
 
@@ -386,9 +420,9 @@
         <div class="grid_layer_a" id="grid_field_summary" style="display:none">
             <div class="grid_layer_b" id="grid_summary_chart_price"></div>
             <div class="grid_layer_b" id="grid_summary_chart_finan"></div>
-            <div id="grid_summary_back">
+            <div class="button_area_right" id="button_group_summary_mobile">
                 <a href="#" onclick="toggleStockAndSummary()">
-                    <img src="static/images/icon_back.png" class="button_toggle button_toggle_left">
+                    <img src="static/images/icon_back.png" class="button_toggle">
                 </a>
             </div>
         </div>

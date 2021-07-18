@@ -17,7 +17,7 @@ class DataAccessObjectSimulation:
 
 
         select_query = '''
-        SELECT A.DATE, STOCKNAME
+        SELECT A.DATE, CONCAT(B.STOCKCODE, '_', B.STOCKNAME) AS  STOCKNAME
         '''
 
         base_query = '''
@@ -41,13 +41,25 @@ class DataAccessObjectSimulation:
         LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
         LEFT JOIN jazzdb.T_STOCK_DAY_SMAR K ON (A.STOCKCODE = K.STOCKCODE AND A.DATE = K.DATE)        
         LEFT JOIN jazzdb.T_STOCK_SHARES_CIRCRATE M ON (A.STOCKCODE = M.STOCKCODE AND A.DATE = M.DATE)
+        LEFT JOIN jazzdb.T_STOCK_FUTURE_PRICE N ON (A.STOCKCODE = N.STOCKCODE AND A.DATE = N.DATE)
+        
         WHERE 1=1
         AND A.DATE BETWEEN "%s" AND "%s"
         '''%(from_date, to_date)
 
+        features = ['MC','BBP','BBW','PSMAR5 AS PMA5','PSMAR60 AS PMA60','VSMAR5 AS VMA5','VSMAR60 AS VMA60']
         for condition in conditions:
-            select_query = select_query + ', %s'%(condition.get("feature"))
-            base_query = base_query + "        AND %s %s %s\n"%(condition.get("feature"),
+            feature_name = condition.get("feature_name")
+            if feature_name is not None and feature_name not in features and 'PSMA' not in feature_name and 'VSMA' not in feature_name:
+                features.append(feature_name)
+
+
+        features += ['PRO1','PRO3','PRO5','PRO10','PRH1', 'PRH3', 'PRH5', 'PRH10']
+
+        for feature in features:
+            select_query = select_query + ", %s"%(feature)
+        for condition in conditions:
+            base_query = base_query + "        AND %s %s %s\n"%(condition.get("feature_name"),
                                                       condition.get("operation"),
                                                       condition.get("target_value"))
 
@@ -57,12 +69,19 @@ class DataAccessObjectSimulation:
 
         try:
             df = db.selectpd(select_query+base_query)
+            print(select_query+base_query)
             print(df)
-            return df.to_dict(orient="records")
+            # return df.to_dict(orient="records")
+
+            html = (
+                df.style
+                    .hide_index()
+                    .render()
+            )
+
+            return html, df.columns.values.tolist()
 
         except Exception as e:
-            print(e)
-
             return {}
 
 

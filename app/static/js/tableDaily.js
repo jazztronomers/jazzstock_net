@@ -112,11 +112,10 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
 
 
 
-function renderTable(tableId, response, columnList){
+function renderTable(tableId, response, columnList, ratio=0.9, fixedLeft=3){
 
     document.getElementById(tableId).innerHTML = response
     // console.log(' * Table rendering start', tableId, now())
-    let ratio = 0.9
     if (device_type == "mobile"){
         ratio = 0.85
         // alert(ratio)
@@ -137,7 +136,7 @@ function renderTable(tableId, response, columnList){
         columnDefs: getColumnDefs(columnList),
         scrollCollapse: true,
         fixedColumns : {
-            leftColumns : 3
+            leftColumns : fixedLeft
         },
         colReorder: {
             enable: true,

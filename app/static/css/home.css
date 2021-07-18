@@ -839,7 +839,7 @@ input[type="button"] {
 
 .table_simulation {
 
-    max-width: 50%;
+    max-width: 100%;
     table-layout: fixed;
     white-space:pre-wrap;
 }
