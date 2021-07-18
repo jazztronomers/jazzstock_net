@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     window.onresize = gridRender;
 
     // document.getElementById("jazzstock").innerHTML = window.innerWidth + "x" + window.innerHeight
-    document.getElementById("jazzstock").innerHTML = window.screen.width + "x" + window.screen.height
+    // document.getElementById("jazzstock").innerHTML = window.screen.width + "x" + window.screen.height
 
 
 })
