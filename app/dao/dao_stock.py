@@ -4,6 +4,7 @@ from jazzstock_net.app.config.config_others import PATH_ROOT
 import pandas as pd
 import pickle
 import os
+from jazzstock_net.app.config.config_table_specification import spec_list_float_column
 
 pd.options.display.max_rows = 2500
 
@@ -69,9 +70,13 @@ class DataAccessObjectStock:
         
         
                 , PSMAR5 AS PMA5
+                , PSMAR20 AS PMA20
                 , PSMAR60 AS PMA60
+                , PSMAR120 AS PMA120
                 , VSMAR5 AS VMA5
+                , VSMAR20 AS VMA20
                 , VSMAR60 AS VMA60
+                , VSMAR120 AS VMA120
                 , BBP
                 , BBW
                 
@@ -83,22 +88,21 @@ class DataAccessObjectStock:
                 , CATEGORY
                 , TITLE AS RTITLE, RDATE, RC1M, RC2M
 
-
-                , CONCAT(DIR_L4, DIR_L3, DIR_L2, DIR_L1) AS PATTERN
-                , DAYS_L4 AS L4ED 
-                , DAYS_L3 AS L3ED
-                , DAYS_L2 AS L2ED
-                , DAYS_L1 AS L1ED
+                , CONCAT(L4BE, L3BE, L2BE, L1BE) AS PATTERN
+                , L4ED 
+                , L3ED
+                , L2ED
+                , L1ED
                 
-                , BBW_L1 AS L4BW
-                , BBW_L2 AS L3BW
-                , BBW_L3 AS L2BW
-                , BBW_L4 AS L1BW
+                , L4BW
+                , L3BW
+                , L2BW
+                , L1BW
                 
-                , BBP_L1 AS L4BP
-                , BBP_L2 AS L3BP
-                , BBP_L3 AS L2BP
-                , BBP_L4 AS L1BP
+                , L4BP
+                , L3BP
+                , L2BP
+                , L1BP
                 
             
                 # , CONCAT("<a href='/downloadReport/",ETC,"'>",TITLE,"</a>") AS RTITLE, RDATE, RCNT1M, RCNT2M
@@ -220,8 +224,14 @@ class DataAccessObjectStock:
             for interval in intervals:
                 float_columns.append('%s%s'%(target,interval))
 
-        float_columns.append("PMA5")
-        float_columns.append("PMA60")
+
+        # PERCENT COLUMNS 처리
+        for column in rtdf.columns.tolist():
+            if column in spec_list_float_column:
+                float_columns.append(column)
+
+        # ALIAS 처리
+
 
         rtdf[float_columns] = rtdf[float_columns] * 100
         rtdf[float_columns] = rtdf[float_columns].round(3)

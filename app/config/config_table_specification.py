@@ -92,7 +92,7 @@ table_column_specification_interval = [
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "price",
-                "percent_ratio_yn":1,
+                "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
 
         },{
@@ -107,7 +107,7 @@ table_column_specification_interval = [
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
-                "percent_ratio_yn":1,
+                "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "F{X}",
@@ -121,7 +121,7 @@ table_column_specification_interval = [
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
-                "percent_ratio_yn":1,
+                "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "PS{X}",
@@ -135,7 +135,7 @@ table_column_specification_interval = [
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
-                "percent_ratio_yn":1,
+                "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "Y{X}",
@@ -149,7 +149,7 @@ table_column_specification_interval = [
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
-                "percent_ratio_yn":1,
+                "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "S{X}",
@@ -163,7 +163,7 @@ table_column_specification_interval = [
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
-                "percent_ratio_yn":1,
+                "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "T{X}",
@@ -177,7 +177,7 @@ table_column_specification_interval = [
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
-                "percent_ratio_yn":1,
+                "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "FN{X}",
@@ -191,7 +191,7 @@ table_column_specification_interval = [
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
-                "percent_ratio_yn":1,
+                "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "OC{X}",
@@ -205,7 +205,7 @@ table_column_specification_interval = [
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
-                "percent_ratio_yn":1,
+                "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         }
 ]
@@ -405,6 +405,17 @@ table_column_specification_bollinger_band = [
         "simulation_feature_yn":1,
         "simulation_feature_type": "bollinger",
         "origin_table":"T_STOCK_BB_EVENT",
+        },{
+        "column_name": "L{X}BE",
+        "column_childs": ["L4BE","L3BE","L2BE","L1BE"],
+        "column_name_full": None,
+        "column_description": "최근X번째 볼린저밴드",
+        "data_type": 'int',
+        "column_def": {"width": 30,
+                       'render':0,},
+        "simulation_feature_yn":1,
+        "simulation_feature_type": "bollinger",
+        "origin_table":"T_STOCK_BB_EVENT",
         }, {
         "column_name": "L{X}BP",
         "column_childs": ["L4BP","L3BP","L2BP","L1BP"],
@@ -467,11 +478,11 @@ table_column_specification_moving_average_ratio =[
         "column_description": "(최근거래일주가 - X거래일 이동평균주가) / X거래일 이동평균주가",
         "data_type": 'int',
         "background_color_map":"profit_map",
-        "column_def": {"width": 35,
+        "column_def": {"width": 40,
                        'render':2,},
         "simulation_feature_yn":1,
         "simulation_feature_type": "price moving average",
-        "percent_ratio_yn":1,
+        "percent_yn":1,
         "origin_table":"T_STOCK_DAY_SMAR",
 
         },
@@ -484,7 +495,7 @@ table_column_specification_moving_average_ratio =[
         "column_description": "(최근거래일거래량 - X거래일 이동평균거래량) / X거래일 이동평균거래량",
         "data_type": 'int',
         "background_color_map":"vma_map",
-        "column_def": {"width": 35,
+        "column_def": {"width": 40,
                        'render':2,},
         "simulation_feature_yn":1,
         "simulation_feature_type": "volume moving average",
@@ -622,6 +633,7 @@ table_column_specification_future = [
                 "column_def": {"width": 35,
                                'render': 2,
                                'orderSequence': ["desc", "asc"]},
+                "percent_yn":1,
                 "origin_table": "T_STOCK_FUTURE_PRICE",
 
         }
@@ -640,9 +652,23 @@ spec  = table_column_specification + \
 
 # table_column_specification_finan +\
 
+float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is not None]
+spec_list_float_column = []
+for each_column_group in float_columns_nested:
+        for each_child in each_column_group:
+                spec_list_float_column.append(each_child)
+
+
+
 if __name__=="__main__":
 
         ## print(spec)
 
 
-        print([col for col in spec if col.get("column_name_full") is not None])
+        float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is not None]
+        float_column = []
+        for each_column_group in float_columns_nested:
+                for each_child in each_column_group:
+                        float_column.append(each_child)
+
+
