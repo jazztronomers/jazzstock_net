@@ -72,11 +72,9 @@ class DataAccessObjectStock:
                 , PSMAR5 AS PMA5
                 , PSMAR20 AS PMA20
                 , PSMAR60 AS PMA60
-                , PSMAR120 AS PMA120
                 , VSMAR5 AS VMA5
                 , VSMAR20 AS VMA20
                 , VSMAR60 AS VMA60
-                , VSMAR120 AS VMA120
                 , BBP
                 , BBW
                 
