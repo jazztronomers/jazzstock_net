@@ -1,9 +1,8 @@
 from jazzstock_net.app.common import connector_db as db
-from datetime import datetime as dt
-from jazzstock_net.app.config.config_others import PATH_ROOT
 import pandas as pd
-import pickle
-import os
+import json
+from datetime import datetime
+from jazzstock_net.app.config.config_table_specification import spec_list_float_column
 
 
 pd.options.display.max_rows = 2500
@@ -17,7 +16,8 @@ class DataAccessObjectSimulation:
 
 
         select_query = '''
-        SELECT A.DATE, CONCAT(B.STOCKCODE, '_', B.STOCKNAME) AS  STOCKNAME
+        SELECT A.DATE, CONCAT(B.STOCKCODE, '_', B.STOCKNAME) AS  STOCKNAME, B.STOCKCODE, SUBSTRING(A.DATE,3,2) AS YY, SUBSTRING(A.DATE,6,2) AS MM
+            
         '''
 
         base_query = '''
@@ -47,11 +47,23 @@ class DataAccessObjectSimulation:
         AND A.DATE BETWEEN "%s" AND "%s"
         '''%(from_date, to_date)
 
-        features = ['MC','BBP','BBW','PSMAR5 AS PMA5','PSMAR60 AS PMA60','VSMAR5 AS VMA5','VSMAR60 AS VMA60']
+        features = ['CLOSE','MC', 'P1', 'P5', 'P20', 'BBP','BBW',
+                    'PSMAR5 AS PMA5',
+                    'PSMAR20 AS PMA20',
+                    'PSMAR60 AS PMA60',
+                    'PSMAR120 AS PMA120',
+                    'VSMAR5 AS VMA5',
+                    'VSMAR20 AS VMA20',
+                    'VSMAR60 AS VMA60',
+                    'VSMAR120 AS VMA120']
         for condition in conditions:
-            feature_name = condition.get("feature_name")
-            if feature_name is not None and feature_name not in features and 'PSMA' not in feature_name and 'VSMA' not in feature_name:
-                features.append(feature_name)
+            feature_name_full = condition.get("feature_name_full")
+            if feature_name_full is not None and feature_name_full not in features\
+                    and "SMAR" not in feature_name_full:
+                features.append(feature_name_full)
+
+
+
 
 
         features += ['PRO1','PRO3','PRO5','PRO10','PRH1', 'PRH3', 'PRH5', 'PRH10']
@@ -59,29 +71,110 @@ class DataAccessObjectSimulation:
         for feature in features:
             select_query = select_query + ", %s"%(feature)
         for condition in conditions:
-            base_query = base_query + "        AND %s %s %s\n"%(condition.get("feature_name"),
-                                                      condition.get("operation"),
-                                                      condition.get("target_value"))
 
-        
+
+            feature_name_full = condition.get("feature_name_full")
+            operation = condition.get("operation")
+            target_value = condition.get("target_value")
+
+            if not target_value.isnumeric():
+                target_value = "'%s'"%(target_value)
+
+
+
+            base_query = base_query + "        AND %s %s %s\n"%(feature_name_full,
+                                                                operation,
+                                                                target_value)
+
 
         base_query = base_query + "        ORDER BY A.DATE DESC"
 
         try:
-            df = db.selectpd(select_query+base_query)
-            print(select_query+base_query)
-            print(df)
-            # return df.to_dict(orient="records")
+            rtdf = db.selectpd(select_query+base_query)
+            # # PERCENT COLUMNS 처리
+            float_columns = []
+            for column in rtdf.columns.tolist():
+                if column in spec_list_float_column:
+                    float_columns.append(column)
+
+            # ALIAS 처리
+
+            rtdf[float_columns] = rtdf[float_columns] * 100
+            rtdf[float_columns] = rtdf[float_columns].round(3)
+            rtdf = rtdf.fillna(0)
+
+
+            html_columns = [x for x in rtdf.columns.tolist() if x not in ['STOCKCODE', 'YY', 'MM']]
+            json_columns = ['STOCKCODE', 'YY', 'MM', 'BBW', 'BBP', 'PRO1','PRO3','PRO5','PRO10','PRH1', 'PRH3', 'PRH5', 'PRH10']
 
             html = (
-                df.style
+                rtdf[html_columns].style
                     .hide_index()
                     .render()
             )
 
-            return html, df.columns.values.tolist()
+            return {"simulation_result_table_html":html,
+                    "simulation_result_column_list":html_columns,
+                    "simulation_result_table_json": rtdf[json_columns].to_dict(orient='records')}
 
         except Exception as e:
-            return {}
+            print(e)
+            return {'message':e}
+
+
+    def set_simulation_conditions(self, condition_set, usercode):
+
+
+        try:
+            query = '''
+                        
+            INSERT INTO `jazzstockuser`.`T_USER_SIMULATION_CONDITION` 
+            (`USERCODE`, 
+            `CONDITION_SET_NAME`, 
+            `CONDITION_SET_DESCRIPTION`, 
+            `CONDITION_SET_VALUE`, 
+            `TIMESTAMP`, 
+            `DEL_YN`) 
+            VALUES ('%s', 
+                    '%s', 
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%s');
+    
+    
+            '''%(usercode,
+                 condition_set.get("condition_set_name"),
+                 condition_set.get("condition_set_description"),
+                 json.dumps(condition_set.get("condition_set")),
+                 str(datetime.now()),
+                 0)
+
+            db.insert(query)
+            return True
+
+        except Exception as e:
+            print(e)
+            return e
+
+
+    def get_simulation_conditions(self, usercode):
+
+        try:
+
+            query = '''
+            
+            SELECT CONDITION_SET_NAME, CONDITION_SET_DESCRIPTION, CONDITION_SET_VALUE
+            FROM jazzstockuser.T_USER_SIMULATION_CONDITION
+            WHERE USERCODE = '%s'
+            AND DEL_YN = 0
+            
+            '''%(usercode)
+
+            df = db.selectpd(query)
+            return {'result': [x for x in df.to_dict("index").values()]}
+
+        except:
+            return {'result': False}
 
 

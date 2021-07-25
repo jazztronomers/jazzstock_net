@@ -16,6 +16,15 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
     for (var i=0; i<column_list.length; i++){
         for (var j=0; j<column_spec_list.length; j++){
             if ((column_list[i] == column_spec_list[j].column_name || null !=column_spec_list[j].column_childs && column_spec_list[j].column_childs.includes(column_list[i]))){
+
+//                if ('1' == column_spec_list[j].percent_yn){
+//                    percent = data[i] * 100
+//
+//                    console.log(data[i])
+//
+//                    // $('td.col'+i, row).html(percent)
+//                    // data[i] = data[i] * 100
+//                }
                 if ('profit_map' == column_spec_list[j].background_color_map){
 
                     for (color in profit_map){

@@ -80,13 +80,59 @@ function sendConfirmationCodeByEmail(){
 }
 
 
-function setConfirmationTimer(){
+function sendConfirmationCodeByTelegram(){
 
-    document.getElementById('confirmationTimer').innerHTML = '02:00'
+    telegram_chat_id = document.getElementById('telegram_chat_id').value
+    isnum = /^\d+$/.test(telegram_chat_id);
+
+
+    if (telegram_chat_id.length<5 || !isnum){
+
+        alert("TELEGRAM CHAT_ID를 정확히 입력해주세요")
+
+    }
+    else{
+        var req = new XMLHttpRequest()
+
+        req.responseType = 'json';
+        req.onreadystatechange = function()
+        {
+            if (req.readyState == 4)
+            {
+                if (req.status == 200){
+
+                    console.log(req.response.result)
+
+                    if(req.response.result == false){
+                            alert(req.response.message,"Chat-id를 확인하거나, 다시 시도해주세요")
+                            return false
+                    }
+                    else {
+
+                            console.log(req.response.message)
+                            alert(req.response.message.chat.username + '님 에게 인증코드가 전송되었습니다, 본인계정이 맞는지 확인하세요')
+                            setConfirmationTimer('confirmationTimerTelegram')
+                            var button = document.getElementById('button_telegram_confirmation')
+                            button.disabled = "";
+                    }
+                }
+            }
+        }
+
+        req.open('POST', '/getTelegramConfirmationCode')
+        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+        req.send('telegram_chat_id="'+telegram_chat_id+'"')
+    }
+}
+
+
+function setConfirmationTimer(element_id_timer_span='confirmationTimer', element_id_confirm_button='button_confirmation'){
+
+    document.getElementById(element_id_timer_span).innerHTML = '02:00'
     startTimer();
 
     function startTimer() {
-        var presentTime = document.getElementById('confirmationTimer').innerHTML;
+        var presentTime = document.getElementById(element_id_timer_span).innerHTML;
         var timeArray = presentTime.split(/[:]+/);
         var m = timeArray[0];
         var s = checkSecond((timeArray[1] - 1));
@@ -94,21 +140,21 @@ function setConfirmationTimer(){
             m=m-1
         }
 
-        if(document.getElementById('confirmationTimer').innerHTML==''){
-            var button = document.getElementById('button_confirmation')
+        if(document.getElementById(element_id_timer_span).innerHTML==''){
+            var button = document.getElementById(element_id_confirm_button)
             button.disabled = "disabled";
             return true
         }
 
         else if(m<0){
 
-            document.getElementById('confirmationTimer').innerHTML = '인증코드가 만료되었습니다, 다시시도하세요'
-            var button = document.getElementById('button_confirmation')
+            document.getElementById(element_id_timer_span).innerHTML = '인증코드가 만료되었습니다, 다시시도하세요'
+            var button = document.getElementById(element_id_confirm_button)
             button.disabled = "disabled";
             return true
         }
         else if (m>=0){
-            document.getElementById('confirmationTimer').innerHTML = m + ":" + s;
+            document.getElementById(element_id_timer_span).innerHTML = m + ":" + s;
             setTimeout(startTimer, 1000);
         }
 
@@ -154,6 +200,39 @@ function checkConfirmationCodeMatches(email){
     req.open('POST', '/checkEmailConfirmationCode')
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
     req.send('confirmation_code='+confirmation_code)
+
+}
+
+function checkTelegramConfirmationCodeMatches(){
+
+    telegram_chat_id = document.getElementById('telegram_chat_id').value
+    confirmation_code_telegram = document.getElementById('confirmation_code_telegram').value
+    var req = new XMLHttpRequest()
+    req.responseType = 'json';
+    req.onreadystatechange = function()
+    {
+        if (req.readyState == 4)
+        {
+            if (req.status == 200){
+
+                if(req.response.result == false)
+                {
+                    alert("입력된 인증코드가 일치하지 않습니다.")
+                    return false
+                }
+                else {
+                    alert("인증코드가 일치합니다, 탤래그램ID가 등록되었습니다!")
+                    document.getElementById('confirmationTimerTelegram').innerHTML = ''
+
+                    return true
+                }
+            }
+        }
+    }
+
+    req.open('POST', '/checkTelegramConfirmationCode')
+    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+    req.send('confirmation_code_telegram='+confirmation_code_telegram + '&telegram_chat_id='+telegram_chat_id)
 
 }
 

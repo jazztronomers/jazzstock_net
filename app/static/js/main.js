@@ -197,23 +197,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
     elemnt = document.getElementById("grid_field_stock")
     new Sortable(elemnt, {
         // direction: 'vertical',
+        filter: '.filtered',
         animation: 150,
 	    ghostClass: 'blue-background-class',
 	    onUpdate: function (/**Event*/evt) {
-		    console.log(evt.item.id)
-		    console.log(evt.oldIndex, evt.newIndex)
 
-
-
-
-		    console.log(stockQueue)
 		    item = stockQueue[evt.oldIndex]
 		    stockQueue.splice(evt.oldIndex, 1);
             stockQueue.splice(evt.newIndex, 0, item);
-		    console.log(stockQueue)
-
-
-
 
 	    },
     });
@@ -231,19 +222,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
     gridRender()
     getUserInfo()
     getSpecification()
+    getFavorite()
+    getRecentTradingDays()
 
     // ===========================================
     // PROD !
-    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
+    // getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
     // ===========================================
     // DEV !
-    // showTableTab('tab_simulation', this, 'red');
-    // renderSimulationTab()
+    showTableTab('tab_simulation', this, 'red');
+    renderSimulationTab()
     // ===========================================
 
 
-    getFavorite()
-    getRecentTradingDays()
     console.log(' * Document initialized', now())
     window.onresize = gridRender;
 
@@ -1039,45 +1030,7 @@ function showStock(tabName, elmnt, color) {
 
 
 function getChartData(stockcode, stockname){
-
-
-    if (stockQueue.includes(stockcode)){
-        // showStock("tab_"+stockcode, document.getElementById("tablink_"+stockcode), "yellow");
-        // document.getElementById("tabcontent"+stockcode).innerHTML=stockname
-        alert(stockname + " 는(은) 이미 표시중입니다!")
-    }
-    else {
-
-        let req = new XMLHttpRequest()
-        req.responseType = 'json';
-        req.onreadystatechange = function()
-        {
-            if (req.readyState == 4)
-            {
-                if (req.status != 200)
-                {
-                    console.log('ERROR')
-                }
-                else
-                {
-
-                    addStockToQueue(stockcode, stockname)
-                    chartId = "chart"+stockcode
-
-
-                }
-            }
-        }
-
-
-
-        req.open('POST', '/ajaxChart')
-        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-        req.send('stockcode="'+encodeURIComponent(stockcode)+'"')
-        return false
-    }
-
-
+    addStockToQueue(stockcode, stockname)
 }
 
 function getColumnDefs(column_list){
@@ -1086,8 +1039,10 @@ function getColumnDefs(column_list){
     for (i=0; i<column_list.length; i++){
         for (j=0; j<column_spec_list.length; j++){
 
+
             if (column_list[i] == column_spec_list[j].column_name ||
                 (null !=column_spec_list[j].column_childs && column_spec_list[j].column_childs.includes(column_list[i]))){
+
                 if (null != column_spec_list[j].column_def){
 
                     let column_def = Object.assign({}, column_spec_list[j].column_def)
@@ -1096,6 +1051,8 @@ function getColumnDefs(column_list){
                     if (null != column_def.render){
                         column_def.render = getDataTableRenderMethod(column_def.render)
                     }
+
+
 
                     if ('stockname' == column_def.created_cell){
                         column_def.createdCell = function(cell, cellData, rowData, rowIndex, colIndex){
@@ -1121,6 +1078,14 @@ function getColumnDefs(column_list){
                         }
                     }
 
+
+                    else if ('fav' == column_def.created_cell){
+                        column_def.createdCell = function(cell, cellData, rowData, rowIndex, colIndex){
+                            title = getFavCheckbox(cellData)
+                            $(cell).html(title)
+                        }
+                    }
+
                     columns_def.push(column_def)
                     break;
                 }
@@ -1129,7 +1094,6 @@ function getColumnDefs(column_list){
 
         }
     }
-
 
     return columns_def
 }

@@ -7,8 +7,19 @@
 
 <script>
 
-  var username_origin = "{{ username }}"
-  var username_dirty = false
+  let username_origin = "{{ username }}"
+  let telegram_chat_id = "{{ telegram_chat_id }}"
+  let username_dirty = false
+  document.addEventListener("DOMContentLoaded", function(event) {
+    if (telegram_chat_id != null){
+
+      document.getElementById('telegram_chat_id').innerHTML=telegram_chat_id
+      document.getElementById('telegram_chat_id').value=telegram_chat_id
+
+    }
+  }
+)
+
 
 </script>
 <script type="text/javascript" src="static/js/open.js"></script>
@@ -53,6 +64,12 @@
         <span id='confirmation_password_same'></span><br>
         <input type="button" id="update_password" style="display:inline" onclick='updatePassword();' value="비밀번호 업데이트" disabled>
       <hr>
+
+        <input type="text" placeholder="탤래그램 CHAT_ID(9자리이상의 숫자)입력" name="telegram_chat_id" id="telegram_chat_id">
+        <input type="button" id="button_telegram" style="display:inline" onclick='sendConfirmationCodeByTelegram()' value="인증코드받기">
+        <input type="text" placeholder="인증코드 입력" id="confirmation_code_telegram">
+        <input type="button" id="button_telegram_confirmation" style="display:inline" onclick='checkTelegramConfirmationCodeMatches();' value="인증코드확인&탤래그램ID등록" disabled>
+        <span id='confirmationTimerTelegram'></span><br>
       <a href="/">메인화면으로 돌아가기</a>
     </div>
 

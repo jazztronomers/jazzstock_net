@@ -2,12 +2,12 @@ from jazzstock_net.app.dao.dao_stock import DataAccessObjectStock
 from jazzstock_net.app.dao.dao_user import DataAccessObjectUser
 from jazzstock_net.app.dao.dao_simulation import DataAccessObjectSimulation
 from jazzstock_net.app.common.mail import send_mail
+from jazzstock_net.app.common.telegram_message import send_message_telegram
 import jazzstock_net.app.config.config as cf
 from jazzstock_net.app.config.config_message import alert_message
 from jazzstock_net.app.config.config_table_specification import spec as spec_content
-import jazzstock_net.app.static.pdf as path_pdf
-from datetime import datetime
 from io import StringIO
+from datetime import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response, flash
 import random, os
 
@@ -36,6 +36,7 @@ def login():
             session['usercode'] = response['usercode']
             session['email'] = response['email']
             session['username'] =  response['username']
+            session['telegram_chat_id'] =  response['telegram_chat_id']
             session['message'] = response["message"]
             session['expiration_date'] = response["expiration_date"]
 
@@ -137,26 +138,26 @@ def renderingRegisterPage():
 def renderingProfilePage():
 
     if session.get('loggedin') == True:
-        return render_template('profile.html', username=session_parser().get('username','zzzzzz'))
+
+
+        return render_template('profile.html', username=session.get('username','zzzzzz'), telegram_chat_id=session.get('telegram_chat_id',None))
     else:
         return redirect(url_for("home"),code=302)  #
 
 @application.route('/getUserInfo', methods=['POST'])
 def getUserInfo():
     if request.method == 'POST':
-        sess = session_parser()
         return jsonify({'result':True,
-                        'loggedin':sess['loggedin'],
-                        'username':sess['username'],
-                        'expiration_date':sess['expiration_date']})
+                        'loggedin':session.get('loggedin'),
+                        'username':session.get('username'),
+                        'expiration_date':session.get('expiration_date')})
 
 
 @application.route('/getFavorite', methods=['POST'])
 def getFavorite():
     if request.method == 'POST':
         dao = DataAccessObjectUser()
-        sess = session_parser()
-        stockcode_favorite = dao.get_favorite(sess['usercode'])['result']
+        stockcode_favorite = dao.get_favorite(session.get('usercode'))['result']
         return jsonify(stockcode_favorite =  stockcode_favorite)
 
     else:
@@ -170,9 +171,8 @@ def setFavorite():
         if request.method == 'POST' and 'stockcode_favorite' in request.form:
             stockcode_favorite = request.form['stockcode_favorite'].split(',')
             dao = DataAccessObjectUser()
-            sess = session_parser()
-            if sess['loggedin']==True:
-                result = dao.set_favorite(usercode=sess['usercode'], stockcodes_new=stockcode_favorite)['result']
+            if session.get('loggedin')==True:
+                result = dao.set_favorite(usercode=session.get('usercode'), stockcodes_new=stockcode_favorite)['result']
                 return jsonify({'result': result})
 
             else:
@@ -189,7 +189,7 @@ def getEmailConfirmationCode():
         dao = DataAccessObjectUser()
         email_dup = dao.check_dup_email(email)
         if email_dup:
-            return jsonify({'result':False, 'message':"근데 이미 가입된 이메일주소입니다, 비밀번호를 잊으셨다면 관리자에 문의주세요"})
+            return jsonify({'result':False, 'message':"이미 가입된 이메일주소입니다, 비밀번호를 잊으셨다면 관리자에 문의주세요"})
             
         else:
         
@@ -206,6 +206,34 @@ def getEmailConfirmationCode():
     else:
         return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
+
+@application.route('/getTelegramConfirmationCode', methods=['POST'])
+def getTelegramConfirmationCode():
+    if request.method == 'POST' and \
+            'telegram_chat_id' in request.form:
+        telegram_chat_id = request.form['telegram_chat_id'].replace('"', '')
+
+        dao = DataAccessObjectUser()
+        telegram_chat_id_dup = dao.check_dup_telegram(telegram_chat_id)
+        if telegram_chat_id_dup:
+            return jsonify({'result': False, 'message': "이미 가입된 탤래그램 CHAT_ID 입니다"})
+
+        else:
+
+            confirmation_code_telegram = str(random.randint(0, 999999)).zfill(6)
+            session['confirmation_code_telegram'] = str(confirmation_code_telegram).zfill(6)
+            ret = send_message_telegram("jazzstock.net에 \nTelegram계정을 등록하는 인증코드입니다:\n%s"%(confirmation_code_telegram), to=telegram_chat_id)
+
+            if(isinstance(ret, dict)):
+                return jsonify({'result': True, 'message':ret})
+
+            else:
+                return jsonify({'result': False, 'message':ret})
+
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+
 @application.route('/checkEmailConfirmationCode', methods=['POST'])
 def checkConfirmationCode():
     if request.method == 'POST' and \
@@ -215,6 +243,26 @@ def checkConfirmationCode():
 
         if confirmation_code_from_client == confirmation_code_at_session:
 
+            return jsonify({'result': True})
+
+        else:
+            return jsonify({'result':False})
+    else:
+        return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
+
+
+@application.route('/checkTelegramConfirmationCode', methods=['POST'])
+def checkTelegramConfirmationCode():
+    if request.method == 'POST' and \
+            'confirmation_code_telegram' in request.form and \
+            'telegram_chat_id' in request.form:
+        confirmation_code_from_client = request.form['confirmation_code_telegram']
+        confirmation_code_at_session = session.get('confirmation_code_telegram')
+        telegram_chat_id = request.form['telegram_chat_id']
+
+        if confirmation_code_from_client == confirmation_code_at_session:
+            dao = DataAccessObjectUser()
+            dao.set_telegram_chat_id(session.get('usercode'), telegram_chat_id)
             return jsonify({'result': True})
 
         else:
@@ -251,32 +299,6 @@ def checkCurrentPassword():
     else:
         return jsonify({'result': False, 'code': 400, 'message': 'Bad request'})
 
-def session_parser(init=False):
-    '''
-    TODO :
-        즐찾종목또는 USER에 귀속된 모든 정보는 SESSION에 그대로 반환하도록
-        init True인경우만
-
-
-    '''
-    email = session.get('email')
-    username = session.get('username')
-    usercode = session.get('usercode')
-    loggedin = False if session.get('loggedin') is None else True
-    message = session.get('message')
-    favorite = session.get('favorite')
-    expiration_date =session.get('expiration_date')
-
-    return {'email':email,
-            'username':username,
-            'usercode': usercode,
-            'loggedin':loggedin,
-            'message':message,
-            'favorite':favorite,
-            'expiration_date':expiration_date}
-
-
-
 @application.route('/updateUuid', methods=['POST'])
 def updateUuid():
 
@@ -310,8 +332,6 @@ def _getMembership():
 # ========================================================
 
 
-
-
 @application.route('/ads.txt')
 def static_from_root():
     return send_from_directory(application.static_folder, request.path[1:])
@@ -333,10 +353,6 @@ def home():
 @application.route('/ajaxTable', methods = ['POST'])
 def ajax_getTable():
     '''
-    TODO
-        1. HTML을 SERVER SIDE 에서 RENDERING 하지 않고, CLIENT SIDE에서 RENDERING 하도록 본 함수에서는 JSON을 그대로 RETURN 하도록 수정
-        2. SESSION정보에 따라서 불러오는 ROW수 또는 컬럼수를 조정해줘야한다.
-
     '''
 
     targets = request.form.get("targets").split(',')
@@ -353,7 +369,6 @@ def ajax_getTable():
         date_idx = 0
 
     dao = DataAccessObjectStock()
-    sess = session_parser()
     member = _getMembership()
 
 
@@ -361,7 +376,7 @@ def ajax_getTable():
 
     if member.get("membership")=='supporter':
         limit = limit
-        usercode = sess['usercode']
+        usercode = session.get('usercode')
         htmltable, column_list = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
                                     method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only, report_only=report_only, date_idx=date_idx)
 
@@ -394,32 +409,18 @@ def ajax_getTable():
 
 
 
-@application.route('/ajaxRealtime', methods=['POST'])
-def ajax_getRealtime():
-
-    seq = request.form['seq'].replace('"', '')
-    date = request.form['date'].replace('"', '')
-
-    dao = DataAccessObjectStock()
-    ret = dao.smar_realtime(date, seq)
-
-    return jsonify(realtime=ret)
-
-
+# @application.route('/ajaxRealtime', methods=['POST'])
+# def ajax_getRealtime():
+#
+#     seq = request.form['seq'].replace('"', '')
+#     date = request.form['date'].replace('"', '')
+#
+#     dao = DataAccessObjectStock()
+#     ret = dao.smar_realtime(date, seq)
+#
+#     return jsonify(realtime=ret)
 
 
-@application.route('/ajaxChart', methods=['POST'])
-def ajax_getSndChart():
-    '''
-    CHART데이터는 Javascript단에서 최대한 빠르게 RENDERING 할 수 있는 자료구조로 처리해서 반환한다
-    빠른반복과 적은 트래픽이 오가는게 관건
-    '''
-
-    stockcode = request.form['stockcode'].replace('"', '')
-    start = datetime.now()
-
-
-    return jsonify()
 
 @application.route('/getTableForOhlcDay', methods=['POST'])
 def getTableForOhlcDay():
@@ -505,7 +506,7 @@ def getRecentTradingDays():
     T_DATE_INDEXED에서 TOP 240 DATE를 가져오는 함수
     '''
     dao = DataAccessObjectStock()
-    recent_trading_days_list = dao.recent_trading_days(limit=60)
+    recent_trading_days_list = dao.recent_trading_days(limit=720)
     return jsonify({'result': True, "content": recent_trading_days_list})
 
 
@@ -529,9 +530,6 @@ def getLastTradingDaysLastSeq():
 
     dao = DataAccessObjectStock()
     date_0, date_1, seq_max_date_0, seq_max = dao.get_last_trading_days_last_seq()
-
-    print(date_0, date_1, seq_max_date_0, seq_max)
-
     return jsonify({'result':True,
                     'date_zero': date_0, 'date_one':date_1, 'seq_max_date_zero':seq_max_date_0, 'seq_max':seq_max})
 
@@ -597,20 +595,59 @@ def getSimulationResult():
         from_date = request.json.get("from_date")
         to_date = request.json.get("to_date")
 
-        conditions = []
-        for i, row in enumerate(request.json.get("input")):
+        condition_set = []
+        for i, row in enumerate(request.json.get("condition_set")):
+            condition_set.append(row)
+        start_time = datetime.now()
+        dao = DataAccessObjectSimulation()
+        ret = dao.get_simulation_result_direct(from_date, to_date, condition_set)
+        elapsed_time = datetime.now() - start_time
 
-            # feature = row.get("feature")
-            # operation = row.get("operation")
-            # target_value = row.get("target_value")
-            conditions.append(row)
+
+        return jsonify(simulation_result_table_html=ret.get('simulation_result_table_html'),
+                       simulation_result_table_json=ret.get('simulation_result_table_json'),
+                       simulation_result_column_list=ret.get('simulation_result_column_list'),
+                       elapsed_time=elapsed_time.total_seconds())
+
+@application.route('/saveConditionSetToServer', methods=['POST'])
+def saveConditionSetToServer():
+    '''
+    최근거래일 총 데이터건수를 가져오는 함수
+    '''
+
+    if request.method == 'POST':
+        # features_rows = []
+        # for i, row in enumerate(request.json.get("condition_set")):
+        #     features_rows.append(row)
+        #
+        # features_name = request.json.get("features_name")
+        dao = DataAccessObjectSimulation()
+        ret = dao.set_simulation_conditions(request.json, session.get('usercode'))
+        print(request.json)
+        return jsonify({"yo": "yo"})
+
+        #
+        # html, column_list = dao.set_simulation_features(features_rows, features_name, session.get('usercode'))
+        # return jsonify(simulation_result_table_html=html, simulation_result_column_list=column_list)
+
+
+
+@application.route('/getConditionSetsFromServer', methods=['POST'])
+def getConditionSetsFromServer():
+    '''
+    최근거래일 총 데이터건수를 가져오는 함수
+    '''
+
+    if request.method == 'POST':
 
         dao = DataAccessObjectSimulation()
-        html, column_list = dao.get_simulation_result_direct(from_date, to_date, conditions)
+        ret = dao.get_simulation_conditions(session.get('usercode'))
 
+        return jsonify(ret)
 
-        return jsonify(simulation_result_table_html=html, simulation_result_column_list=column_list)
-
+        #
+        # html, column_list = dao.set_simulation_features(features_rows, features_name, session.get('usercode'))
+        # return jsonify(simulation_result_table_html=html, simulation_result_column_list=column_list)
 
 @application.route('/test', methods=['POST'])
 def test():

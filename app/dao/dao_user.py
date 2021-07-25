@@ -70,7 +70,7 @@ class DataAccessObjectUser:
     def login(self, email, pw):
         pw_encoded = sha256(pw.encode('utf-8')).hexdigest()
         response = db.selectpd('''
-                                SELECT USERCODE, EMAIL, USERNAME, CAST(EXPIRATION_DATE AS CHAR) AS EXPIRATION_DATE
+                                SELECT USERCODE, EMAIL, USERNAME, CAST(EXPIRATION_DATE AS CHAR) AS EXPIRATION_DATE, TELEGRAM
                                 FROM jazzstockuser.T_USER_INFO
                                 JOIN jazzstockuser.T_USER_DONATION USING (USERCODE)
                                 WHERE 1=1
@@ -85,6 +85,7 @@ class DataAccessObjectUser:
                    'usercode':str(response.USERCODE.values[0]),
                    'email': response.EMAIL.values[0],
                    'username': response.USERNAME.values[0],
+                   'telegram_chat_id': response.TELEGRAM.values[0],
                    'expiration_date':response.EXPIRATION_DATE.values[0]}
 
         else:
@@ -93,6 +94,7 @@ class DataAccessObjectUser:
                     'usercode':None,
                     'email': None,
                     'username': None,
+                    'telegram_chat_id': None,
                     'expiration_date':None}
 
 
@@ -290,3 +292,22 @@ class DataAccessObjectUser:
 
         except Exception as e:
             return False
+
+
+    def check_dup_telegram(self, chat_id):
+
+        ret = db.selectSingleValue("SELECT USERCODE FROM jazzstockuser.T_USER_INFO WHERE TELEGRAM='%s'" % (chat_id))
+        if ret is None:
+            return False  # 이메일 존재함
+        else:
+            return True  # 이메일 존재하지 않음
+
+    def set_telegram_chat_id(self, usercode, chat_id):
+
+        query = '''
+        UPDATE `jazzstockuser`.`T_USER_INFO` SET `TELEGRAM` = '%s' WHERE (`USERCODE` = '%s');        
+        '''%(chat_id, usercode)
+
+        db.insert(query)
+
+        return True
