@@ -26,7 +26,7 @@ table_column_specification = [
                              'render':1,
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "finan",
+                "simulation_feature_type": "Finan (재무관련)",
                 "origin_table":"T_STOCK_MC",
 
         },{
@@ -91,7 +91,7 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "price",
+                "simulation_feature_type": "PRICE: 가격과 관련된 FEATURE 들",
                 "percent_yn":1,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
 
@@ -662,13 +662,17 @@ for each_column_group in float_columns_nested:
 
 if __name__=="__main__":
 
+
+        pass
         ## print(spec)
-
-
-        float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is not None]
-        float_column = []
-        for each_column_group in float_columns_nested:
-                for each_child in each_column_group:
-                        float_column.append(each_child)
-
+        #
+        #
+        # float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is not None]
+        # float_column = []
+        # for each_column_group in float_columns_nested:
+        #         for each_child in each_column_group:
+        #                 float_column.append(each_child)
+        #
+        #
+        #
 

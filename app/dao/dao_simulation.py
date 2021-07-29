@@ -1,6 +1,8 @@
 from jazzstock_net.app.common import connector_db as db
 import pandas as pd
 import json
+import random
+import string
 from datetime import datetime
 from jazzstock_net.app.config.config_table_specification import spec_list_float_column
 
@@ -47,7 +49,7 @@ class DataAccessObjectSimulation:
         AND A.DATE BETWEEN "%s" AND "%s"
         '''%(from_date, to_date)
 
-        features = ['CLOSE','MC', 'P1', 'P5', 'P20', 'BBP','BBW',
+        features = ['CLOSE','MC', 'P1', 'P5', 'P20', 'I1', 'I5', 'I20', 'F1', 'F5', 'F20', 'BBP','BBW',
                     'PSMAR5 AS PMA5',
                     'PSMAR20 AS PMA20',
                     'PSMAR60 AS PMA60',
@@ -87,7 +89,7 @@ class DataAccessObjectSimulation:
                                                                 target_value)
 
 
-        base_query = base_query + "        ORDER BY A.DATE DESC"
+        base_query = base_query + "        ORDER BY A.DATE ASC"
 
         try:
             rtdf = db.selectpd(select_query+base_query)
@@ -103,15 +105,18 @@ class DataAccessObjectSimulation:
             rtdf[float_columns] = rtdf[float_columns].round(3)
             rtdf = rtdf.fillna(0)
 
+            print(rtdf.sort_values(by="DATE", ascending=False).head(20))
 
             html_columns = [x for x in rtdf.columns.tolist() if x not in ['STOCKCODE', 'YY', 'MM']]
-            json_columns = ['STOCKCODE', 'YY', 'MM', 'BBW', 'BBP', 'PRO1','PRO3','PRO5','PRO10','PRH1', 'PRH3', 'PRH5', 'PRH10']
+            json_columns = ['STOCKCODE', 'DATE', 'YY', 'MM', 'BBW', 'BBP', 'I1', 'I5', 'F1', 'F5', 'PRO1','PRO3','PRO5','PRO10','PRH1', 'PRH3', 'PRH5', 'PRH10']
 
             html = (
                 rtdf[html_columns].style
                     .hide_index()
                     .render()
             )
+
+
 
             return {"simulation_result_table_html":html,
                     "simulation_result_column_list":html_columns,
@@ -124,18 +129,29 @@ class DataAccessObjectSimulation:
 
     def set_simulation_conditions(self, condition_set, usercode):
 
+        while True:
+            condition_set_id =  ''.join(random.choice(string.ascii_lowercase) for _ in range(22))
+            query = "SELECT COUNT(*) FROM jazzstockuser.T_USER_SIMULATION_CONDITION WHERE CONDITION_SET_ID = '%s'"%(condition_set_id)
+            is_not_unique = int(db.selectSingleValue(query))
+            if not is_not_unique:
+                break
+            else:
+                import time
+                time.sleep(0.5)
 
         try:
             query = '''
                         
             INSERT INTO `jazzstockuser`.`T_USER_SIMULATION_CONDITION` 
             (`USERCODE`, 
+            `CONDITION_SET_ID`, 
             `CONDITION_SET_NAME`, 
             `CONDITION_SET_DESCRIPTION`, 
             `CONDITION_SET_VALUE`, 
             `TIMESTAMP`, 
             `DEL_YN`) 
             VALUES ('%s', 
+                    '%s', 
                     '%s', 
                     '%s',
                     '%s',
@@ -144,6 +160,7 @@ class DataAccessObjectSimulation:
     
     
             '''%(usercode,
+                 condition_set_id,
                  condition_set.get("condition_set_name"),
                  condition_set.get("condition_set_description"),
                  json.dumps(condition_set.get("condition_set")),
@@ -164,17 +181,37 @@ class DataAccessObjectSimulation:
 
             query = '''
             
-            SELECT CONDITION_SET_NAME, CONDITION_SET_DESCRIPTION, CONDITION_SET_VALUE
+            SELECT CONDITION_SET_ID, CONDITION_SET_NAME, CONDITION_SET_DESCRIPTION, CONDITION_SET_VALUE, TIMESTAMP
             FROM jazzstockuser.T_USER_SIMULATION_CONDITION
-            WHERE USERCODE = '%s'
+            WHERE 1=1
+            AND USERCODE = '%s'
             AND DEL_YN = 0
-            
+            ORDER BY TIMESTAMP DESC
             '''%(usercode)
+
 
             df = db.selectpd(query)
             return {'result': [x for x in df.to_dict("index").values()]}
 
-        except:
+        except Exception as e:
+            print("get_simulation_conditions", e)
             return {'result': False}
 
 
+    def delete_simulation_condition(self, condition_set_id, usercode):
+
+        try:
+
+            query = '''
+
+            DELETE FROM `jazzstockuser`.`T_USER_SIMULATION_CONDITION` 
+            WHERE (`USERCODE` = '%s') and (`CONDITION_SET_ID` = '%s');
+
+            ''' % (usercode, condition_set_id)
+
+            df = db.delete(query)
+            return {'result': True}
+
+        except Exception as e:
+            print("delete_simulation_condition", e)
+            return {'result': False}
