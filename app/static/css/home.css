@@ -501,6 +501,7 @@ div#specification_content {
     position: absolute;
     opacity:50%;
     border-radius: 5px;
+    z-index: 9;
 }
 
 .button_area_left {
