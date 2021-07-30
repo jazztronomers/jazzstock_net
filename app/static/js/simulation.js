@@ -3,6 +3,7 @@ function renderSimulationTab(){
     getAllFeaturesForSimulation()
     renderRecentTradingDays()
     renderConditionGenerationArea()
+    getConditionSetsFromServer()
     // getSpecificFeatureStats()
 
 }
@@ -12,6 +13,9 @@ let condition_queue = []
 let features_map = {}
 let feature_type_list = []
 let simulation_result = undefined
+let simulation_result_object = undefined
+let simulation_result_html = undefined
+let simulation_result_column_list = undefined
 
 function getAllFeaturesForSimulation(){
     /*
@@ -50,39 +54,14 @@ function renderAllFeatures(){
     *     가져온 모든 features를 화면에다 버튼으로 뿌리는 함수
     */
 
-    simulation_feature_selection_area = document.getElementById("simulation_feature_selection_area")
+    simulation_condition_feature_menu_tbody = document.getElementById("simulation_condition_feature_menu_tbody")
 
-    while (simulation_feature_selection_area.firstChild){
-        simulation_feature_selection_area.removeChild(simulation_feature_selection_area.lastChild)
+    while (simulation_condition_feature_menu_tbody.firstChild){
+        simulation_condition_feature_menu_tbody.removeChild(simulation_condition_feature_menu_tbody.lastChild)
     }
 
 
-    let table = document.createElement("table")
-    table.setAttribute("class", "table_simulation table_simulation_feature")
-
-    let thead = document.createElement("thead")
-    let row = document.createElement("tr")
-    let cell_a = document.createElement("th")
-    let cell_b = document.createElement("th")
-
-    cell_a.innerHTML="FEATURE_TYPE"
-    cell_b.innerHTML="FEATURES"
-
-    row.appendChild(cell_a)
-    row.appendChild(cell_b)
-    thead.appendChild(row)
-
-    let tbody = document.createElement("tbody")
-
-    table.appendChild(thead)
-    table.appendChild(tbody)
-
-    /*
-        TYPE 별로 한 CELL을 먹도록..
-    */
     for (let i=0; i< feature_type_list.length; i++){
-
-
 
         let row = document.createElement("tr")
         let cell_a = document.createElement("td")
@@ -116,12 +95,10 @@ function renderAllFeatures(){
 
         row.appendChild(cell_a)
         row.appendChild(cell_b)
-
-        tbody.appendChild(row)
+        simulation_condition_feature_menu_tbody.appendChild(row)
 
     }
 
-    simulation_feature_selection_area.appendChild(table)
 
 
 }
@@ -171,11 +148,19 @@ function addConditionInputRow(feature_name, feature_name_full, preset_operation=
      *
      *    할때 호출되는 함수
      */
-    row_id = getConditionInputRowId()
 
+
+    row_id = getConditionInputRowId()
     console.log('addConditionInputRow:', feature_name, feature_name_full, preset_operation, preset_target_value)
 
     simulation_condition_generation_tbody = document.getElementById("simulation_condition_generation_tbody")
+
+    // deafault cell 삭제
+    simulation_condition_generation_tbody.childNodes.forEach(c=>{
+    if(c.className  == 'table_default_row_while_empty'){
+        simulation_condition_generation_tbody.removeChild(c);
+    }})
+
 
     let row = document.createElement("tr")
     row.setAttribute("id", row_id)
@@ -265,10 +250,33 @@ function addConditionInputRow(feature_name, feature_name_full, preset_operation=
 }
 
 function deleteRow(row_id){
-    console.log(row_id)
+
+
+
     let row = document.getElementById(row_id);
-    console.log(row)
     row.parentNode.removeChild(row);
+
+    // SHOW DEFAULT VALUE WHILE EMPTY
+    simulation_condition_generation_tbody = document.getElementById("simulation_condition_generation_tbody")
+    if (simulation_condition_generation_tbody.firstElementChild == null){
+
+        tr = document.createElement('tr')
+        tr.setAttribute("class", "table_default_row_while_empty")
+
+        td = document.createElement('td')
+        td.setAttribute("colspan", "4")
+        td.setAttribute("class", "table_default_cell_while_empty")
+        td.innerHTML="ADD FEATURES FROM LEFT FEATURE MENU !"
+
+        tr.appendChild(td)
+        simulation_condition_generation_tbody.appendChild(tr)
+    }
+
+
+
+
+
+
 }
 
 function changeTargetInputArea(target, row_id, preset_target_value=null) {
@@ -330,19 +338,16 @@ function simulationRequest(){
             {
 
 
-                html = req.response.simulation_result_table_html
-                column_list = req.response.simulation_result_column_list
+                simulation_result_html = req.response.simulation_result_table_html
+                simulation_result_column_list = req.response.simulation_result_column_list
                 simulation_result = req.response.simulation_result_table_json
                 elapsed_time = req.response.elapsed_time
                 setFeaturesToLocalStorage(JSON.stringify(condition_set), from_date, to_date)
-                getSimulationSummary()
+                simulation_result_object = parseSimulationResult(simulation_result)
                 console.log('simulationRequest elapsed time: ', elapsed_time)
 
-                if (document.getElementById("table_simulation").hasAttribute("aria-describedby") == true){
-                    clearTable("table_simulation")
-                }
-
-                renderTable("table_simulation", html, column_list, ratio=0.5, fixedLeft=2)
+                setSimulationResults()
+                // renderTable("table_simulation", html, column_list, ratio=0.5, fixedLeft=2)
 
             }
         }
@@ -361,31 +366,268 @@ function simulationRequest(){
 
 }
 
-function getSimulationSummary(){
+function parseSimulationResult(simulation_result){
 
 
-    df = new dfd.DataFrame(simulation_result)
+    let df = new dfd.DataFrame(simulation_result)
 
-    //  let grp = df.groupby(["YY", "MM"])
-    //  grp.agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "STOCKCODE":"count"}).print()
-
-
-    grp = df.groupby(["YY"])
-    grp.agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "STOCKCODE":"count"}).print()
-    grp.agg({"PRO1":"std","PRO3":"std", "PRO5":"std", "PRO10":"std", "STOCKCODE":"count"}).print()
-
-    // grp.agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "STOCKCODE":"count"}).col_data
-    // grp.agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "STOCKCODE":"count"}).column_names
-
-    // >> [[...], [...], [...], [...], [...], [...]] COLUMN 기준으로 출력됨
-    // >>  ["YY", "PRO1_mean", "PRO3_mean", "PRO5_mean", "PRO10_mean", "STOCKCODE_count"]
+    df = df.astype({column: ("YY","MM"), dtype: "string"})
 
 
+//    df.plot("simulation_row_results_table_content").table()
+//
+//    document.getElementById("simulation_row_results_table_content")
+
+
+    grp = df.groupby(["YY", "MM"]).agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "STOCKCODE":"count"})
+    mm_columns = grp.column_names
+    mm_data = grp.data
+    grp.print()
+
+
+    grp = df.groupby(["YY"]).agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "STOCKCODE":"count"})
+    yy_columns = grp.column_names
+    yy_data = grp.data
+    grp.print()
+
+    return {"simulation_result_raw":simulation_result,
+            "simulation_result_columns":df.column_names,
+            "simulation_result_row_data":df.data,
+            "simulation_result_col_data":df.col_data,
+            "simulation_result_mm_summary_columns":mm_columns,
+            "simulation_result_mm_summary_row_data":mm_data,
+            "simulation_result_mm_summary_col_data":mm_data,
+            "simulation_result_yy_summary_columns":yy_columns,
+            "simulation_result_yy_summary_row_data":yy_data,
+            "simulation_result_yy_summary_col_data":yy_data}
+
+}
+
+function setSimulationResults(){
+
+    // global simulation_result_object
+
+    select_box = document.getElementById("simulation_row_results_table_select")
+    select_box.setAttribute("onchange", "renderSimulationResultTable(this.value)")
+
+    removeAllChildOfElement(select_box)
+
+    opt = document.createElement("option")
+    opt.value = "YEAR"
+    opt.innerHTML = "YEAR"
+    select_box.appendChild(opt)
+
+
+    opt = document.createElement("option")
+    opt.value = "MONTH"
+    opt.innerHTML = "MONTH"
+    select_box.appendChild(opt)
+
+
+    opt = document.createElement("option")
+    opt.value = "RAW"
+    opt.innerHTML = "RAW"
+    select_box.appendChild(opt)
+
+    // ------------------------------------------------------------------------------
+
+    select_box_x = document.getElementById("simulation_row_results_scatter_select_x")
+    select_box_x.setAttribute("onchange", "renderSimulationResultScatterPlot()")
+
+    removeAllChildOfElement(select_box_x)
+
+    for (let each of ['BBP', 'BBW', 'I1', 'I5', 'I20', 'F1', 'F5', 'F20']){
+        opt = document.createElement("option")
+        opt.value = each
+        opt.innerHTML = each
+        select_box_x.appendChild(opt)
+    }
+
+
+    select_box_y = document.getElementById("simulation_row_results_scatter_select_y")
+    select_box_y.setAttribute("onchange", "renderSimulationResultScatterPlot()")
+
+    removeAllChildOfElement(select_box_y)
+
+
+    opt = document.createElement("option")
+    opt.value = "PRO10"
+    opt.innerHTML = "PRO10"
+    select_box_y.appendChild(opt)
+
+    opt = document.createElement("option")
+    opt.value = "PRO5"
+    opt.innerHTML = "PRO5"
+    select_box_y.appendChild(opt)
+
+    // cont = document.getElementById("simulation_row_results_content")
 
 
 }
 
 
+function removeAllChildOfElement(element){
+
+    while (element.firstChild){
+            element.removeChild(element.lastChild)
+    }
+}
+
+
+function renderSimulationResultTable(label){
+
+    // global simulation_result_object
+    simulation_row_results_table_content = document.getElementById("simulation_row_results_table_content")
+    removeAllChildOfElement(simulation_row_results_table_content)
+
+    console.log(simulation_result_object.simulation_result_raw)
+
+    table = document.createElement('table')
+    table.setAttribute("id","simulation_row_results_table")
+    table.style.width="100%"
+    thead = document.createElement('thead')
+    thead.setAttribute("id","simulation_row_results_table_thead")
+
+    tbody = document.createElement('tbody')
+    tbody.setAttribute("id","simulation_row_results_table_tbody")
+
+
+    table.appendChild(thead)
+    table.appendChild(tbody)
+    simulation_row_results_table_content.appendChild(table)
+
+    if(label=="YEAR"){
+
+
+        column_list = simulation_result_object.simulation_result_yy_summary_columns
+        h_tr = document.createElement("tr")
+        for (let each_col of simulation_result_object.simulation_result_yy_summary_columns) {
+            th = document.createElement("th")
+            th.innerHTML = each_col
+            h_tr.appendChild(th)
+        }
+        thead.appendChild(h_tr)
+
+
+
+
+        for (let each_line of simulation_result_object.simulation_result_yy_summary_row_data) {
+            b_tr = document.createElement("tr")
+            for (let each_col of each_line) {
+                td = document.createElement("td")
+                td.innerHTML = each_col
+                b_tr.appendChild(td)
+            }
+            tbody.appendChild(b_tr)
+        }
+
+        renderTable("simulation_row_results_table", null, column_list, ratio=0.4)
+
+    }
+    else if(label=="MONTH"){
+
+        column_list = simulation_result_object.simulation_result_mm_summary_columns
+        h_tr = document.createElement("tr")
+        for (let each_col of simulation_result_object.simulation_result_mm_summary_columns) {
+            th = document.createElement("th")
+            th.innerHTML = each_col
+            h_tr.appendChild(th)
+        }
+        thead.appendChild(h_tr)
+
+        for (let each_line of simulation_result_object.simulation_result_mm_summary_row_data) {
+            b_tr = document.createElement("tr")
+            for (let each_col of each_line) {
+                td = document.createElement("td")
+                td.innerHTML = each_col
+                b_tr.appendChild(td)
+            }
+            tbody.appendChild(b_tr)
+        }
+
+        renderTable("simulation_row_results_table", null, column_list, ratio=0.4)
+    }
+    else if(label=="RAW"){
+
+        renderTable("simulation_row_results_table", simulation_result_html, simulation_result_column_list, ratio=0.2)
+    }
+
+//    table = document.getElementById("simulation_row_results_table_table")
+//    if(table.className.includes("dataTable")){
+//        clearTable("simulation_row_results_table_table")
+//    }
+
+
+    console.log(column_list)
+
+
+}
+
+
+
+function renderSimulationResultScatterPlot(){
+
+    x = document.getElementById("simulation_row_results_scatter_select_x").value
+    y = document.getElementById("simulation_row_results_scatter_select_y").value
+    x_idx = simulation_result_object.simulation_result_columns.indexOf(x)
+    y_idx = simulation_result_object.simulation_result_columns.indexOf(y)
+    console.log(x,y)
+    console.log(simulation_result_object.simulation_result_columns)
+    console.log(x_idx, y_idx)
+
+    // global simulation_result_object
+
+    let trace1 = {
+      x: simulation_result_object.simulation_result_col_data[x_idx],
+      y: simulation_result_object.simulation_result_col_data[y_idx],
+      mode: 'markers+text',
+      type: 'scatter',
+      name: 'Team A',
+      text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
+      textposition: 'top center',
+      textfont: {
+        family:  'Raleway, sans-serif'
+      },
+      marker: { size: 12 }
+    };
+
+
+    let data = [ trace1];
+    let layout = {
+        xaxis: {
+            range: [ Math.min(simulation_result_object.simulation_result_col_data[x_idx]),
+                     Math.max(simulation_result_object.simulation_result_col_data[x_idx]) ],
+            title: x
+        },
+        yaxis: {
+            range: [ Math.min(simulation_result_object.simulation_result_col_data[y_idx]),
+                     Math.max(simulation_result_object.simulation_result_col_data[y_idx]) ],
+            title: y
+        },
+        margin: {
+            l: 30,
+            r: 30,
+            b: 30,
+            t: 30,
+            pad: 4
+        },
+        legend: {
+            y: 0.5,
+            yref: 'paper',
+            font: {
+              family: 'Arial, sans-serif',
+              size: 20,
+              color: 'grey',
+            }
+        },
+        paper_bgcolor: "#D85236", // RED
+        plot_bgcolor: "#36AED8", // BLUE
+        title: "scatter plot"
+    };
+
+    Plotly.newPlot('simulation_row_results_scatter_content', data, layout);
+
+}
 
 function setFeaturesToLocalStorage(feature_rows, from_date='2020-01-02', to_date='2021-07-23'){
 
@@ -406,19 +648,17 @@ function renderSpecificFeatureStats(feature_name, stats){
 
 function renderRecentTradingDays(){
 
-    simulation_target_date_area = document.getElementById("simulation_target_date_area")
-
-
-    while (simulation_target_date_area.firstChild){
-        simulation_target_date_area.removeChild(simulation_target_date_area.lastChild)
+    select_box_from = document.getElementById("simulation_from_date")
+    select_box_to = document.getElementById("simulation_to_date")
+    while (select_box_from.firstChild){
+        select_box_from.removeChild(select_box_from.lastChild)
     }
 
 
+    while (select_box_to.firstChild){
+        select_box_to.removeChild(select_box_to.lastChild)
+    }
 
-    select_box_from = document.createElement("select")
-    select_box_from.setAttribute("id","simulation_from_date")
-    select_box_to = document.createElement("select")
-    select_box_to.setAttribute("id","simulation_to_date")
 
     for (let i = 0; i < recent_trading_days.length; i++){
 
@@ -445,8 +685,6 @@ function renderRecentTradingDays(){
 
     }
 
-    simulation_target_date_area.appendChild(select_box_from)
-    simulation_target_date_area.appendChild(select_box_to)
 
 }
 
@@ -487,7 +725,11 @@ function getDistribution(feature_name){
 
 
 
-function renderFeatures(feature_rows){
+function renderFeatures(condition_set){
+
+    condition_set_name = condition_set.CONDITION_SET_NAME
+    condition_set_description = condition_set.CONDITION_SET_DESCRIPTION
+    feature_rows = JSON.parse(condition_set.CONDITION_SET_VALUE)
 
     simulation_condition_generation_tbody = document.getElementById("simulation_condition_generation_tbody")
     while (simulation_condition_generation_tbody.firstChild){
@@ -498,6 +740,14 @@ function renderFeatures(feature_rows){
         console.log("renderFeatures...", feature_rows[i])
         addConditionInputRow(feature_rows[i].feature_name, feature_rows[i].feature_name_full, feature_rows[i].operation, feature_rows[i].target_value)
     }
+
+
+
+    elm = document.getElementById("condition_set_name")
+    elm.value=condition_set_name
+
+    elm = document.getElementById("condition_set_description")
+    elm.value=condition_set_description
 
 
 }
@@ -533,11 +783,7 @@ function getConditionSetsFromServer(){
             }
             else
             {
-
-                console.log(req.response)
                 renderConditionSets(req.response)
-
-
             }
         }
     }
@@ -551,12 +797,14 @@ function getConditionSetsFromServer(){
 function renderConditionSets(response){
 
     tbody = document.getElementById("simulation_condition_list_tbody")
-    condition_set = response.result
-    console.log(condition_set)
-    console.log(condition_set.length)
 
-    console.log(condition_set)
-    console.log("b", condition_set.length)
+
+    while (tbody.firstChild){
+        tbody.removeChild(tbody.lastChild)
+    }
+
+    condition_set = response.result
+
 
     for (let i = 0; i< condition_set.length; i++){
 
@@ -565,22 +813,33 @@ function renderConditionSets(response){
         cell_timestamp = document.createElement("td")
         cell_delete = document.createElement("td")
 
-        button = document.createElement('button')
-        button.innerHTML = condition_set[i].CONDITION_SET_NAME
-        button.value = condition_set[i].CONDITION_SET_VALUE
-        button.setAttribute("onclick", "renderFeatures(JSON.parse(this.value))")
+        condition_name = document.createElement('a')
+        condition_name.innerHTML = condition_set[i].CONDITION_SET_NAME
+        condition_name.value = condition_set[i]
 
-        cell_timestamp.innerHTML = 'ABC'
-        cell_delete.innerHTML = 'DEF'
+        condition_name.setAttribute("href", "#")
+        condition_name.setAttribute("onclick", "renderFeatures(this.value)")
 
-        cell_name.appendChild(button)
+        button_delete=document.createElement("button")
+        button_delete.setAttribute("class", "button_in_a_cell")
+        button_delete.innerHTML= "delete"
+        button_delete.value = condition_set[i].CONDITION_SET_ID
+        button_delete.setAttribute("onclick","deleteConditionOnServer(this.value)")
+
+
+        cell_timestamp.innerHTML = condition_set[i].TIMESTAMP
+
+
+
+        cell_name.appendChild(condition_name)
+        cell_name.appendChild(button_delete)
         row.appendChild(cell_name)
         row.appendChild(cell_timestamp)
-        row.appendChild(cell_delete)
         tbody.append(row)
     }
 
 }
+
 
 
 function getConditionSetCurrent(){
@@ -630,8 +889,6 @@ function saveConditionSetToServer(){
         중복되지 않았다면 insert
     */
 
-
-
     condition_set_name = document.getElementById("condition_set_name")
     condition_set_description = document.getElementById("condition_set_description")
 
@@ -656,6 +913,7 @@ function saveConditionSetToServer(){
                 {
 
                     console.log(req.response)
+                    getConditionSetsFromServer()
 
                 }
             }
@@ -663,7 +921,7 @@ function saveConditionSetToServer(){
 
 
 
-
+        alert("fuckyou")
         condition_set = getConditionSetCurrent()
         features = JSON.stringify({"condition_set":condition_set, "condition_set_name": condition_set_name.value, "condition_set_description": condition_set_description.value})
 
@@ -673,33 +931,41 @@ function saveConditionSetToServer(){
     }
 }
 
-//
-//bbw = [0.089, 0.085, 0.075, 0.057, 0.078, 0.063, 0.063, 0.11, 0.097, 0.117, 0.064, 0.051, 0.095, 0.059, 0.066, 0.074, 0.057, 0.057, 0.092, 0.058, 0.065, 0.068, 0.084, 0.065, 0.079, 0.082, 0.07, 0.069, 0.083, 0.101, 0.114, 0.081, 0.085, 0.064, 0.032, 0.111, 0.104, 0.083, 0.103, 0.091, 0.117, 0.063, 0.092, 0.074, 0.109, 0.053, 0.116, 0.085, 0.079, 0.069, 0.031, 0.073, 0.06, 0.081, 0.106, 0.095, 0.05, 0.045, 0.077, 0.099, 0.048, 0.096, 0.065, 0.095, 0.089, 0.076, 0.075, 0.066, 0.073, 0.105, 0.112, 0.043, 0.089, 0.114, 0.112, 0.019, 0.013, 0.083, 0.097, 0.113, 0.058, 0.117, 0.058, 0.09, 0.093, 0.091, 0.096, 0.079, 0.062, 0.098, 0.092, 0.1, 0.091, 0.102, 0.093]
-//
-//pro = [0, 30.9, -5.1, -3.5, -4, -5.6, 1.6, 7.5, 5.1, 9.3, 1.2, 0.3, 3.1, -0.4, 0.3, -1.1, 1.4, 2.2, -1.7, 5.1, -4.6, -6.7, 2.8, 1.6, -3.1, 9.5, 5.6, 4.5, 14, 5.6, -4.4, -0.8, 5.9, -0.9, 2.9, 4.9, 0.2, 6.2, 2.4, 0, 6.1, -6.5, -6.5, -3.3, 2.6, 8.1, 9.1, -1.4, -1.5, 6.7, 0.4, -3.2, 4.2, 8, -2.4, 1.8, 2.1, -3.4, -4.3, 3.9, 0.2, -2.5, 1.4, -7.4, -7.3, -1, -1.5, -1.3, -3.2, -0.8, 15.1, 2.4, 19.2, 2.1, 12.5, 0, -2.6, -0.9, 4.8, -5.7, -3.8, 4.4, -2.1, 4.1, 1.5, 6.5, -2.5, 24.3, 0.2, 1.6, 4.6, -1.1, -11.3, 3.1, -0.7]
-//
-//var trace2 = {
-//  x: bbw,
-//  y: pro,
-//  mode: 'markers',
-//  type: 'scatter',
-//  name: 'Team B',
-//  text: ['B-a', 'B-b', 'B-c', 'B-d', 'B-e'],
-//  marker: { size: 12 }
-//};
-//
-//var data = [ trace2 ];
-//
-//var layout = {
-//  xaxis: {
-//    range: [ Math.min(bbw), Math.max(bbw) ]
-//  },
-//  yaxis: {
-//    range: [ Math.min(pro), Math.max(pro) ]
-//  },
-//  title:'Data Labels Hover',
-//  width: 800,
-//  height: 800
-//};
-//
-//Plotly.newPlot('myDiv', data, layout);
+
+function deleteConditionOnServer(condition_set_id){
+
+    if(confirm("are you sure?")){
+
+
+        let req = new XMLHttpRequest()
+        req.responseType = 'json';
+        req.onreadystatechange = function()
+        {
+            if (req.readyState == 4)
+            {
+                if (req.status != 200)
+                {
+                    alert('deleteConditionOnServer ERROR!')
+                }
+                else
+                {
+
+                    console.log(req.response)
+                    getConditionSetsFromServer()
+                }
+            }
+        }
+
+        req.open('POST', '/deleteConditionSetOnServer')
+        req.setRequestHeader("Content-type", "application/json")
+        params = JSON.stringify({"condition_set_id":condition_set_id})
+
+        req.send(params)
+
+    }
+
+    else {
+        // DO NOTHING
+    }
+
+}

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response, Blueprint
+from flask import request, jsonify, session, redirect, url_for, Blueprint
 from jazzstock_net.app.dao.dao_user import DataAccessObjectUser
 from jazzstock_net.app.common.telegram_message import send_message_telegram
 from datetime import datetime

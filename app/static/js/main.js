@@ -193,7 +193,6 @@ $.fn.dataTable.ext.search.push(
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
-
     elemnt = document.getElementById("grid_field_stock")
     new Sortable(elemnt, {
         // direction: 'vertical',
@@ -471,7 +470,7 @@ function getStorageSize(){
         }
         _xLen = ((localStorage[_x].length + _x.length) * 2);
         _lsTotal += _xLen;
-        console.log(_x.substr(0, 50) + " = " + (_xLen / 1024).toFixed(2) + " KB")
+        console.log(_x.substr(0, 50) + ":" + localStorage[_x] +  " = " + (_xLen / 1024).toFixed(2) + " KB")
     };
     console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
 
@@ -675,7 +674,13 @@ function queueRender(all=false){
 
 function login(is_auto=false){
 
-    if(event.key === 'Enter' || null == event.key || is_auto == true) {
+    console.log(" * login triggered....", event.key, is_auto)
+    if(event.type === 'keydown' && event.key === undefined){
+        console.log("[BUG?] ubuntu chromium bug!", event.key, event.type)
+        return true
+    }
+
+    else if(event.key === 'Enter' || null == event.key || is_auto == true) {
 
         let req = new XMLHttpRequest()
         req.responseType = 'json';
@@ -712,10 +717,11 @@ function login(is_auto=false){
         let email = document.getElementById('email').value
         let auto_login_checked = document.getElementById('auto_login').checked
 
+        console.log(" * login...?", event, is_auto)
+
         if (is_auto == true){
             req.send('email='+localStorage.getItem('jazzstock_auto_login_email')+'&pw='+localStorage.getItem('jazzstock_auto_login_pw'))
         }
-
         else {
             pw = SHA256(document.getElementById('pw').value)
             req.send('email='+email+'&pw='+pw)
@@ -724,10 +730,16 @@ function login(is_auto=false){
 }
 
 
-function autologin(){
+function autologin(evt){
+
+
     have_to_login = localStorage.getItem('jazzstock_auto_login');
     if (have_to_login == 'true' && user_loggedin == false){
         login(true)
+    }
+
+    else {
+        return false
     }
 }
 
@@ -805,8 +817,8 @@ function getUserInfo(){
                 console.log(" * getUserInfo...:", req.response)
                 user_expiration_date = req.response.expiration_date
                 user_loggedin = req.response.loggedin
+                autologin(event)
                 setMenu()
-                autologin()
             }
         }
     }
@@ -833,25 +845,8 @@ function setMenu(){
     expdate = new Date(user_expiration_date).setHours(0,0,0,0)
     curdate = new Date().setHours(0,0,0,0)
 
-//    if (expdate>=curdate){
-//
-//        console.log(" * Supporter function rendering....")
-//        let class_for_supporter = document.getElementsByClassName('only_supporter')
-//        for (i = 0; i < class_for_supporter.length; i++) {
-//            class_for_supporter[i].style.display="inline-block"
-//        }
-//        // document.getElementById('only_supporter').style.display = "block";
-//        // document.getElementById('builtinFilter').style.display = "block";
-//    }
 }
 
-
-
-function clickPress(event,a,b) {
-    if (event.keyCode == 13) {
-        getChartData(a,b,c)
-    }
-}
 
 
 function foldSearchingOption(){

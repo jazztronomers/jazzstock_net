@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response, Blueprint
+from flask import request, jsonify, session, Blueprint
 from jazzstock_net.app.dao.dao_simulation import DataAccessObjectSimulation
 from datetime import datetime
 

@@ -3,14 +3,18 @@
 <title>Jazzstock</title>
 
 
-
-
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-<script type="text/javascript" charset="utf8" src="/static/js/datatables.js"></script>
-<script type="text/javascript" charset="utf8" src="/static/js/dataTables.colReorder.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/datatable.jazzstock.css') }}">
+<link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+<!--<script type="text/javascript" charset="utf8" src="/static/js/datatables.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="/static/js/dataTables.colReorder.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>-->
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.22/sorting/natural.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/danfojs@0.2.7/lib/bundle.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.plot.ly/plotly-2.3.0.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
 <!--JAZZSTOCK JS -->
 
@@ -23,7 +27,6 @@
 <script type="text/javascript" src="static/js/echarts.min.js"></script>
 <script type="text/javascript" src="static/js/sndChart.js"></script>
 <script type="text/javascript" src="static/js/chart.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 
@@ -47,22 +50,8 @@
       gtag('config', 'UA-132476295-1');
 </script>
 <body>
-
-    <style>
-    .jazzstockhead { width: 320px; height: 100px; }
-    @media(min-width: 360px) { .jazzstockhead { width: 340px; height: 60px; } }
-    @media(min-width: 375px) { .jazzstockhead { width: 350px; height: 60px; } }
-    @media(min-width: 500px) { .jazzstockhead { width: 468px; height: 60px; } }
-    @media(min-width: 800px) { .jazzstockhead { width: 728px; height: 90px; } }
-    @media(min-width: 1600px) { .jazzstockhead { width: 1720px; height: 90px; } }
-    @media(min-width: 1920px) { .jazzstockhead { width: 1820px; height: 100px; } }
-    </style>
-
-
-
-
     <div id="menu">
-        <div class="navigation_top"  id="navigation_top">
+        <div id="navigation_top" class="navigation_top"  >
             <a class="active" href="/" id="jazzstock"><b>Jazzstock</b></a>
             <div class="navigation_top_right" id="menu_loggedin">
                 <div id="notloggedin">
@@ -99,114 +88,6 @@
             <div id="induce_signin" class="navigation_top_right" style="display: block">
                 <p>로그인을 하시면 <u>조회권한</u> 및 <u>조회건수</u>가 늘어납니다</p>
             </div>
-        </div>
-        <div id="specification" style="display: none">
-            <select id="specification_selectbox" onchange="drawSpecification(this)">
-            </select>
-            <div id="specification_content">
-                <u>선택된 컬럼에 대한 설명과 예시가 보여집니다.</u>
-            </div>
-            <hr>
-        </div>
-
-
-        <div class="popup" id="popup_login" style="display:none">
-            <form id ="login" class="popup_container">
-                <h1>Login</h1>
-
-                <label for="email"><b>Email</b></label>
-                <input type="text" placeholder="Enter Email" name="email" id="email" required>
-
-                <label for="pw"><b>Password</b></label>
-                <input type="password" placeholder="Enter Password" name="pw" id="pw" onkeydown="login()"required >
-
-                <label for="auto_login"><b>AutoLogin</b></label>
-                <input type="checkbox" name="auto_login" id="auto_login">
-
-                <button type="button" class="btn" id='login_btn' onclick='login();' value="Login">Login</button>
-                <button type="button" class="btn cancel" onclick="closeForm('popup_login')">Close</button>
-            </form>
-        </div>
-        <div class="popup popup_menu only_supporter" id="filter" style="display: none">
-            <b><u>FILTER</u></b><br>
-            활성화된 테이블에 대한 client-side 필터입니다, 전종목 테이블일때 유용합니다<br><hr>
-            <div id='customFilter'>
-                <label for="filter_a">Keyword A:</label>
-                <input type="text" class="input_filter" id="filter_a" placeholder="종목 카테고리를 입력하세요">
-                <a href="#" onclick="setCustomFilter('filter_a');">필터적용</a><br>
-
-                <label for="filter_b">Keyword B:</label>
-                <input type="text" class="input_filter"  id="filter_b" placeholder="ex) 반도체">
-                <a href="#" onclick="setCustomFilter('filter_b');">필터적용</a><br>
-
-                <label for="filter_c">Keyword C:</label>
-                <input type="text" class="input_filter"  id="filter_c" placeholder="ex) 2차전지">
-                <a href="#" onclick="setCustomFilter('filter_c');">필터적용</a><br>
-
-                <label for="filter_d">Keyword D:</label>
-                <input type="text" class="input_filter"  id="filter_d" placeholder="ex) 삼성">
-                <a href="#" onclick="setCustomFilter('filter_d');">필터적용</a><br>
-
-                <label for="filter_e">Keyword E:</label>
-                <input type="text" class="input_filter"  id="filter_e" placeholder="ex) LUMUMDMU">
-                <a href="#" onclick="setCustomFilter('filter_e');">필터적용</a><br>
-
-                <label for="filter_e">Keyword F:</label>
-                <input type="text" class="input_filter"  id="filter_f" placeholder="ex) 띄어쓰기로 OR조건 가능">
-                <a href="#" onclick="setCustomFilter('filter_f');">필터적용</a><br>
-
-                <label for="filter_e">Keyword G:</label>
-                <input type="text" class="input_filter"  id="filter_g" placeholder="ex) 반도체 2차전지">
-                <a href="#" onclick="setCustomFilter('filter_g');">필터적용</a><br>
-
-                <label for="filter_e">Keyword H:</label>
-                <input type="text" class="input_filter"  id="filter_h" placeholder="ex) 브라우저에 저장되어 지속사용 가능">
-                <a href="#" onclick="setCustomFilter('filter_h');">필터적용</a><br>
-            </div>
-            <div id='builtinFilter'>
-                <label for="mc_min">Filter MarketCap:</label>
-                <input type="text" id="mc_min" class="filter_gauge_min" placeholder="시가총액 최소값">
-                <input type="text" id="mc_max" placeholder="시가총액 최대값"><br>
-            </div>
-        </div>
-        <div class="popup popup_menu only_supporter" id="download" style="display: none">
-            <p><u>다운로드 샘플입니다. <br>ROW수는 전종목이며, 일자는 선택가능하게 수정할 예정입니다.</u><br>
-            <a href="/getTableCsv?day=0">최근 -0 거래일 전종목데이터</a><br>
-            <a href="/getTableCsv?day=1">최근 -1 거래일 전종목데이터</a><br>
-            <a href="/getTableCsv?day=2">최근 -2 거래일 전종목데이터</a><br>
-            <a href="/getTableCsv?day=3">최근 -3 거래일 전종목데이터</a><br>
-            <a href="/getTableCsv?day=4">최근 -4 거래일 전종목데이터</a><br>
-            </p>
-        </div>
-        <div id='description' style="display: none">
-
-            <p id="notice">
-
-                <b>NOTICE:</b><br><br>
-
-                2021.07.18:<br>
-                최근 UI개편작업으로 배포가 잦습니다<br>
-                작동하지 않을시 캐시삭제 및 강제새로고침을 해주세요<br>
-
-                재즈스탁은 크롬브라우저에 최적화 되어있습니다, 크롬을 사용해주세요.<br>
-                신규가입후 <u>7일간 후원자 전용기능이 활성화</u> 됩니다<br>
-                현재까지 개발된 후원자 전용기능은 <u>모든테이블 조회</u>, <u>기본테이블 조회건수 추가</u>, <u>즐겨찾기등록</u> 입니다.
-                후원회원 전용기능 사용 후원액은 월 4,400원으로 책정하고있습니다
-                재즈스탁에 가입하신 닉네임으로, 아래 계좌로 4,400 * 구독개월수로 입금주시면 일할계산하여 후원기간 설정해드리고 있습니다.
-                우리은행 1002-455-318806
-
-                보다 자세한 문의는 오픈카톡방, 1:1오픈챗으로 문의주세요.<br><br>
-
-                <b>LINK:</b><br><br>
-                - <a href="https://blog.naver.com/rubenchu" >개발자 블로그</a><br>
-                - <a href="https://open.kakao.com/o/sFf8ti8" >개발자 1:1 카톡문의</a><br>
-                - <a href="https://open.kakao.com/o/ge5OuYhb">재즈스탁 오픈카톡방</a> | 입장코드 : jazzz<br>
-                - <a href="https://t.me/joinchat/ScYM_CnhEPnSGu9K">재즈스탁 텔레그램 알람봇 BETA</a><br><br>
-
-
-
-            </p>
-            <hr>
         </div>
     </div>
     <div id="grid_canvas" class="col">
@@ -329,59 +210,89 @@
                     </div>
                 </div>
                 <div id="tab_simulation" class="tabtable" style="display:none">
-                    <div class="row">
-                        <div class="card">
-                            <table id="table_simulation" class="display simulationTable" style="width:100%">
-                                <tr><td class="loading"><div class="signal"></div></td></tr>
-                            </table>
+                    <div id="simulation_row_results" class="simulation_row">
+                        <div class="simulation_column" id="simulation_results_column_a">
+                            <div id="simulation_row_results_table_toggle">
+                                <select id="simulation_row_results_table_select">
+                                </select>
+                            </div>
+                            <div id="simulation_row_results_table_content" class="simulation_table_container">
+                            </div>
+                        </div>
+                        <div class="simulation_column" id="simulation_results_column_b">
+                            <div id="simulation_row_results_scatter_toggle">
+                                <select id="simulation_row_results_scatter_select_x">
+                                </select>
+                                <select id="simulation_row_results_scatter_select_y">
+                                </select>
+                            </div>
+                            <div id="simulation_row_results_scatter_content">
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="card">
-                            <div id="simulation_feature_selection_area"></div>
-                            <div id="simulation_target_date_area"></div>
-
-
-                            <!-- --------------------------------------------------------------------- -->
-                            <div id="simulation_row" class="simulation_row">
-                                <div id="simulation_condition_list_area" class="simulation_column_left">
-                                    <table class="table_simulation_list">
-                                        <thead>
-                                            <tr>
-                                                <th>CONDITION_NAME</th><th>TIMESTAMP</th><th>DELETE</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="simulation_condition_list_tbody">
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div id="simulation_condition_generation_area" class="simulation_column_right">
-                                    <table id="simulation_condition_generation_table" class="table_simulation_input">
-                                        <thead id="simulation_condition_generation_thead">
-                                            <tr>
-                                                <th>FEATURE</th><th>OPERATION</th><th>TARGET_TYPE</th><th>TARGET_VALUE</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="simulation_condition_generation_tbody"></tbody>
-                                        <tfoot id="simulation_condition_generation_tfoot">
-
+                    <div id="simulation_row_upper" class="simulation_row">
+                        <div class="simulation_column" id="simulation_condition_feature">
+                            <div id="simulation_condition_feature_menu" class="simulation_table_container">
+                                <table class="simulation_table" id="simulation_condition_feature_menu_table">
+                                    <thead class="simulation_table_header">
                                         <tr>
-                                            <td><button onclick="simulationRequest()">RunSimulation</button></td>
-                                            <td><button onclick="getConditionSetFromLocalStorage()">From Local</button></td>
-                                            <td></td>
-                                            <td></td>
+                                            <th>FEATURE_TYPE</th>
+                                            <th>FEATURES</th>
                                         </tr>
-
-                                        </tfoot>
-                                    </table>
-
-                                </div>
+                                    </thead>
+                                    <tbody id="simulation_condition_feature_menu_tbody">
+                                    </tbody>
+                                    <tfoot></tfoot>
+                                </table>
                             </div>
-                            <!-- --------------------------------------------------------------------- -->
+                        </div>
+                        <div class="simulation_column" id="simulation_condition_generation_area">
+                            <table id="simulation_condition_generation_table" class="simulation_table_container table_simulation_input">
+                                <thead id="simulation_condition_generation_thead">
+                                    <tr>
+                                        <th>FEATURE</th><th>OPERATION</th><th>TARGET_TYPE</th><th>TARGET_VALUE</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="simulation_condition_generation_tbody">
+                                    <tr class="table_default_row_while_empty">
+                                        <td colspan="4" class="table_default_cell_while_empty">
+                                            <u>ADD FEATURES FROM LEFT FEATURE MENU !</u>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot id="simulation_condition_generation_tfoot">
+                                    <tr>
+                                        <td>FROMDATE<select id="simulation_from_date"></select></td>
+                                        <td>TODATE<select id="simulation_to_date"></select></td>
+                                        <td><button onclick="simulationRequest()">RunSimulation</button></td>
+                                        <td><button onclick="getConditionSetFromLocalStorage()">From Local</button></td>
 
-                            <br>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                    </div>
+                    <div id="simulation_row_lower" class="simulation_row">
+
+
+                        <div class="simulation_column" id="simulation_condition_list_area" >
+                            <table class="table_simulation_list">
+                                <thead>
+                                    <tr>
+                                        <th>CONDITION_NAME</th><th>TIMESTAMP</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="simulation_condition_list_tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="simulation_column" id="simulation_current_condition_meta_input">
                             <table class="table_simulation_meta" width="50%">
+                                <tr>
+                                    <th>THEAD</th>
+                                    <th>THEAD</th>
+                                </tr>
                                 <tr>
                                     <td><label for="condition_set_name">condition_set_name</label></td>
                                     <td><input type="text" id="condition_set_name"></td>
@@ -391,12 +302,9 @@
                                     <td><textarea id="condition_set_description" rows="5" cols="40"></textarea></td>
                                 </tr>
                             </table>
-                            <button onclick="getConditionSetsFromServer()">Load</button>
-                            <button onclick="saveConditionSetToServer()">Save</button>
-
-
-                            <div id="simulation_result_area"></div>
+                            <button onclick="saveConditionSetToServer()">SAVE | UPDATE </button>
                         </div>
+
                     </div>
                 </div>
                 <div id="tab_realtime" class="tabtable" style="display:none">
@@ -410,8 +318,7 @@
                     </div>
                 </div>
             </div>
-
-            <div class="button_area_right" id="button_group_table_non_mobile">
+            <div id="button_group_table_non_mobile" class="button_area_right" >
                 <a href="#" onclick="toggleElement('download')">
                     <img src="static/images/icon_csv.png" class="button_toggle">
                 </a>
@@ -425,8 +332,7 @@
                     <img src="static/images/icon_expand.png" class="button_toggle">
                 </a>
             </div>
-
-            <div class="button_area_right" id="button_group_table_mobile">
+            <div id="button_group_table_mobile" class="button_area_right" >
                 <a href="#" onclick="setFavorite()">
                     <img src="static/images/icon_listupdate.png" class="button_toggle">
                 </a>
@@ -436,28 +342,26 @@
             </div>
 
         </div>
-
         <div class="grid_layer_a" id="grid_field_stock" style="display:none">
-            <div class="grid_layer_b grid_stock_chart" id="grid_stock_a">
+            <div id="grid_stock_a" class="grid_layer_b grid_stock_chart" >
                 <div class="ohlc_chart" id="grid_stock_a_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b grid_stock_chart" id="grid_stock_b">
+            <div id="grid_stock_b" class="grid_layer_b grid_stock_chart" >
                 <div class="ohlc_chart" id="grid_stock_b_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b grid_stock_chart" id="grid_stock_c">
+            <div id="grid_stock_c" class="grid_layer_b grid_stock_chart" >
                 <div class="ohlc_chart" id="grid_stock_c_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b grid_stock_chart" id="grid_stock_d">
+            <div id="grid_stock_d" class="grid_layer_b grid_stock_chart" >
                 <div class="ohlc_chart" id="grid_stock_d_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b grid_stock_chart" id="grid_stock_e">
+            <div id="grid_stock_e" class="grid_layer_b grid_stock_chart" >
                 <div class="ohlc_chart" id="grid_stock_e_chart"> undefined </div>
             </div>
-            <div class="grid_layer_b grid_stock_chart" id="grid_stock_f">
+            <div id="grid_stock_f" class="grid_layer_b grid_stock_chart" >
                 <div class="ohlc_chart" id="grid_stock_f_chart"> undefined </div>
             </div>
-
-            <div class="button_area_right filtered" id="button_group_stock_mobile">
+            <div id="button_group_stock_mobile" class="button_area_right filtered" >
                 <a href="#" onclick="changeGlobalX()">
                     <img src="static/images/icon_change_x.png" class="button_toggle" >
                 </a>
@@ -465,12 +369,11 @@
                     <img src="static/images/icon_back.png" class="button_toggle" >
                 </a>
             </div>
-
         </div>
         <div class="grid_layer_a" id="grid_field_summary" style="display:none">
-            <div class="grid_layer_b" id="grid_summary_chart_price"></div>
-            <div class="grid_layer_b" id="grid_summary_chart_finan"></div>
-            <div class="button_area_right" id="button_group_summary_mobile">
+            <div id="grid_summary_chart_price" class="grid_layer_b"></div>
+            <div id="grid_summary_chart_finan" class="grid_layer_b"></div>
+            <div id="button_group_summary_mobile" class="button_area_right">
                 <a href="#" onclick="toggleStockAndSummary()">
                     <img src="static/images/icon_back.png" class="button_toggle">
                 </a>
@@ -478,6 +381,116 @@
         </div>
     </div>
 
+
+    <div id="popup">
+        <div id="specification" class="popup popup_menu" style="display: none">
+            <h1>MANUAL</h1>
+            <select id="specification_selectbox" onchange="drawSpecification(this)">
+            </select>
+            <div id="specification_content">
+                <u>선택된 컬럼에 대한 설명과 예시가 보여집니다.</u>
+            </div>
+
+        </div>
+        <div id='description' class="popup popup_menu" style="display: none">
+            <div id="notice">
+                <h3>NOTICE:</h3>
+
+                <h4>2021.07.18</h4>
+                - 최근 UI개편작업으로 배포가 잦습니다<br>
+                - 작동하지 않을시 캐시삭제 및 강제새로고침을 해주세요!<br>
+
+                <h4>상시공지</h4>
+                - 재즈스탁은 크롬브라우저에 최적화 되어있습니다, 크롬을 사용해주세요.<br>
+                - 신규가입후 <u>7일간 후원자 전용기능이 활성화</u> 됩니다<br>
+                - 후원자 전용기능: <u>모든탭 조회</u>, <u>기본탭 조회건수 추가</u>, <u>즐겨찾기등록</u>, <u>csv다운로드</u><br>
+
+                <h4>후원관련</h4>
+                - 후원자 전용기능 사용금액: 4,400원/월<br>
+                - 본명대신 사이트 닉네임으로 입금주시면 확인이 용이합니다<br>
+                - 닉네임으로 입금 주셨다면, 수시간내에 권한세팅 됩니다<br>
+                - 본명으로 입금 주셨다면, 아래 카톡 또는 텔래그램으로 연락 주세요<br><br><br>
+                - <u>우리은행 1002-455-318806</u><br>
+
+
+
+                <h3>LINK:</h3>
+                - <a href="https://blog.naver.com/rubenchu" >개발자 블로그</a><br>
+                - <a href="https://open.kakao.com/o/sFf8ti8" >개발자 1:1 카톡문의</a><br>
+                - <a href="https://open.kakao.com/o/ge5OuYhb">재즈스탁 오픈카톡방</a> | 입장코드 : jazzz<br>
+                - <a href="https://t.me/joinchat/ScYM_CnhEPnSGu9K">재즈스탁 텔레그램 알람봇 BETA</a><br><br>
+
+            </div>
+        </div>
+        <div id="filter" class="popup popup_menu only_supporter"  style="display: none">
+            <b><u>FILTER</u></b><br>
+            활성화된 테이블에 대한 client-side 필터입니다, 전종목 테이블일때 유용합니다<br><hr>
+            <div id='customFilter'>
+                <label for="filter_a">Keyword A:</label>
+                <input type="text" class="input_filter" id="filter_a" placeholder="종목 카테고리를 입력하세요">
+                <a href="#" onclick="setCustomFilter('filter_a');">필터적용</a><br>
+
+                <label for="filter_b">Keyword B:</label>
+                <input type="text" class="input_filter"  id="filter_b" placeholder="ex) 반도체">
+                <a href="#" onclick="setCustomFilter('filter_b');">필터적용</a><br>
+
+                <label for="filter_c">Keyword C:</label>
+                <input type="text" class="input_filter"  id="filter_c" placeholder="ex) 2차전지">
+                <a href="#" onclick="setCustomFilter('filter_c');">필터적용</a><br>
+
+                <label for="filter_d">Keyword D:</label>
+                <input type="text" class="input_filter"  id="filter_d" placeholder="ex) 삼성">
+                <a href="#" onclick="setCustomFilter('filter_d');">필터적용</a><br>
+
+                <label for="filter_e">Keyword E:</label>
+                <input type="text" class="input_filter"  id="filter_e" placeholder="ex) LUMUMDMU">
+                <a href="#" onclick="setCustomFilter('filter_e');">필터적용</a><br>
+
+                <label for="filter_e">Keyword F:</label>
+                <input type="text" class="input_filter"  id="filter_f" placeholder="ex) 띄어쓰기로 OR조건 가능">
+                <a href="#" onclick="setCustomFilter('filter_f');">필터적용</a><br>
+
+                <label for="filter_e">Keyword G:</label>
+                <input type="text" class="input_filter"  id="filter_g" placeholder="ex) 반도체 2차전지">
+                <a href="#" onclick="setCustomFilter('filter_g');">필터적용</a><br>
+
+                <label for="filter_e">Keyword H:</label>
+                <input type="text" class="input_filter"  id="filter_h" placeholder="ex) 브라우저에 저장되어 지속사용 가능">
+                <a href="#" onclick="setCustomFilter('filter_h');">필터적용</a><br>
+            </div>
+            <div id='builtinFilter'>
+                <label for="mc_min">Filter MarketCap:</label>
+                <input type="text" id="mc_min" class="filter_gauge_min" placeholder="시가총액 최소값">
+                <input type="text" id="mc_max" placeholder="시가총액 최대값"><br>
+            </div>
+        </div>
+        <div id="download" class="popup popup_menu only_supporter"  style="display: none">
+            <p><u>다운로드 샘플입니다. <br>ROW수는 전종목이며, 일자는 선택가능하게 수정할 예정입니다.</u><br>
+            <a href="/getTableCsv?day=0">최근 -0 거래일 전종목데이터</a><br>
+            <a href="/getTableCsv?day=1">최근 -1 거래일 전종목데이터</a><br>
+            <a href="/getTableCsv?day=2">최근 -2 거래일 전종목데이터</a><br>
+            <a href="/getTableCsv?day=3">최근 -3 거래일 전종목데이터</a><br>
+            <a href="/getTableCsv?day=4">최근 -4 거래일 전종목데이터</a><br>
+            </p>
+        </div>
+        <div id="popup_login" class="popup"  style="display:none">
+            <div id ="login" class="popup_container">
+                <h1>Login</h1>
+
+                <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter Email" name="email" id="email" required>
+
+                <label for="pw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="pw" id="pw" onkeydown="login()" required >
+
+                <label for="auto_login"><b>AutoLogin</b></label>
+                <input type="checkbox" name="auto_login" id="auto_login">
+
+                <button type="button" class="btn" id='login_btn' onclick='login();' value="Login">Login</button>
+                <button type="button" class="btn cancel" onclick="closeForm('popup_login')">Close</button>
+            </div>
+        </div>
+    </div>
     <div id="realtime"></div>
 
 

@@ -17,14 +17,6 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
         for (var j=0; j<column_spec_list.length; j++){
             if ((column_list[i] == column_spec_list[j].column_name || null !=column_spec_list[j].column_childs && column_spec_list[j].column_childs.includes(column_list[i]))){
 
-//                if ('1' == column_spec_list[j].percent_yn){
-//                    percent = data[i] * 100
-//
-//                    console.log(data[i])
-//
-//                    // $('td.col'+i, row).html(percent)
-//                    // data[i] = data[i] * 100
-//                }
                 if ('profit_map' == column_spec_list[j].background_color_map){
 
                     for (color in profit_map){
@@ -121,9 +113,11 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
 
 
 
-function renderTable(tableId, response, columnList, ratio=0.9, fixedLeft=3){
+function renderTable(tableId, response=null, columnList, ratio=0.9, fixedLeft=3){
 
-    document.getElementById(tableId).innerHTML = response
+    if (response != null){
+        document.getElementById(tableId).innerHTML = response
+    }
     // console.log(' * Table rendering start', tableId, now())
     if (device_type == "mobile"){
         ratio = 0.85
@@ -150,7 +144,7 @@ function renderTable(tableId, response, columnList, ratio=0.9, fixedLeft=3){
         colReorder: {
             enable: true,
             realtime: true,
-            fixedColumnsLeft: 3,
+            fixedColumnsLeft: fixedLeft,
 
         },
         rowCallback: function( row, data ) {
