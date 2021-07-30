@@ -42,7 +42,7 @@ def login():
 @application_user.route('/logout', methods=['POST','GET'])
 def logout():
     session.clear()
-    return redirect(url_for("home"),code=302)
+    return redirect(url_for("rendering_page_home"),code=302)
 
 
 @application_user.route('/getTelegramConfirmationCode', methods=['POST'])

@@ -25,14 +25,13 @@ h3 {
 h4 {
   font-size: 1em;
   text-align: left;
-  margin-top: 0.7em;
-  margin-bottom: 0.7em;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
   text-decoration: underline;
 }
 
 h5 {
   font-size: 0.8em;
-  margin: 8px;
   text-align: center;
 }
 
@@ -215,12 +214,14 @@ td {
 td:nth-child(1) {
   text-align: left;
   word-break: break-all;
+  background-color:white;
   width:85px;
 }
 
 td:nth-child(2) {
   text-align: left;
   word-break: break-all;
+  background-color:white;
   width:20px;
 
 }
@@ -228,25 +229,17 @@ td:nth-child(2) {
 td:nth-child(3) {
   text-align: center;
   word-break: break-all;
+  background-color:white;
   width:30px;
 }
 
 td:nth-child(4) {
   text-align: center;
   word-break: break-all;
+  background-color:white;
   width:50px;
 }
 
-
-td:nth-last-child(19) {
-  text-align: left;
-  word-break: break-all;
-}
-
-td:nth-last-child(18) {
-  text-align: left;
-  word-break: break-all;
-}
 
 
 

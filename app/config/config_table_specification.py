@@ -15,6 +15,8 @@ table_column_specification = [
                 "data_type":'str',
                 "column_def":{"width":90,
                               "created_cell":"stockname"},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
         },{
                 "column_name":"MC",
                 "column_name_full": None,
@@ -25,6 +27,8 @@ table_column_specification = [
                 "column_def": {"width": 30,
                              'render':1,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "Finan (재무관련)",
                 "origin_table":"T_STOCK_MC",
@@ -37,6 +41,8 @@ table_column_specification = [
                 즐겨찾기로 등록하고자 하는 종목 옆 체크박스를 체크후, 아래 <즐겨찾기 업데이트> 버튼을 클릭하시면<br>
                 체크된 종목들이 즐겨찾기 종목으로 등록되며, 향후 모든테이블에서 노란색으로 Highlighting 됩니다<br>
                 추가로 <즐겨찾기> 탭에서 별도로 모아서 조회할 수 있습니다.''',
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "data_type":"checkbox",
                 "column_def": {"width": 20,
                                "created_cell":"fav"},
@@ -49,6 +55,8 @@ table_column_specification = [
                 "column_def": {"width": 50,
                              'render':0,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "origin_table":"T_STOCK_OHLC",
         },{
                 "column_name":"PCLSE",
@@ -90,6 +98,8 @@ table_column_specification_interval = [
                 "column_def": {"width": 35,
                              'render':2,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "PRICE: 가격과 관련된 FEATURE 들",
                 "percent_yn":1,
@@ -105,6 +115,8 @@ table_column_specification_interval = [
                 "column_def": {"width": 35,
                              'render':2,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
                 "percent_yn":1,
@@ -119,6 +131,8 @@ table_column_specification_interval = [
                 "column_def": {"width": 35,
                              'render':2,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
                 "percent_yn":1,
@@ -133,6 +147,8 @@ table_column_specification_interval = [
                 "column_def": {"width": 35,
                              'render':2,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
                 "percent_yn":1,
@@ -147,6 +163,8 @@ table_column_specification_interval = [
                 "column_def": {"width": 35,
                              'render':2,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
                 "percent_yn":1,
@@ -161,6 +179,8 @@ table_column_specification_interval = [
                 "column_def": {"width": 35,
                              'render':2,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
                 "percent_yn":1,
@@ -175,6 +195,8 @@ table_column_specification_interval = [
                 "column_def": {"width": 35,
                              'render':2,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
                 "percent_yn":1,
@@ -189,6 +211,8 @@ table_column_specification_interval = [
                 "column_def": {"width": 35,
                              'render':2,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
                 "percent_yn":1,
@@ -203,6 +227,8 @@ table_column_specification_interval = [
                 "column_def": {"width": 35,
                              'render':2,
                              'orderSequence':["desc","asc"]},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "snd_strength",
                 "percent_yn":1,
@@ -218,6 +244,8 @@ table_column_specification_ranking = [
         "data_type":"int",
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "snd_rank",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -229,6 +257,8 @@ table_column_specification_ranking = [
         "data_type":"int",
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "snd_rank",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -238,6 +268,8 @@ table_column_specification_ranking = [
         "column_description": "당 종목의 500거래일간 외인의 일일 순매수주식수를 내림차순으로 정렬 했을때의 순위입니다.",
         "data_type":"int",
         "background_color_map":"rank_map",
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "column_def": {"width": 30},
         "simulation_feature_yn":1,
         "simulation_feature_type": "snd_rank",
@@ -248,6 +280,8 @@ table_column_specification_ranking = [
         "column_description": "당 종목의 500거래일간 연기금의 일일 순매수주식수를 내림차순으로 정렬 했을때의 순위입니다.",
         "data_type":"int",
         "background_color_map":"rank_map",
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "column_def": {"width": 30},
         "simulation_feature_yn":1,
         "simulation_feature_type": "snd_rank",
@@ -259,6 +293,8 @@ table_column_specification_ranking = [
         "data_type":"int",
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "snd_rank",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -269,6 +305,8 @@ table_column_specification_ranking = [
         "data_type":"int",
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "snd_rank",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -279,6 +317,8 @@ table_column_specification_ranking = [
         "data_type":"int",
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "snd_rank",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -289,6 +329,8 @@ table_column_specification_ranking = [
         "data_type":"int",
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "snd_rank",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -305,6 +347,8 @@ table_column_specification_finan = [
         "column_def": {"width": 35,
                        'render':2,
                        'orderSequence':["desc","asc"]},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "finan",
         "origin_table":"T_STOCK_FINAN",
@@ -319,6 +363,8 @@ table_column_specification_finan = [
         "column_def": {"width": 35,
                        'render':2,
                        'orderSequence':["desc","asc"]},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "finan",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -333,6 +379,8 @@ table_column_specification_finan = [
         "column_def": {"width": 35,
                        'render':2,
                        'orderSequence':["desc","asc"]},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "finan",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -344,6 +392,8 @@ table_column_specification_finan = [
         "background_color_map": "ccr_map",
         "column_def": {"width": 35,
                        'render':2},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "finan",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -393,7 +443,9 @@ table_column_specification_bollinger_band = [
                 ''',
 
                 "data_type": 'str',
-                "column_def": {"width": 80}
+                "column_def": {"width": 80},
+                "feature_for_default_table":True,
+                "feature_for_manual": True,
         }, {
         "column_name": "L{X}ED",
         "column_childs": ["L4ED","L3ED","L2ED","L1ED"],
@@ -413,6 +465,8 @@ table_column_specification_bollinger_band = [
         "data_type": 'int',
         "column_def": {"width": 30,
                        'render':0,},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "bollinger",
         "origin_table":"T_STOCK_BB_EVENT",
@@ -425,6 +479,8 @@ table_column_specification_bollinger_band = [
         "background_color_map":"bbp_map",
         "column_def": {"width": 30,
                        'render':2,},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "bollinger",
         "origin_table":"T_STOCK_BB_EVENT",
@@ -438,6 +494,8 @@ table_column_specification_bollinger_band = [
         "background_color_map":"bbw_map",
         "column_def": {"width": 30,
                        'render':2,},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "bollinger",
         "origin_table":"T_STOCK_BB_EVENT",
@@ -450,6 +508,8 @@ table_column_specification_bollinger_band = [
         "background_color_map":"bbp_map",
         "column_def": {"width": 30,
                        'render':2,},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "bollinger",
         "origin_table":"T_STOCK_BB_EVENT",
@@ -461,6 +521,8 @@ table_column_specification_bollinger_band = [
         "background_color_map":"bbw_map",
         "column_def": {"width": 30,
                        'render':2,},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "bollinger",
         "origin_table":"T_STOCK_BB_EVENT",
@@ -480,6 +542,8 @@ table_column_specification_moving_average_ratio =[
         "background_color_map":"profit_map",
         "column_def": {"width": 40,
                        'render':2,},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "price moving average",
         "percent_yn":1,
@@ -497,6 +561,8 @@ table_column_specification_moving_average_ratio =[
         "background_color_map":"vma_map",
         "column_def": {"width": 40,
                        'render':2,},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "volume moving average",
         "origin_table":"T_STOCK_DAY_SMAR",
@@ -513,7 +579,9 @@ table_column_specification_other = [
         "column_name_full": None,
         "column_description": "해당종목이 속한 카테고리(섹터)",
         "data_type": 'int',
-       	"column_def": {"width": 140}
+       	"column_def": {"width": 140},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
 
         },
         {
@@ -521,7 +589,9 @@ table_column_specification_other = [
         "column_name_full": None,
         "column_description": "즐겨찾기에 등록된 일자.",
         "data_type": 'int',
-        "column_def": {"width": 70}
+        "column_def": {"width": 70},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
 
         },
         {
@@ -529,7 +599,9 @@ table_column_specification_other = [
         "column_name_full": None,
         "column_description": "Simulation Date",
         "data_type": 'int',
-        "column_def": {"width": 80}
+        "column_def": {"width": 80},
+        "feature_for_default_table":False,
+        "feature_for_manual": False,
         }
 ]
 
@@ -541,40 +613,25 @@ table_column_specification_report = [
         {
         "column_name": "RTITLE",
         "column_name_full": None,
-        "column_description": "가장 최근에 발행된 증권사레포트 제목",
+        "column_description": "최근에 발행된 증권사레포트 제목묶",
         "data_type": 'str',
-        "column_def": {"width": 400}
+        "column_def": {"width": 400,
+                        "created_cell":"rtitle"},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
 
         },{
-        "column_name": "RC1M",
+        "column_name": "RC1Y",
         "column_name_full": None,
-        "column_description": "REPORTS COUNT 1MONTH: 최근 20거래일간 발행된 레포트수",
+        "column_description": "REPORTS COUNT 1MONTH: 최근 240거래일간 발행된 레포트수",
         "data_type": 'int',
         "column_def": {"width": 35, "render":0},
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "other"
 
-        },{
-        "column_name": "RC2M",
-        "column_name_full": None,
-        "column_description": "REPORTS COUNT 2MONTH: 20거래일전 ~ 40거래일전 기간동안 발행된 레포트수",
-        "data_type": 'int',
-        "column_def": {"width": 35, "render":0},
-        "simulation_feature_yn":1,
-        "simulation_feature_type": "other"
-
-        },{
-        "column_name": "RDATE",
-        "column_name_full": None,
-        "column_description": "가장 최근에 발행된 증권사레포트 발행일자",
-        "data_type": 'int',
-        "column_def": {"width": 60,
-                       'orderSequence':["desc","asc"]}
-
-        },
-
-
-
+        }
 ]
 
 
@@ -592,7 +649,9 @@ table_column_specification_finan_summary = [
         "column_name_full": None,
         "column_description": "FINAN TRANSPOSED",
         "data_type": 'str',
-        "column_def": {"width": 40, "render":2}
+        "column_def": {"width": 40, "render":2},
+        "feature_for_default_table":False,
+        "feature_for_manual": False,
 
         }
 ,
@@ -615,7 +674,9 @@ table_column_specification_realtime = [
         "column_description": "가장 최근에 발행된 증권사레포트 제목",
         "data_type": 'str',
         "column_def": {"width": 20, "render":1,
-                       'orderSequence':["desc","asc"]}
+                       'orderSequence':["desc","asc"]},
+        "feature_for_default_table":False,
+        "feature_for_manual": False,
 
         }
 ,
@@ -627,7 +688,7 @@ table_column_specification_future = [
                 "column_name": "PRO{X}",
                 "column_childs": ["PRO1","PRO3","PRO5","PRO10","PRH1","PRH3","PRH5","PRH10"],
                 "column_name_full": None,
-                "column_description": "최근 {X}거래일이전 종가를 기준으로 계산된 당일 종가 수익률(또는 상승, 하락율)입니다",
+                "column_description": "익일시가 기준으로 계산된 {X}거래일이후 종가 수익률",
                 "data_type": 'float',
                 "background_color_map": "profit_map",
                 "column_def": {"width": 35,
@@ -635,6 +696,8 @@ table_column_specification_future = [
                                'orderSequence': ["desc", "asc"]},
                 "percent_yn":1,
                 "origin_table": "T_STOCK_FUTURE_PRICE",
+                "feature_for_default_table":False,
+                "feature_for_manual": True,
 
         }
 ]
@@ -642,10 +705,10 @@ table_column_specification_future = [
 spec  = table_column_specification + \
         table_column_specification_interval + \
         table_column_specification_ranking + \
-        table_column_specification_bollinger_band + \
         table_column_specification_moving_average_ratio +\
         table_column_specification_finan +\
-        table_column_specification_report +\
+        table_column_specification_report + \
+        table_column_specification_bollinger_band + \
         table_column_specification_realtime +\
         table_column_specification_future +\
         table_column_specification_other

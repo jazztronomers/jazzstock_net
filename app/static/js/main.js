@@ -226,11 +226,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     // ===========================================
     // PROD !
-    // getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
+    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
     // ===========================================
     // DEV !
-    showTableTab('tab_simulation', this, 'red');
-    renderSimulationTab()
+    // showTableTab('tab_simulation', this, 'red');
+    // renderSimulationTab()
     // ===========================================
 
 
@@ -270,7 +270,7 @@ function handleChange(row){
 function setFavorite(){
 
     if (stockcode_favorite_dirty == false){
-        alert("즐겨찾기 종목이 추가, 또는 제거되지 않았습니다.")
+        alert("즐겨찾기 종목이 변경되지 않았습니다.")
     }
 
     else{
@@ -293,7 +293,7 @@ function setFavorite(){
                     else{
 
                         response = req.response.result
-                        alert("즐겨찾기 종목이 체크된 상태로 업데이트되었습니다.")
+                        alert("즐겨찾기 종목이 업데이트되었습니다.")
                     }
                 }
             }
@@ -785,10 +785,13 @@ function getSpecification(){
 
 
                 for (let i = 0; i<=column_spec_list.length-1; i++){
-                    let opt = document.createElement('option');
-                    opt.value = column_spec_list[i].column_description;
-                    opt.innerHTML = column_spec_list[i].column_name;
-                    select_box.appendChild(opt);
+
+                    if (column_spec_list[i].feature_for_manual == true){
+                        let opt = document.createElement('option');
+                        opt.value = column_spec_list[i].column_description;
+                        opt.innerHTML = column_spec_list[i].column_name;
+                        select_box.appendChild(opt);
+                    }
                 }
             }
         }
@@ -1066,6 +1069,21 @@ function getColumnDefs(column_list){
                         }
                     }
 
+                    else if ('rtitle' == column_def.created_cell){
+                        column_def.createdCell = function(cell, cellData, rowData, rowIndex, colIndex){
+
+                            let reports = cellData.split("*#*")
+                            select_box_as_html_plain_text = getSelectBoxHtml(reports)
+
+                            $(cell).html(select_box_as_html_plain_text)
+
+                            // color = getColoringBool(stockcode)
+                            // $(cell).css('background-color', '#ffffff')
+                            // console.log(stockname, color)
+
+                        }
+                    }
+
                     else if ('fav' == column_def.created_cell){
                         column_def.createdCell = function(cell, cellData, rowData, rowIndex, colIndex){
                             title = getFavCheckbox(cellData)
@@ -1074,12 +1092,7 @@ function getColumnDefs(column_list){
                     }
 
 
-                    else if ('fav' == column_def.created_cell){
-                        column_def.createdCell = function(cell, cellData, rowData, rowIndex, colIndex){
-                            title = getFavCheckbox(cellData)
-                            $(cell).html(title)
-                        }
-                    }
+
 
                     columns_def.push(column_def)
                     break;
@@ -1104,6 +1117,26 @@ function getChartlink(stockcode, stockname){
         return title
 }
 
+
+function getSelectBoxHtml(elements){
+
+    ret = ""
+    prefix_select = '<select style="border: none; background: white; width: 100%">'
+    suffix_select = "</select>"
+    prefix_option = "<option>"
+    suffix_option = "</option>"
+
+    ret += prefix_select
+
+    for (elm in elements) {
+
+        ret += prefix_option + elements[elm] + suffix_option
+    }
+    ret += suffix_select
+
+    return ret
+
+}
 
 
 function getFavCheckbox(cellData){

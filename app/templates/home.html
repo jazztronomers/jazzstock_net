@@ -63,6 +63,7 @@
                 <div id="loggedin" style="display: none">
                     <a href="#" onclick="description()">Notice</a>
                     <a href="/profile">Profile</a>
+<!--                    <a href="/customize">Customize</a>-->
                     <a href="#" onclick="logout()">Logout</a>
                     <a href="#" onclick="openColumnSpec()">Manual</a>
                 </div>
@@ -78,7 +79,7 @@
             <a href="#" id='tab_rep_link' class="tablink only_supporter" onclick="showTableTab('tab_rep', this, 'red'); getTable('table_rep',  ['P','I','F'], [1,5,20,60], ['I1','F1'], 'DESC', 200, false, true, true, true, 0);">레포트</a>
             <a href="#" id='tab_fav_link' class="tablink only_supporter" onclick="showTableTab('tab_fav', this, 'red'); getTable('table_fav',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 100, true, true, true, false, 0);">즐겨찾기</a>
             <a href="#" id='tab_full_link' class="tablink only_supporter" onclick="showTableTab('tab_full', this, 'red'); getTable('table_full',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 2500, false, true, true, false, 0);">전종목</a>
-            <a href="#" id='tab_simulation_link' class="tablink" onclick="showTableTab('tab_simulation', this, 'red'); renderSimulationTab()">시뮬</a>
+<!--            <a href="#" id='tab_simulation_link' class="tablink" onclick="showTableTab('tab_simulation', this, 'red'); renderSimulationTab()">시뮬</a>-->
 
             <!-- <a href="#" id='tab_realtime_link' class="tablink" onclick="openPage('tab_realtime', this, 'red'); getRealtime()">실시간</a> -->
             <div id="userinfo" class="navigation_top_right" style="display: none">
@@ -385,6 +386,7 @@
     <div id="popup">
         <div id="specification" class="popup popup_menu" style="display: none">
             <h1>MANUAL</h1>
+            <h5>이라고 적었지만 걍 컬럼설명 입니다....좀더 보완하겠습니다.. ㅎㅎ</h5>
             <select id="specification_selectbox" onchange="drawSpecification(this)">
             </select>
             <div id="specification_content">
@@ -394,23 +396,25 @@
         </div>
         <div id='description' class="popup popup_menu" style="display: none">
             <div id="notice">
-                <h3>NOTICE:</h3>
+                <h1>NOTICE</h1>
 
-                <h4>2021.07.18</h4>
+                <h4>2021.07.31</h4>
                 - 최근 UI개편작업으로 배포가 잦습니다<br>
-                - 작동하지 않을시 캐시삭제 및 강제새로고침을 해주세요!<br>
+                - 작동하지 않을시 F12 > 새로고침버튼 우클릭 > 캐시삭제 및 강제새로고침을 해주세요!<br>
+                - 모바일 환경에 버그가 있습니다, 완벽히 커버할 수 없는점 양해바랍니다 ㅠㅠ<br>
+                - 요즘엔 <u>조건검색기능</u> 및 <u>사용자정의기능</u>을 개발하고 있습니다, 8월안에 작업끝낼 예정이니 기대해주세요!<br>
 
                 <h4>상시공지</h4>
                 - 재즈스탁은 크롬브라우저에 최적화 되어있습니다, 크롬을 사용해주세요.<br>
                 - 신규가입후 <u>7일간 후원자 전용기능이 활성화</u> 됩니다<br>
-                - 후원자 전용기능: <u>모든탭 조회</u>, <u>기본탭 조회건수 추가</u>, <u>즐겨찾기등록</u>, <u>csv다운로드</u><br>
 
                 <h4>후원관련</h4>
                 - 후원자 전용기능 사용금액: 4,400원/월<br>
-                - 본명대신 사이트 닉네임으로 입금주시면 확인이 용이합니다<br>
-                - 닉네임으로 입금 주셨다면, 수시간내에 권한세팅 됩니다<br>
-                - 본명으로 입금 주셨다면, 아래 카톡 또는 텔래그램으로 연락 주세요<br><br><br>
-                - <u>우리은행 1002-455-318806</u><br>
+                - 후원자 전용기능: <u>모든 테이블 조회</u>, <u>기본탭 조회건수 추가</u>, <u>즐겨찾기등록</u>, <u>csv다운로드</u><br>
+                - 후원금 입금시 본명대신 사이트 닉네임으로 해주시면 확인이 용이합니다<br>
+                - 닉네임으로 입금 주셨다면, 수 시간내 후원로기간이 세팅 됩니다<br>
+                - 본명으로 입금 주셨다면, 카톡 또는 텔래그램으로 연락 주세요(LINK참조)<br><br><br>
+                - <u>계좌: 우리은행 1002-455-318806</u><br>
 
 
 

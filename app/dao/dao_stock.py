@@ -16,13 +16,11 @@ class DataAccessObjectStock:
 
         if date_idx == None:
             date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 0")
-            date_20 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 20")
-            date_40 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 40")
+            date_240 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = 240")
 
         else:
             date = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s"%(date_idx))
-            date_20 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s" %(int(date_idx) + 20))
-            date_40 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s" % (int(date_idx) + 40))
+            date_240 = db.selectSingleValue("SELECT DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT = %s" % (int(date_idx) + 240))
 
 
 
@@ -84,8 +82,9 @@ class DataAccessObjectStock:
                 , M.CIRCRATE AS CCR
                 
                 , CATEGORY
-                , TITLE AS RTITLE, RDATE, RC1M, RC2M
+                # , TITLE AS RTITLE, RDATE, RC1M, RC2M
 
+                , TITLE AS RTITLE, RC1Y
                 , CONCAT(L4BE, L3BE, L2BE, L1BE) AS PATTERN
                 , L4ED 
                 , L3ED
@@ -141,23 +140,25 @@ class DataAccessObjectStock:
                 LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
                 LEFT JOIN jazzdb.T_STOCK_DAY_SMAR K ON (A.STOCKCODE = K.STOCKCODE AND A.DATE = K.DATE)
                 LEFT JOIN (
-
-                    SELECT STOCKCODE, CONCAT(CONTENT, ' [', REPLACE(AUTHOR, '증권', ''),']') AS TITLE, RDATE, RN, RC1M, RC2M, ETC
+                
+                    SELECT STOCKCODE, GROUP_CONCAT(CONTENT separator '*#*') AS TITLE, COUNT(*) AS RC1Y
                     FROM
                     (
-                        SELECT STOCKCODE, CONTENT, DATE, AUTHOR, DATE AS RDATE, ETC,
-                            ROW_NUMBER() OVER (PARTITION BY STOCKCODE ORDER BY DATE DESC) AS RN,
-                            SUM(case when DATE >= '%s' then 1 else 0 end) OVER (PARTITION BY STOCKCODE) as RC1M,
-                            SUM(case when DATE BETWEEN '%s' AND '%s' then 1 else 0 end) OVER (PARTITION BY STOCKCODE) as RC2M
+                        SELECT STOCKCODE, CONCAT_wS(" | ", DATE, CONTENT, AUTHOR) AS CONTENT,
+                            ROW_NUMBER() OVER (PARTITION BY STOCKCODE ORDER BY DATE DESC) AS RN
                         FROM jazzdb.T_STOCK_TEXT
                         WHERE DATE > "%s"
                     ) A
-                    WHERE RN = 1
+                    WHERE 1=1
+                    AND RN < 10
+                    GROUP BY STOCKCODE
+                    
                 ) L ON (A.STOCKCODE = L.STOCKCODE)
+
                 
                 LEFT JOIN jazzdb.T_STOCK_SHARES_CIRCRATE M ON (A.STOCKCODE = M.STOCKCODE AND A.DATE = M.DATE)
                 #=========================================================================
-                WHERE 1=1'''%(usercode, date_20, date_40, date_20, date_40)
+                WHERE 1=1'''%(usercode, date_240)
 
 
 
@@ -205,7 +206,10 @@ class DataAccessObjectStock:
         if debug:
             print(fullquery)
 
+        start = dt.now()
         df = db.selectpd(fullquery)
+        print(dt.now()-start)
+
         rtdf = df[df.columns[2:]].round(4)
         if method == 'dataframe':
             return rtdf
