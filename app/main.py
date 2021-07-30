@@ -13,6 +13,7 @@ application.register_blueprint(user.application_user)
 application.register_blueprint(stock.application_stock)
 application.register_blueprint(simulation.application_simulation)
 
+
 @application.route('/')
 def rendering_page_home():
     return render_template('home.html',
@@ -41,14 +42,17 @@ def rendering_page_profile():
     else:
         return redirect(url_for("home"),code=302)
 
+
 @application.route('/ads.txt')
 def static_from_root():
     return send_from_directory(application.static_folder, request.path[1:])
+
 
 @application.route('/test', methods=['POST'])
 def test():
     print(request.json)
     return jsonify({"yo":"yo"})
+
 
 if __name__ == '__main__':
     application.run(debug=True, host='0.0.0.0', port=9002)
