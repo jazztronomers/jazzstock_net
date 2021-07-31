@@ -193,7 +193,7 @@ $.fn.dataTable.ext.search.push(
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
-    elemnt = document.getElementById("grid_field_stock")
+    elemnt = document.getElementById("grid_field_stock_chart")
     new Sortable(elemnt, {
         // direction: 'vertical',
         filter: '.filtered',

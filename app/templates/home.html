@@ -4,7 +4,7 @@
 
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/datatable.jazzstock.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/datatablejazzstock.css') }}">
 <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 <!--<script type="text/javascript" charset="utf8" src="/static/js/datatables.js"></script>-->
 <!--<script type="text/javascript" charset="utf8" src="/static/js/dataTables.colReorder.js"></script>-->
@@ -12,6 +12,9 @@
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.25/features/scrollResize/dataTables.scrollResize.min.js"></script>
+
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.22/sorting/natural.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/danfojs@0.2.7/lib/bundle.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.plot.ly/plotly-2.3.0.min.js"></script>
@@ -28,7 +31,7 @@
 <script type="text/javascript" src="static/js/sndChart.js"></script>
 <script type="text/javascript" src="static/js/chart.js"></script>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
 <!--META -->
 <meta property="og:title" content="Jazzstock" />
@@ -50,7 +53,7 @@
       gtag('config', 'UA-132476295-1');
 </script>
 <body>
-    <div id="menu">
+    <div id="navigaion_bar">
         <div id="navigation_top" class="navigation_top"  >
             <a class="active" href="/" id="jazzstock"><b>Jazzstock</b></a>
             <div class="navigation_top_right" id="menu_loggedin">
@@ -344,23 +347,25 @@
 
         </div>
         <div class="grid_layer_a" id="grid_field_stock" style="display:none">
-            <div id="grid_stock_a" class="grid_layer_b grid_stock_chart" >
-                <div class="ohlc_chart" id="grid_stock_a_chart"> undefined </div>
-            </div>
-            <div id="grid_stock_b" class="grid_layer_b grid_stock_chart" >
-                <div class="ohlc_chart" id="grid_stock_b_chart"> undefined </div>
-            </div>
-            <div id="grid_stock_c" class="grid_layer_b grid_stock_chart" >
-                <div class="ohlc_chart" id="grid_stock_c_chart"> undefined </div>
-            </div>
-            <div id="grid_stock_d" class="grid_layer_b grid_stock_chart" >
-                <div class="ohlc_chart" id="grid_stock_d_chart"> undefined </div>
-            </div>
-            <div id="grid_stock_e" class="grid_layer_b grid_stock_chart" >
-                <div class="ohlc_chart" id="grid_stock_e_chart"> undefined </div>
-            </div>
-            <div id="grid_stock_f" class="grid_layer_b grid_stock_chart" >
-                <div class="ohlc_chart" id="grid_stock_f_chart"> undefined </div>
+            <div id="grid_field_stock_chart">
+                <div id="grid_stock_a" class="grid_layer_b grid_stock_chart" >
+                    <div class="ohlc_chart" id="grid_stock_a_chart"> undefined </div>
+                </div>
+                <div id="grid_stock_b" class="grid_layer_b grid_stock_chart" >
+                    <div class="ohlc_chart" id="grid_stock_b_chart"> undefined </div>
+                </div>
+                <div id="grid_stock_c" class="grid_layer_b grid_stock_chart" >
+                    <div class="ohlc_chart" id="grid_stock_c_chart"> undefined </div>
+                </div>
+                <div id="grid_stock_d" class="grid_layer_b grid_stock_chart" >
+                    <div class="ohlc_chart" id="grid_stock_d_chart"> undefined </div>
+                </div>
+                <div id="grid_stock_e" class="grid_layer_b grid_stock_chart" >
+                    <div class="ohlc_chart" id="grid_stock_e_chart"> undefined </div>
+                </div>
+                <div id="grid_stock_f" class="grid_layer_b grid_stock_chart" >
+                    <div class="ohlc_chart" id="grid_stock_f_chart"> undefined </div>
+                </div>
             </div>
             <div id="button_group_stock_mobile" class="button_area_right filtered" >
                 <a href="#" onclick="changeGlobalX()">
@@ -400,12 +405,12 @@
 
                 <h4>2021.07.31</h4>
                 - 최근 UI개편작업으로 배포가 잦습니다<br>
+                - REPORT 컬럼을 콤보박스화 하였습니다, 1년간 발행된 레포트명을 조회하실 수 있습니다<br>
                 - 작동하지 않을시 F12 > 새로고침버튼 우클릭 > 캐시삭제 및 강제새로고침을 해주세요!<br>
-                - 모바일 환경에 버그가 있습니다, 완벽히 커버할 수 없는점 양해바랍니다 ㅠㅠ<br>
                 - 요즘엔 <u>조건검색기능</u> 및 <u>사용자정의기능</u>을 개발하고 있습니다, 8월안에 작업끝낼 예정이니 기대해주세요!<br>
 
                 <h4>상시공지</h4>
-                - 재즈스탁은 크롬브라우저에 최적화 되어있습니다, 크롬을 사용해주세요.<br>
+                - 재즈스탁은 크롬브라우저 * PC * 해상도 1920*1080에 최적화 되어있습니다<br>
                 - 신규가입후 <u>7일간 후원자 전용기능이 활성화</u> 됩니다<br>
 
                 <h4>후원관련</h4>

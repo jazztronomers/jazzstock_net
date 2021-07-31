@@ -1,10 +1,11 @@
 body{
-  max-width: 100%;
-  margin: auto;
-  background: white;
-  padding: 0px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  overflow: hidden;
+
+    max-width: 100%;
+    margin: auto;
+    background: white;
+    padding: 0px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow: hidden;
 
 }
 
@@ -52,6 +53,10 @@ select, option {
 /* DISABLE IOS SELECT DROP DOWN */
 
 
+
+
+
+
 ::-webkit-scrollbar{
 height: 8px;
 width: 8px;
@@ -64,10 +69,15 @@ border: 1px solid #999;
 margin-left: 20px;
 }
 
+#navigation_bar {
 
+
+}
 
 
 #grid_canvas {
+
+
     position: absolute;
     justify-content: center;
     background-color: white;
@@ -75,9 +85,9 @@ margin-left: 20px;
     height: 100%;
     grid-auto-flow: column;
 
-	/*
+    /*
 	background-color: #BCDCB7;
-	*/
+    */
 }
 
 
@@ -86,8 +96,6 @@ margin-left: 20px;
     background-color: #111;
     overflow: hidden;
     width: 100%;
-    position:  relative;
-    top: 0;
 }
 
 /* Style the links inside the navigation bar */
@@ -119,19 +127,7 @@ margin-left: 20px;
 }
 
 
-#navbar_stock_right {
-	float: right;
-}
 
-#navbar_stock_right {
-	float: right;
-}
-
-
-.adsense#adsense_top {
-    top:  37px;
-    margin:0 0;
-}
 
 
 
@@ -157,28 +153,7 @@ div.scrollmenu a:hover {
 
 
 
-div#footer {
 
-    overflow: hidden;
-    position: fixed;
-    bottom:0;
-    white-space: nowrap;
-    float: center;
-    width: 100%;
-    font-size: 0.8em;
-    text-align: center;
-
-}
-
-
-
-
-div#Filter  {
-
-    margin-left:10px;
-    font-size: 0.8em;
-    line-height: 1.5;
-}
 
 #Filter input[type=text] {
   box-sizing: border-box;
@@ -359,6 +334,7 @@ input[type=checkbox] {
     left: 0px;
     background-color: white;
     width:40%;
+    min-width:280px;
     padding:10px;
     opacity:90%;
     font-size: 12px;
@@ -438,9 +414,6 @@ div#specification_content {
 
 
 
-
-
-
 .grid_layer_a {
 	display: inline-block;
 	border: solid 0px rgb(0,0,0,0.2);
@@ -452,16 +425,9 @@ div#specification_content {
 	position: relative;
 	/*
 	background-color: #B7D1DC;
-	*/
+    */
 }
 
-.closestock {
-
-    top: 50%;
-    right: 50%;
-    position: absolute;
-    background-color: white;
-}
 
 .grid_layer_b {
 	background-color: white;
