@@ -44,12 +44,18 @@ class DataAccessObjectSimulation:
         LEFT JOIN jazzdb.T_STOCK_DAY_SMAR K ON (A.STOCKCODE = K.STOCKCODE AND A.DATE = K.DATE)        
         LEFT JOIN jazzdb.T_STOCK_SHARES_CIRCRATE M ON (A.STOCKCODE = M.STOCKCODE AND A.DATE = M.DATE)
         LEFT JOIN jazzdb.T_STOCK_FUTURE_PRICE N ON (A.STOCKCODE = N.STOCKCODE AND A.DATE = N.DATE)
+        JOIN (
+            SELECT STOCKCODE, CLOSE AS RCLSE
+            FROM jazzdb.T_STOCK_OHLC_DAY
+            WHERE DATE = "%s"
+            
+        ) AS O ON (A.STOCKCODE = O.STOCKCODE)
         
         WHERE 1=1
         AND A.DATE BETWEEN "%s" AND "%s"
-        '''%(from_date, to_date)
+        '''%(to_date, from_date, to_date)
 
-        features = ['CLOSE','MC', 'P1', 'P5', 'P20', 'I1', 'I5', 'I20', 'F1', 'F5', 'F20', 'BBP','BBW',
+        features = ['CLOSE', 'RCLSE', 'MC', 'P1', 'P5', 'P20', 'I1', 'I5', 'I20', 'F1', 'F5', 'F20', 'BBP','BBW',
                     'PSMAR5 AS PMA5',
                     'PSMAR20 AS PMA20',
                     'PSMAR60 AS PMA60',
@@ -108,10 +114,13 @@ class DataAccessObjectSimulation:
             print(rtdf.sort_values(by="DATE", ascending=False).head(20))
 
             html_columns = [x for x in rtdf.columns.tolist() if x not in ['STOCKCODE', 'YY', 'MM']]
-            json_columns = ['STOCKCODE', 'DATE', 'YY', 'MM', 'BBW', 'BBP', 'I1', 'I5', 'F1', 'F5', 'PRO1','PRO3','PRO5','PRO10','PRH1', 'PRH3', 'PRH5', 'PRH10']
+            json_columns = ['STOCKCODE', 'DATE', 'YY', 'MM', 'BBW', 'BBP',
+                            'PMA5', 'PMA20', 'PMA60', 'PMA120', 'VMA5', 'VMA20', 'VMA60', 'VMA120',
+                            'I1', 'I5','I20', 'F1', 'F5', 'F20',
+                            'PRO1', 'PRO3', 'PRO5', 'PRO10', 'PRH1', 'PRH3', 'PRH5', 'PRH10']
 
             html = (
-                rtdf[html_columns].style
+                rtdf.sort_values(by="DATE", ascending=False)[html_columns].style
                     .hide_index()
                     .render()
             )

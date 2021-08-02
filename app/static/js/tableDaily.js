@@ -113,7 +113,7 @@ function conditionalFormatting(row, data, column_list, stockcode_favorite){
 
 
 
-function renderTable(tableId, response=null, columnList, ratio=0.9, fixedLeft=3){
+function renderTable(tableId, response=null, columnList, ratio=0.9, fixedLeft=3, markdate_yn=null){
 
     if (response != null){
         document.getElementById(tableId).innerHTML = response
@@ -136,7 +136,7 @@ function renderTable(tableId, response=null, columnList, ratio=0.9, fixedLeft=3)
         aLengthMenu: [ 50, 100 ],
         iDisplayLength: 100,
         //fixedHeader: true,
-        columnDefs: getColumnDefs(columnList),
+        columnDefs: getColumnDefs(columnList, markdate_yn),
         scrollCollapse: true,
         fixedColumns : {
             leftColumns : fixedLeft

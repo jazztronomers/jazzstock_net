@@ -226,11 +226,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     // ===========================================
     // PROD !
-    getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
+    // getTable('table_insfor',  ['P','I','F'], [1,5,20,60], ['I1'], 'DESC', 100, false, true,  false, false, 0);
     // ===========================================
     // DEV !
-    // showTableTab('tab_simulation', this, 'red');
-    // renderSimulationTab()
+    showTableTab('tab_simulation', this, 'red');
+    renderSimulationTab()
     // ===========================================
 
 
@@ -599,12 +599,12 @@ let stockMap = {}
 
 
 
-function addStockToQueue(stockcode, stockname){
+function addStockToQueue(stockcode, stockname, markdate){
 
     // var min = new Date().getSeconds()
     if(stockQueue.length < 6){
         stockQueue.push(stockcode)
-        getOhlcChartData(stockcode)
+        getOhlcChartData(stockcode, markdate)
 
     }
     else {
@@ -612,7 +612,7 @@ function addStockToQueue(stockcode, stockname){
         stockcode_to_delete = stockQueue.pop()
         delete stockMap[stockcode_to_delete]
         stockQueue.push(stockcode)
-        getOhlcChartData(stockcode)
+        getOhlcChartData(stockcode, markdate)
     }
 
     console.log(' * CURRENT STOCK QUEUE', stockQueue)
@@ -659,7 +659,6 @@ function queueRender(all=false){
 
         i = stockQueue.length-1
         grid_layer_b_stock_elements = document.getElementsByClassName("grid_layer_b")
-        // console.log(' ** queueRender', i, stockQueue[i], grid_layer_b_stock_elements[i].id)
         stockcode = stockQueue[i]
         renderOhlcChart(stockcode, stockMap[stockcode], grid_layer_b_stock_elements[i].id+"")
 
@@ -1027,11 +1026,11 @@ function showStock(tabName, elmnt, color) {
 }
 
 
-function getChartData(stockcode, stockname){
-    addStockToQueue(stockcode, stockname)
+function getChartData(stockcode, stockname, markdate=null){
+    addStockToQueue(stockcode, stockname, markdate)
 }
 
-function getColumnDefs(column_list){
+function getColumnDefs(column_list, markdate_yn=null){
 
     columns_def = []
     for (i=0; i<column_list.length; i++){
@@ -1058,7 +1057,16 @@ function getColumnDefs(column_list){
                             let stockcode_stockname = cellData.split("_")
                             stockcode = stockcode_stockname[0]
                             stockname = stockcode_stockname[1]
-                            title = getChartlink(stockcode, stockname)
+
+
+                            if (markdate_yn != true){
+                                title = getChartlink(stockcode, stockname, markdate_yn)
+                            }
+
+                            else {
+                                title = getChartlink(stockcode, stockname, rowData[0]) // simulation table에서 첫번째 컬럼이 Date
+                            }
+
 
                             $(cell).html(title)
 
@@ -1110,10 +1118,15 @@ function getDataTableRenderMethod(round=0){
     return $.fn.dataTable.render.number( ',', '.', round, '')
 }
 
-function getChartlink(stockcode, stockname){
+function getChartlink(stockcode, stockname, markdate=null){
 
+        if (markdate == null){
+            title = '<div id="table_daily_stockcode_'+stockcode+'" style=""><a href="#" onclick="getChartData(' + "'"  + stockcode +"','" + stockname + "');\">" + stockname + '</a></div>'
+        }
 
-        title = '<div id="table_daily_stockcode_'+stockcode+'" style=""><a href="#" onclick="getChartData(' + "'"  + stockcode +"','" + stockname + "');\">" + stockname + '</a></div>'
+        else {
+            title = '<div id="table_daily_stockcode_'+stockcode+'" style=""><a href="#" onclick="getChartData(' + "'"  + stockcode +"','" + stockname +"','" + markdate  + "');\">" + stockname + '</a></div>'
+        }
         return title
 }
 
@@ -1121,7 +1134,7 @@ function getChartlink(stockcode, stockname){
 function getSelectBoxHtml(elements){
 
     ret = ""
-    prefix_select = '<select style="border: none; background: white; width: 100%">'
+    prefix_select = '<select style="border: none; width: 100%">'
     suffix_select = "</select>"
     prefix_option = "<option>"
     suffix_option = "</option>"
@@ -1147,4 +1160,14 @@ function getFavCheckbox(cellData){
     else {
         return '<input type="checkbox" onchange="handleChange(this)" value="'+ cellData +'">'
     }
+}
+
+
+function strArrayAllElementsToUpperCase(arr){
+
+    for (let i=0; i<arr.length; i++){
+        arr[i]=arr[i].toUpperCase();
+    }
+    return arr
+
 }

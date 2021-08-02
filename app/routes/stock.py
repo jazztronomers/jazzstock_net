@@ -178,7 +178,9 @@ def getRecentTradingDays():
     T_DATE_INDEXED에서 TOP 240 DATE를 가져오는 함수
     '''
     dao = DataAccessObjectStock()
-    recent_trading_days_list = dao.recent_trading_days(limit=720)
+    recent_trading_days_list = dao.recent_trading_days(limit=720, above="2020-01-01")
+
+
     return jsonify({'result': True, "content": recent_trading_days_list})
 
 

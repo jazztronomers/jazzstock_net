@@ -363,7 +363,7 @@ class DataAccessObjectStock:
 
                                          SELECT DATE, CNT   
                                           FROM jazzdb.T_DATE_INDEXED
-                                         WHERE CNT BETWEEN 0 AND 259
+                                         WHERE CNT BETWEEN 0 AND 600
 
                                        ) DIX 
 
@@ -544,9 +544,13 @@ class DataAccessObjectStock:
             return {'result': 'Market closed'}
 
 
-    def recent_trading_days(self, limit=10):
+    def recent_trading_days(self, limit=10, above=None):
 
         recent_trading_days = db.selectSingleColumn('SELECT CAST(DATE AS CHAR) AS DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT < %s ORDER BY CNT ASC'%(limit))
+
+        if above is not None:
+            recent_trading_days = [x for x in recent_trading_days if x >= above]
+
         return recent_trading_days
 
     # ==================================================================================

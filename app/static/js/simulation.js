@@ -16,6 +16,7 @@ let simulation_result = undefined
 let simulation_result_object = undefined
 let simulation_result_html = undefined
 let simulation_result_column_list = undefined
+let simulation_is_running = false
 
 function getAllFeaturesForSimulation(){
     /*
@@ -151,7 +152,7 @@ function addConditionInputRow(feature_name, feature_name_full, preset_operation=
 
 
     row_id = getConditionInputRowId()
-    console.log('addConditionInputRow:', feature_name, feature_name_full, preset_operation, preset_target_value)
+    // console.log('addConditionInputRow:', feature_name, feature_name_full, preset_operation, preset_target_value)
 
     simulation_condition_generation_tbody = document.getElementById("simulation_condition_generation_tbody")
 
@@ -322,85 +323,121 @@ function changeTargetInputArea(target, row_id, preset_target_value=null) {
 
 function simulationRequest(){
 
+    if (simulation_is_running == true){
 
-
-    let req = new XMLHttpRequest()
-    req.responseType = 'json';
-    req.onreadystatechange = function()
-    {
-        if (req.readyState == 4)
-        {
-            if (req.status != 200)
-            {
-                alert('simulationRequest ERROR!')
-            }
-            else
-            {
-
-
-                simulation_result_html = req.response.simulation_result_table_html
-                simulation_result_column_list = req.response.simulation_result_column_list
-                simulation_result = req.response.simulation_result_table_json
-                elapsed_time = req.response.elapsed_time
-                setFeaturesToLocalStorage(JSON.stringify(condition_set), from_date, to_date)
-                simulation_result_object = parseSimulationResult(simulation_result)
-                console.log('simulationRequest elapsed time: ', elapsed_time)
-
-                setSimulationResults()
-                // renderTable("table_simulation", html, column_list, ratio=0.5, fixedLeft=2)
-
-            }
-        }
+        alert("simulation이 실행중입니다, 잠시뒤 다시 시도해주세요")
     }
 
-    condition_set = getConditionSetCurrent()
-    from_date = document.getElementById('simulation_from_date').value
-    to_date = document.getElementById('simulation_to_date').value
-
-    features = JSON.stringify({"condition_set":condition_set, "from_date":from_date, "to_date":to_date})
+    else {
 
 
-    req.open('POST', '/getSimulationResult')
-    req.setRequestHeader("Content-type", "application/json")
-    req.send(features)
 
+        condition_set = getConditionSetCurrent()
+        from_date = document.getElementById('simulation_from_date').value
+        to_date = document.getElementById('simulation_to_date').value
+
+        if (condition_set != false && from_date != undefined && to_date != undefined) {
+
+            let req = new XMLHttpRequest()
+            req.responseType = 'json';
+            req.onreadystatechange = function()
+            {
+                if (req.readyState == 4)
+                {
+                    if (req.status != 200)
+                    {
+                        alert('simulationRequest ERROR!')
+                    }
+                    else
+                    {
+
+                        if (req.response.result == false){
+
+                                alert(req.response.message)
+                        }
+
+                        else {
+
+                            simulation_result_html = req.response.simulation_result_table_html
+                            simulation_result_column_list = req.response.simulation_result_column_list
+                            simulation_result = req.response.simulation_result_table_json
+                            elapsed_time = req.response.elapsed_time
+                            setFeaturesToLocalStorage(JSON.stringify(condition_set), from_date, to_date)
+                            simulation_result_object = parseSimulationResult(simulation_result)
+
+                            if (simulation_result_object == false){
+
+                                alert("검색된 종목이 없습니다")
+
+                            }
+
+                            else {
+
+                                setSimulationResults()
+                                renderSimulationResultTable("RAW")
+                                renderSimulationResultScatterPlot()
+
+                            }
+                            console.log('simulationRequest elapsed time: ', elapsed_time)
+                        }
+                        simulation_is_running = false
+                        // renderTable("table_simulation", html, column_list, ratio=0.5, fixedLeft=2)
+
+                    }
+                }
+            }
+
+
+
+            features = JSON.stringify({"condition_set":condition_set, "from_date":from_date, "to_date":to_date})
+            req.open('POST', '/getSimulationResult')
+            req.setRequestHeader("Content-type", "application/json")
+            req.send(features)
+            simulation_is_running=true
+
+        }
+
+        else {
+            alert("input이 정확하지 않습니다")
+        }
+
+    }
 }
 
 function parseSimulationResult(simulation_result){
 
+    if (simulation_result.length == 0){
 
-    let df = new dfd.DataFrame(simulation_result)
+        return false
+    }
 
-    df = df.astype({column: ("YY","MM"), dtype: "string"})
+    else {
+        let df = new dfd.DataFrame(simulation_result)
 
+        df = df.astype({column: ("YY","MM"), dtype: "string"})
 
-//    df.plot("simulation_row_results_table_content").table()
-//
-//    document.getElementById("simulation_row_results_table_content")
+        grp = df.groupby(["YY", "MM"]).agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "PRH1":"mean","PRH3":"mean", "PRH5":"mean", "PRH10":"mean", "STOCKCODE":"count"})
+        mm_columns = grp.column_names
+        mm_data = grp.data
+        grp.print()
 
+        grp = df.groupby(["YY"]).agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "PRH1":"mean","PRH3":"mean", "PRH5":"mean", "PRH10":"mean", "STOCKCODE":"count"})
+        yy_columns = grp.column_names
+        yy_data = grp.data
+        grp.print()
 
-    grp = df.groupby(["YY", "MM"]).agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "STOCKCODE":"count"})
-    mm_columns = grp.column_names
-    mm_data = grp.data
-    grp.print()
-
-
-    grp = df.groupby(["YY"]).agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "STOCKCODE":"count"})
-    yy_columns = grp.column_names
-    yy_data = grp.data
-    grp.print()
-
-    return {"simulation_result_raw":simulation_result,
-            "simulation_result_columns":df.column_names,
-            "simulation_result_row_data":df.data,
-            "simulation_result_col_data":df.col_data,
-            "simulation_result_mm_summary_columns":mm_columns,
-            "simulation_result_mm_summary_row_data":mm_data,
-            "simulation_result_mm_summary_col_data":mm_data,
-            "simulation_result_yy_summary_columns":yy_columns,
-            "simulation_result_yy_summary_row_data":yy_data,
-            "simulation_result_yy_summary_col_data":yy_data}
-
+        return {"simulation_result_raw":simulation_result,
+                "simulation_result_columns":strArrayAllElementsToUpperCase(df.column_names),
+                "simulation_result_row_data":df.data,
+                "simulation_result_col_data":df.col_data,
+                "simulation_result_mm_summary_columns":strArrayAllElementsToUpperCase(mm_columns),
+                "simulation_result_mm_summary_row_data":mm_data,
+                "simulation_result_mm_summary_col_data":mm_data,
+                "simulation_result_yy_summary_columns":strArrayAllElementsToUpperCase(yy_columns),
+                "simulation_result_yy_summary_row_data":yy_data,
+                "simulation_result_yy_summary_col_data":yy_data
+                }
+    }
 }
 
 function setSimulationResults(){
@@ -436,7 +473,9 @@ function setSimulationResults(){
 
     removeAllChildOfElement(select_box_x)
 
-    for (let each of ['BBP', 'BBW', 'I1', 'I5', 'I20', 'F1', 'F5', 'F20']){
+    for (let each of ['BBW', 'BBP',
+                    'PMA5', 'PMA20', 'PMA60', 'PMA120', 'VMA5', 'VMA20', 'VMA60', 'VMA120',
+                    'I1', 'I5','I20', 'F1', 'F5', 'F20']){
         opt = document.createElement("option")
         opt.value = each
         opt.innerHTML = each
@@ -460,7 +499,6 @@ function setSimulationResults(){
     opt.innerHTML = "PRO5"
     select_box_y.appendChild(opt)
 
-    // cont = document.getElementById("simulation_row_results_content")
 
 
 }
@@ -549,7 +587,7 @@ function renderSimulationResultTable(label){
     }
     else if(label=="RAW"){
 
-        renderTable("simulation_row_results_table", simulation_result_html, simulation_result_column_list, ratio=0.2)
+        renderTable("simulation_row_results_table", simulation_result_html, simulation_result_column_list, ratio=0.2, fixedLeft=3, markdate_yn=true)
     }
 
 //    table = document.getElementById("simulation_row_results_table_table")
@@ -558,7 +596,6 @@ function renderSimulationResultTable(label){
 //    }
 
 
-    console.log(column_list)
 
 
 }
@@ -569,11 +606,11 @@ function renderSimulationResultScatterPlot(){
 
     x = document.getElementById("simulation_row_results_scatter_select_x").value
     y = document.getElementById("simulation_row_results_scatter_select_y").value
+
     x_idx = simulation_result_object.simulation_result_columns.indexOf(x)
     y_idx = simulation_result_object.simulation_result_columns.indexOf(y)
-    console.log(x,y)
-    console.log(simulation_result_object.simulation_result_columns)
-    console.log(x_idx, y_idx)
+
+    removeAllChildOfElement(document.getElementById("simulation_row_results_scatter_content"))
 
     // global simulation_result_object
 
@@ -582,8 +619,6 @@ function renderSimulationResultScatterPlot(){
       y: simulation_result_object.simulation_result_col_data[y_idx],
       mode: 'markers+text',
       type: 'scatter',
-      name: 'Team A',
-      text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
       textposition: 'top center',
       textfont: {
         family:  'Raleway, sans-serif'
@@ -605,10 +640,10 @@ function renderSimulationResultScatterPlot(){
             title: y
         },
         margin: {
-            l: 30,
-            r: 30,
-            b: 30,
-            t: 30,
+            l: 40,
+            r: 40,
+            b: 40,
+            t: 40,
             pad: 4
         },
         legend: {
@@ -620,8 +655,8 @@ function renderSimulationResultScatterPlot(){
               color: 'grey',
             }
         },
-        paper_bgcolor: "#D85236", // RED
-        plot_bgcolor: "#36AED8", // BLUE
+        // paper_bgcolor: "#D85236", // RED
+        // plot_bgcolor: "#36AED8", // BLUE
         title: "scatter plot"
     };
 
@@ -737,7 +772,7 @@ function renderFeatures(condition_set){
     }
 
     for (let i=0; i< feature_rows.length; i++){
-        console.log("renderFeatures...", feature_rows[i])
+        // console.log("renderFeatures...", feature_rows[i])
         addConditionInputRow(feature_rows[i].feature_name, feature_rows[i].feature_name_full, feature_rows[i].operation, feature_rows[i].target_value)
     }
 
@@ -850,29 +885,35 @@ function getConditionSetCurrent(){
 
     simulation_condition_generation_tbody = document.getElementById('simulation_condition_generation_tbody')
     condition_set = []
-    for (let i=0; i < simulation_condition_generation_tbody.children.length; i++){
 
-        row_id = simulation_condition_generation_tbody.children[i].id
-        feature_name   = document.getElementById(row_id + "_cell_a").getAttribute('feature_name')
-        feature_name_full   = document.getElementById(row_id + "_cell_a").getAttribute('feature_name_full')
+    try {
+        for (let i=0; i < simulation_condition_generation_tbody.children.length; i++){
+
+            row_id = simulation_condition_generation_tbody.children[i].id
+            feature_name   = document.getElementById(row_id + "_cell_a").getAttribute('feature_name')
+            feature_name_full   = document.getElementById(row_id + "_cell_a").getAttribute('feature_name_full')
 
 
 
-        operation = document.getElementById(row_id + "_cell_b").childNodes[0].value
-        target_type = document.getElementById(row_id +  "_cell_c").childNodes[0].value
+            operation = document.getElementById(row_id + "_cell_b").childNodes[0].value
+            target_type = document.getElementById(row_id +  "_cell_c").childNodes[0].value
 
-        if (target_type=="value"){
-            target_value = document.getElementById(row_id + "_cell_d").childNodes[0].value
+            if (target_type=="value"){
+                target_value = document.getElementById(row_id + "_cell_d").childNodes[0].value
+            }
+
+            else {
+                target_value = document.getElementById(row_id + "_cell_d").childNodes[0].value
+                target_value = target_value + "*"
+                target_value = target_value + document.getElementById(row_id + "_cell_d").childNodes[1].value
+            }
+
+
+            condition_set.push({"feature_name":feature_name, "feature_name_full":feature_name_full, "operation":operation, "target_value":target_value})
         }
+    } catch (error) {
 
-        else {
-            target_value = document.getElementById(row_id + "_cell_d").childNodes[0].value
-            target_value = target_value + "*"
-            target_value = target_value + document.getElementById(row_id + "_cell_d").childNodes[1].value
-        }
-
-
-        condition_set.push({"feature_name":feature_name, "feature_name_full":feature_name_full, "operation":operation, "target_value":target_value})
+        return false
     }
 
     return condition_set
@@ -921,7 +962,6 @@ function saveConditionSetToServer(){
 
 
 
-        alert("fuckyou")
         condition_set = getConditionSetCurrent()
         features = JSON.stringify({"condition_set":condition_set, "condition_set_name": condition_set_name.value, "condition_set_description": condition_set_description.value})
 

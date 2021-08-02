@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customize.css') }}">
     <script type="text/javascript" src="static/js/customize.js"></script>
     <script type="text/javascript" charset="utf8" src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
 
 </head>
 <body>
+
+
+<div id="container">
+    <div id="grid_feature_ordering">
+        <div id="area_feature_ordering_title">
+            <h4>FEATURE GROUP</h4>
+        </div>
+        <div id="area_feature_ordering_content"></div>
+        <div id="area_feature_ordering_save_button"></div>
+    </div>
+</div>
 
 </body>
 </html>

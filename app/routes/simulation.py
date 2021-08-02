@@ -1,9 +1,22 @@
 from flask import request, jsonify, session, Blueprint
 from jazzstock_net.app.dao.dao_simulation import DataAccessObjectSimulation
+from jazzstock_net.app.config.config_message import alert_message
 from datetime import datetime
 
-
 application_simulation = Blueprint('simulation', __name__, url_prefix='/')
+
+
+def _getMembership():
+    if session.get('loggedin') == True:
+        if session.get('expiration_date') > str(datetime.now().date()):
+            return {'result': True, 'membership': 'supporter'}
+
+        else:
+            return {'result': True, 'membership': 'general'}
+
+    else:
+        return {'result': True, 'membership': 'non-member'}
+
 
 @application_simulation.route('/getSimulationResult', methods=['POST'])
 def getSimulationResult():
@@ -13,22 +26,28 @@ def getSimulationResult():
 
     if request.method == 'POST':
 
-        from_date = request.json.get("from_date")
-        to_date = request.json.get("to_date")
+        member = _getMembership()
 
-        condition_set = []
-        for i, row in enumerate(request.json.get("condition_set")):
-            condition_set.append(row)
-        start_time = datetime.now()
-        dao = DataAccessObjectSimulation()
-        ret = dao.get_simulation_result_direct(from_date, to_date, condition_set)
-        elapsed_time = datetime.now() - start_time
+        if member.get("membership") == 'supporter':
+            from_date = request.json.get("from_date")
+            to_date = request.json.get("to_date")
+
+            condition_set = []
+            for i, row in enumerate(request.json.get("condition_set")):
+                condition_set.append(row)
+            start_time = datetime.now()
+            dao = DataAccessObjectSimulation()
+            ret = dao.get_simulation_result_direct(from_date, to_date, condition_set)
+            elapsed_time = datetime.now() - start_time
 
 
-        return jsonify(simulation_result_table_html=ret.get('simulation_result_table_html'),
-                       simulation_result_table_json=ret.get('simulation_result_table_json'),
-                       simulation_result_column_list=ret.get('simulation_result_column_list'),
-                       elapsed_time=elapsed_time.total_seconds())
+            return jsonify(simulation_result_table_html=ret.get('simulation_result_table_html'),
+                           simulation_result_table_json=ret.get('simulation_result_table_json'),
+                           simulation_result_column_list=ret.get('simulation_result_column_list'),
+                           elapsed_time=elapsed_time.total_seconds())
+
+        else:
+            return jsonify({'result': False, "message": alert_message['supporter_only_kr']})
 
 @application_simulation.route('/saveConditionSetToServer', methods=['POST'])
 def saveConditionSetToServer():

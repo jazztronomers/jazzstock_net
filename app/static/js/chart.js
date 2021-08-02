@@ -1,10 +1,10 @@
 let upColor = '#0008ff';
 let downColor = '#ec0000';
 
-let timePeriod = [100/6*3, 100/6*2, 100/6, 100/6*5, 100/6*4 ]
+let timePeriod = [ 80, 60, 40, 20, 0, 90 ]
 
 
-function getOhlcChartData(stockcode){
+function getOhlcChartData(stockcode, mark_date=null){
 
     // 개별종목 챠트용 데이터를 받아오는 함수
 
@@ -25,7 +25,10 @@ function getOhlcChartData(stockcode){
 
 
                 ohlc_day_data = req.response.ohlc_day_data.result
-                stockMap[stockcode]= ohlc_day_data
+
+                console.log(stockcode, mark_date)
+
+                stockMap[stockcode]= {"data":ohlc_day_data, "mark_date":mark_date}
 
                 if (window.innerWidth < 800){
                     toggleTableAndStock()
@@ -48,7 +51,7 @@ function getOhlcChartData(stockcode){
 }
 
 
-function renderOhlcChart(stockcode, ohlc_day_data, element_id){
+function renderOhlcChart(stockcode, chart_data_obj, element_id){
 
 
     // 개별종목 챠트를 화면에 그리는 함수
@@ -73,6 +76,9 @@ function renderOhlcChart(stockcode, ohlc_day_data, element_id){
     let charts = echarts.init(element);
     var labelFont = 'bold 12px Sans-serif';
 
+    ohlc_day_data=chart_data_obj.data
+    mark_date=chart_data_obj.mark_date
+
     let dates = ohlc_day_data.DATE
     let data = []
     for (let i = 0; i<=dates.length-1; i++){
@@ -85,6 +91,17 @@ function renderOhlcChart(stockcode, ohlc_day_data, element_id){
     let dataMA60 = ohlc_day_data.MA_Q
 
     charts.clear()
+
+    if (mark_date != null){
+
+        mark_date_from = mark_date
+        mark_date_to = dates[Math.min(dates.indexOf(mark_date) + 10, dates.length)]
+    }
+
+    else {
+        mark_date_from = dates[0]
+        mark_date_to = dates[0]
+    }
 
 
     option = {
@@ -195,7 +212,7 @@ function renderOhlcChart(stockcode, ohlc_day_data, element_id){
         dataZoom: [{
             type: 'inside',
             xAxisIndex: [0, 1],
-            start: 100/6*4,
+            start: 90,
             end: 100,
             top: 0,
             height: height_unit * 8
@@ -221,6 +238,18 @@ function renderOhlcChart(stockcode, ohlc_day_data, element_id){
             itemStyle: {
                 color: downColor,
                 color0: upColor,
+            },
+            markArea: {
+
+                itemStyle: {
+                    color: 'rgba(255, 173, 177, 0.4)'
+                },
+                data: [ [{
+                    name: 'HIGH',
+                    xAxis: mark_date_from
+                }, {
+                    xAxis: mark_date_to
+                }]]
             }
         }, {
             name: 'MA5',
@@ -318,7 +347,7 @@ function getSummaryData(stockcode){
 }
 
 
-function renderSummaryChart(stockcode, ohlc_day_data, snd_day_data, element_id){
+function renderSummaryChart(stockcode, chart_data_obj, snd_day_data, element_id){
 
     // console.log("renderSummaryChart", element_id)
 
@@ -337,6 +366,9 @@ function renderSummaryChart(stockcode, ohlc_day_data, snd_day_data, element_id){
     element = document.getElementById(element_id)
     element.value=stockcode
 
+    console.log(chart_data_obj)
+
+    ohlc_day_data= chart_data_obj.data
 
     chart_height = canvas_height * 0.7
     element.style.height =  chart_height + 'px'
@@ -660,7 +692,7 @@ function renderSummaryChart(stockcode, ohlc_day_data, snd_day_data, element_id){
         dataZoom: [{
             type: 'inside',
             xAxisIndex: [0, 1, 2],
-            start: 50,
+            start: 80,
             end: 100,
             top: 0,
             height: height_unit * 36
@@ -679,7 +711,8 @@ function renderSummaryChart(stockcode, ohlc_day_data, snd_day_data, element_id){
                 color: downColor,
                 color0: upColor,
             }
-        }, {
+        },
+        {
             name: 'MA5',
             type: 'line',
             data: dataMA5,
@@ -1423,11 +1456,8 @@ function changeGlobalX(){
 
 
     grid_stock_charts = document.getElementsByClassName("grid_stock_chart")
-
-    console.log(timePeriod)
     curr = timePeriod.splice(0,1)
 
-    console.log(timePeriod)
     for (let i=0; i<grid_stock_charts.length; i++){
         if (grid_stock_charts[i].hasAttribute('_echarts_instance_')){
             chart = echarts.init(grid_stock_charts[i])
