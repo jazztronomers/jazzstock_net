@@ -367,7 +367,7 @@ function simulationRequest(){
 
                             if (simulation_result_object == false){
 
-                                alert("검색된 종목이 없습니다")
+                                alert("조건에 부합하는 종목이 없습니다")
 
                             }
 
@@ -394,6 +394,7 @@ function simulationRequest(){
             req.setRequestHeader("Content-type", "application/json")
             req.send(features)
             simulation_is_running=true
+            alert("simulation이 요청되었습니다, 잠시만 기다려주세요")
 
         }
 
@@ -518,7 +519,7 @@ function renderSimulationResultTable(label){
     simulation_row_results_table_content = document.getElementById("simulation_row_results_table_content")
     removeAllChildOfElement(simulation_row_results_table_content)
 
-    console.log(simulation_result_object.simulation_result_raw)
+    // console.log(simulation_result_object.simulation_result_raw)
 
     table = document.createElement('table')
     table.setAttribute("id","simulation_row_results_table")
@@ -655,8 +656,8 @@ function renderSimulationResultScatterPlot(){
               color: 'grey',
             }
         },
-        // paper_bgcolor: "#D85236", // RED
-        // plot_bgcolor: "#36AED8", // BLUE
+        // paper_bgcolor: "#B5C4CA", // RED
+        plot_bgcolor: "#B5C4CA", // BLUE
         title: "scatter plot"
     };
 
