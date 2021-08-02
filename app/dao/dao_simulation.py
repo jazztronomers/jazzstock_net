@@ -111,7 +111,7 @@ class DataAccessObjectSimulation:
             rtdf[float_columns] = rtdf[float_columns].round(3)
             rtdf = rtdf.fillna(0)
 
-            print(rtdf.sort_values(by="DATE", ascending=False).head(20))
+            # print(rtdf.sort_values(by="DATE", ascending=False).head(20))
 
             html_columns = [x for x in rtdf.columns.tolist() if x not in ['STOCKCODE', 'YY', 'MM']]
             json_columns = ['STOCKCODE', 'DATE', 'YY', 'MM', 'BBW', 'BBP',
@@ -200,7 +200,12 @@ class DataAccessObjectSimulation:
 
 
             df = db.selectpd(query)
-            return {'result': [str(x) for x in df.to_dict("index").values()]}
+
+            # print(df.to_dict("records"))
+            # print({'result': [str(x) for x in df.to_dict("index").values()]})
+
+
+            return {'result': df.to_dict("records")}
 
         except Exception as e:
             print("get_simulation_conditions", e)
