@@ -2,7 +2,7 @@ from flask import request, jsonify, session, Blueprint
 from jazzstock_net.app.dao.dao_simulation import DataAccessObjectSimulation
 from jazzstock_net.app.config.config_message import alert_message
 from datetime import datetime
-
+import json
 application_simulation = Blueprint('simulation', __name__, url_prefix='/')
 
 
@@ -78,6 +78,11 @@ def getConditionSetsFromServer():
 
         dao = DataAccessObjectSimulation()
         ret = dao.get_simulation_conditions(session.get('usercode'))
+
+        print(ret)
+        print(type(ret))
+        print(json.dumps(ret))
+
 
         return jsonify(ret)
 
