@@ -79,9 +79,13 @@ def getConditionSetsFromServer():
         dao = DataAccessObjectSimulation()
         ret = dao.get_simulation_conditions(session.get('usercode'))
 
-        print(json.dumps(ret))
+        print("DEBUG-----")
+        print(json.__version__)
         print(ret)
         print(type(ret))
+
+        print(json.dumps(ret))
+
 
 
         return jsonify(ret)
