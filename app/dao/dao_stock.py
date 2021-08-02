@@ -208,7 +208,6 @@ class DataAccessObjectStock:
 
         start = dt.now()
         df = db.selectpd(fullquery)
-        print(dt.now()-start)
 
         rtdf = df[df.columns[2:]].round(4)
         if method == 'dataframe':
