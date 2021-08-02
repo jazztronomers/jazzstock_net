@@ -200,7 +200,7 @@ class DataAccessObjectSimulation:
 
 
             df = db.selectpd(query)
-            return {'result': [x for x in df.to_dict("index").values()]}
+            return {'result': [str(x) for x in df.to_dict("index").values()]}
 
         except Exception as e:
             print("get_simulation_conditions", e)
