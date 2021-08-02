@@ -16,6 +16,7 @@ table_column_specification = [
                 "column_def":{"width":90,
                               "created_cell":"stockname"},
                 "feature_for_default_table":True,
+                "feature_group":"default",
                 "feature_for_manual": True,
         },{
                 "column_name":"MC",
@@ -28,9 +29,10 @@ table_column_specification = [
                              'render':1,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"default",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "Finan (재무관련)",
+                "simulation_feature_type": "FINAN",
                 "origin_table":"T_STOCK_MC",
 
         },{
@@ -42,6 +44,7 @@ table_column_specification = [
                 체크된 종목들이 즐겨찾기 종목으로 등록되며, 향후 모든테이블에서 노란색으로 Highlighting 됩니다<br>
                 추가로 <즐겨찾기> 탭에서 별도로 모아서 조회할 수 있습니다.''',
                 "feature_for_default_table":True,
+                "feature_group":"default",
                 "feature_for_manual": True,
                 "data_type":"checkbox",
                 "column_def": {"width": 20,
@@ -55,6 +58,7 @@ table_column_specification = [
                 "column_def": {"width": 50,
                              'render':0,
                              'orderSequence':["desc","asc"]},
+                "feature_group":"default",
                 "feature_for_default_table":True,
                 "feature_for_manual": True,
                 "origin_table":"T_STOCK_OHLC",
@@ -99,10 +103,11 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"snd_strength",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "PRICE: 가격과 관련된 FEATURE 들",
-                "percent_yn":1,
+                "simulation_feature_type": "PRICE",
+                "percent_yn":True,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
 
         },{
@@ -116,10 +121,11 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"snd_strength",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "snd_strength",
-                "percent_yn":1,
+                "simulation_feature_type": "SND_STRENGTH",
+                "percent_yn":True,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "F{X}",
@@ -132,10 +138,11 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"snd_strength",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "snd_strength",
-                "percent_yn":1,
+                "simulation_feature_type": "SND_STRENGTH",
+                "percent_yn":True,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "PS{X}",
@@ -148,10 +155,11 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"snd_strength",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "snd_strength",
-                "percent_yn":1,
+                "simulation_feature_type": "SND_STRENGTH",
+                "percent_yn":True,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "Y{X}",
@@ -164,10 +172,11 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"snd_strength",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "snd_strength",
-                "percent_yn":1,
+                "simulation_feature_type": "SND_STRENGTH",
+                "percent_yn":True,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "S{X}",
@@ -180,10 +189,11 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"snd_strength",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "snd_strength",
-                "percent_yn":1,
+                "simulation_feature_type": "SND_STRENGTH",
+                "percent_yn":True,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "T{X}",
@@ -196,10 +206,11 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"snd_strength",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "snd_strength",
-                "percent_yn":1,
+                "simulation_feature_type": "SND_STRENGTH",
+                "percent_yn":True,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "FN{X}",
@@ -212,10 +223,11 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"snd_strength",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "snd_strength",
-                "percent_yn":1,
+                "simulation_feature_type": "SND_STRENGTH",
+                "percent_yn":True,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
                 "column_name": "OC{X}",
@@ -228,10 +240,11 @@ table_column_specification_interval = [
                              'render':2,
                              'orderSequence':["desc","asc"]},
                 "feature_for_default_table":True,
+                "feature_group":"snd_strength",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "snd_strength",
-                "percent_yn":1,
+                "simulation_feature_type": "SND_STRENGTH",
+                "percent_yn":True,
                 "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         }
 ]
@@ -245,9 +258,10 @@ table_column_specification_ranking = [
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
         "feature_for_default_table":True,
+        "feature_group":"snd_rank",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "snd_rank",
+        "simulation_feature_type": "SND_RANK",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
 
         },{
@@ -258,9 +272,10 @@ table_column_specification_ranking = [
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
         "feature_for_default_table":True,
+        "feature_group":"snd_rank",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "snd_rank",
+        "simulation_feature_type": "SND_RANK",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
         "column_name":"FR",
@@ -269,10 +284,11 @@ table_column_specification_ranking = [
         "data_type":"int",
         "background_color_map":"rank_map",
         "feature_for_default_table":True,
+        "feature_group":"snd_rank",
         "feature_for_manual": True,
         "column_def": {"width": 30},
         "simulation_feature_yn":1,
-        "simulation_feature_type": "snd_rank",
+        "simulation_feature_type": "SND_RANK",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
         "column_name":"YR",
@@ -281,10 +297,11 @@ table_column_specification_ranking = [
         "data_type":"int",
         "background_color_map":"rank_map",
         "feature_for_default_table":True,
+        "feature_group":"snd_rank",
         "feature_for_manual": True,
         "column_def": {"width": 30},
         "simulation_feature_yn":1,
-        "simulation_feature_type": "snd_rank",
+        "simulation_feature_type": "SND_RANK",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
         "column_name":"SR",
@@ -294,9 +311,10 @@ table_column_specification_ranking = [
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
         "feature_for_default_table":True,
+        "feature_group":"snd_rank",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "snd_rank",
+        "simulation_feature_type": "SND_RANK",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
         "column_name":"FNR",
@@ -306,9 +324,10 @@ table_column_specification_ranking = [
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
         "feature_for_default_table":True,
+        "feature_group": "snd_rank",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "snd_rank",
+        "simulation_feature_type": "SND_RANK",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
         "column_name":"TR",
@@ -318,9 +337,10 @@ table_column_specification_ranking = [
         "background_color_map":"rank_map",
         "column_def": {"width": 30},
         "feature_for_default_table":True,
+        "feature_group":"snd_rank",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "snd_rank",
+        "simulation_feature_type": "SND_RANK",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },{
         "column_name":"OCR",
@@ -328,11 +348,12 @@ table_column_specification_ranking = [
         "column_description": "당 종목의 500거래일간 기타법읜의 일일 순매수주식수를 내림차순으로 정렬 했을때의 순위입니다.",
         "data_type":"int",
         "background_color_map":"rank_map",
+        "feature_group":"snd_rank",
         "column_def": {"width": 30},
         "feature_for_default_table":True,
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "snd_rank",
+        "simulation_feature_type": "SND_RANK",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         }
 ]
@@ -348,9 +369,10 @@ table_column_specification_finan = [
                        'render':2,
                        'orderSequence':["desc","asc"]},
         "feature_for_default_table":True,
+        "feature_group":"finan",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "finan",
+        "simulation_feature_type": "FINAN",
         "origin_table":"T_STOCK_FINAN",
         }
 
@@ -364,9 +386,10 @@ table_column_specification_finan = [
                        'render':2,
                        'orderSequence':["desc","asc"]},
         "feature_for_default_table":True,
+        "feature_group":"finan",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "finan",
+        "simulation_feature_type": "FINAN",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         }
 
@@ -380,9 +403,10 @@ table_column_specification_finan = [
                        'render':2,
                        'orderSequence':["desc","asc"]},
         "feature_for_default_table":True,
+        "feature_group":"finan",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "finan",
+        "simulation_feature_type": "FINAN",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         }, {
         "column_name": "CCR",
@@ -393,15 +417,51 @@ table_column_specification_finan = [
         "column_def": {"width": 35,
                        'render':2},
         "feature_for_default_table":True,
+        "feature_group":"finan",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "finan",
+        "simulation_feature_type": "FINAN",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         }
 
 ]
 
 table_column_specification_bollinger_band = [
+
+        {
+        "column_name": "BBP",
+        "column_name_full": None,
+        "column_description": "최근 거래일 BBP",
+        "data_type": 'int',
+        "background_color_map":"bbp_map",
+        "column_def": {"width": 30,
+                       'render':2,},
+
+        "feature_for_default_table": True,
+        "feature_for_manual": True,
+        "feature_group": "bollinger",
+        "simulation_feature_yn":1,
+        "simulation_feature_type": "BOLLINGER",
+        "origin_table":"T_STOCK_BB_EVENT",
+        }, {
+        "column_name": "BBW",
+        "column_name_full": None,
+        "column_description": "최근 거래일 BBW",
+        "data_type": 'int',
+        "background_color_map":"bbw_map",
+        "column_def": {"width": 30,
+                       'render':2,},
+
+        "feature_for_default_table": True,
+        "feature_for_manual": True,
+        "feature_group": "bollinger",
+        "feature_for_default_table":True,
+        "feature_for_manual": True,
+        "simulation_feature_yn":1,
+        "simulation_feature_type": "BOLLINGER",
+        "origin_table":"T_STOCK_BB_EVENT",
+
+        },
 
         {
                 "column_name": "PATTERN",
@@ -445,6 +505,7 @@ table_column_specification_bollinger_band = [
                 "data_type": 'str',
                 "column_def": {"width": 80},
                 "feature_for_default_table":True,
+                "feature_group":"bollinger_pattern",
                 "feature_for_manual": True,
         }, {
         "column_name": "L{X}ED",
@@ -454,8 +515,12 @@ table_column_specification_bollinger_band = [
         "data_type": 'int',
         "column_def": {"width": 30,
                        'render':0,},
+
+        "feature_for_default_table": True,
+        "feature_for_manual": True,
+        "feature_group": "bollinger_pattern",
         "simulation_feature_yn":1,
-        "simulation_feature_type": "bollinger",
+        "simulation_feature_type": "BOLLINGER_PATTERN",
         "origin_table":"T_STOCK_BB_EVENT",
         },{
         "column_name": "L{X}BE",
@@ -465,10 +530,12 @@ table_column_specification_bollinger_band = [
         "data_type": 'int',
         "column_def": {"width": 30,
                        'render':0,},
-        "feature_for_default_table":True,
+
+        "feature_for_default_table": True,
         "feature_for_manual": True,
+        "feature_group": "bollinger_pattern",
         "simulation_feature_yn":1,
-        "simulation_feature_type": "bollinger",
+        "simulation_feature_type": "BOLLINGER_PATTERN",
         "origin_table":"T_STOCK_BB_EVENT",
         }, {
         "column_name": "L{X}BP",
@@ -479,10 +546,12 @@ table_column_specification_bollinger_band = [
         "background_color_map":"bbp_map",
         "column_def": {"width": 30,
                        'render':2,},
-        "feature_for_default_table":True,
+
+        "feature_for_default_table": True,
         "feature_for_manual": True,
+        "feature_group": "bollinger_pattern",
         "simulation_feature_yn":1,
-        "simulation_feature_type": "bollinger",
+        "simulation_feature_type": "BOLLINGER_PATTERN",
         "origin_table":"T_STOCK_BB_EVENT",
 
         }, {
@@ -494,37 +563,12 @@ table_column_specification_bollinger_band = [
         "background_color_map":"bbw_map",
         "column_def": {"width": 30,
                        'render':2,},
-        "feature_for_default_table":True,
-        "feature_for_manual": True,
-        "simulation_feature_yn":1,
-        "simulation_feature_type": "bollinger",
-        "origin_table":"T_STOCK_BB_EVENT",
 
-        }, {
-        "column_name": "BBP",
-        "column_name_full": None,
-        "column_description": "최근 거래일 BBP",
-        "data_type": 'int',
-        "background_color_map":"bbp_map",
-        "column_def": {"width": 30,
-                       'render':2,},
-        "feature_for_default_table":True,
+        "feature_for_default_table": True,
         "feature_for_manual": True,
+        "feature_group": "bollinger_pattern",
         "simulation_feature_yn":1,
-        "simulation_feature_type": "bollinger",
-        "origin_table":"T_STOCK_BB_EVENT",
-        }, {
-        "column_name": "BBW",
-        "column_name_full": None,
-        "column_description": "최근 거래일 BBW",
-        "data_type": 'int',
-        "background_color_map":"bbw_map",
-        "column_def": {"width": 30,
-                       'render':2,},
-        "feature_for_default_table":True,
-        "feature_for_manual": True,
-        "simulation_feature_yn":1,
-        "simulation_feature_type": "bollinger",
+        "simulation_feature_type": "BOLLINGER_PATTERN",
         "origin_table":"T_STOCK_BB_EVENT",
 
         }
@@ -543,10 +587,11 @@ table_column_specification_moving_average_ratio =[
         "column_def": {"width": 40,
                        'render':2,},
         "feature_for_default_table":True,
+        "feature_group": "moving_average",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "price moving average",
-        "percent_yn":1,
+        "simulation_feature_type": "PRICE_MOVING_AVERAGE",
+        "percent_yn":True,
         "origin_table":"T_STOCK_DAY_SMAR",
 
         },
@@ -562,9 +607,10 @@ table_column_specification_moving_average_ratio =[
         "column_def": {"width": 40,
                        'render':2,},
         "feature_for_default_table":True,
+        "feature_group": "moving_average",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "volume moving average",
+        "simulation_feature_type": "VOLUME MOVING AVERAGE",
         "origin_table":"T_STOCK_DAY_SMAR",
 
         }
@@ -581,6 +627,7 @@ table_column_specification_other = [
         "data_type": 'int',
        	"column_def": {"width": 140},
         "feature_for_default_table":True,
+        "feature_group": "other",
         "feature_for_manual": True,
 
         },
@@ -591,6 +638,7 @@ table_column_specification_other = [
         "data_type": 'int',
         "column_def": {"width": 70},
         "feature_for_default_table":True,
+        "feature_group": "other",
         "feature_for_manual": True,
 
         },
@@ -601,6 +649,7 @@ table_column_specification_other = [
         "data_type": 'int',
         "column_def": {"width": 80},
         "feature_for_default_table":False,
+        "feature_group": "other",
         "feature_for_manual": False,
         }
 ]
@@ -618,6 +667,7 @@ table_column_specification_report = [
         "column_def": {"width": 400,
                         "created_cell":"rtitle"},
         "feature_for_default_table":True,
+        "feature_group": "report",
         "feature_for_manual": True,
 
         },{
@@ -627,9 +677,8 @@ table_column_specification_report = [
         "data_type": 'int',
         "column_def": {"width": 35, "render":0},
         "feature_for_default_table":True,
-        "feature_for_manual": True,
-        "simulation_feature_yn":1,
-        "simulation_feature_type": "other"
+        "feature_group": "report",
+        "feature_for_manual": True
 
         }
 ]
@@ -694,10 +743,80 @@ table_column_specification_future = [
                 "column_def": {"width": 35,
                                'render': 2,
                                'orderSequence': ["desc", "asc"]},
-                "percent_yn":1,
+                "percent_yn":True,
                 "origin_table": "T_STOCK_FUTURE_PRICE",
                 "feature_for_default_table":False,
                 "feature_for_manual": True,
+                "feature_group":"future",
+
+        },
+
+        {
+                "column_name": "PRO{X}_MEAN",
+                "column_childs": ["PRO1_MEAN","PRO3_MEAN","PRO5_MEAN","PRO10_MEAN","PRH1_MEAN","PRH3_MEAN","PRH5_MEAN","PRH10_MEAN"],
+                "column_name_full": None,
+                "column_description": "익일시가 기준으로 계산된 {X}거래일이후 종가 수익률",
+                "data_type": 'float',
+                "background_color_map": "profit_map",
+                "column_def": {"width": 35,
+                               'render': 2,
+                               'orderSequence': ["desc", "asc"]},
+                "percent_yn":True,
+                "origin_table": "T_STOCK_FUTURE_PRICE",
+                "feature_for_default_table":False,
+                "feature_for_manual": False,
+                "feature_group":"future",
+
+        }
+]
+
+table_column_simulation_meta = [
+        {
+                "column_name": "YY",
+                "column_childs": None,
+                "column_name_full": None,
+                "column_description": "시뮬레이션 결과 연간 그룹",
+                "data_type": 'float',
+                "background_color_map": "profit_map",
+                "column_def": {"width": 35,
+                               'orderSequence': ["desc", "asc"]},
+                "percent_yn":False,
+                "origin_table": None,
+                "feature_for_default_table":False,
+                "feature_for_manual": True,
+                "feature_group":"future",
+
+        },
+
+        {
+                "column_name": "MM",
+                "column_childs": None,
+                "column_name_full": None,
+                "data_type": 'float',
+                "background_color_map": "profit_map",
+                "column_def": {"width": 35,
+                               'orderSequence': ["desc", "asc"]},
+                "percent_yn":False,
+                "origin_table": None,
+                "feature_for_default_table":False,
+                "feature_for_manual": False,
+                "feature_group":"future",
+
+        },
+
+        {
+                "column_name": "STOCKCODE_COUNT",
+                "column_childs": None,
+                "column_name_full": None,
+                "data_type": 'float',
+                "background_color_map": "profit_map",
+                "column_def": {"width": 35,
+                               'orderSequence': ["desc", "asc"]},
+                "percent_yn":False,
+                "origin_table": None,
+                "feature_for_default_table":False,
+                "feature_for_manual": False,
+                "feature_group":"future",
 
         }
 ]
@@ -711,11 +830,12 @@ spec  = table_column_specification + \
         table_column_specification_bollinger_band + \
         table_column_specification_realtime +\
         table_column_specification_future +\
-        table_column_specification_other
+        table_column_specification_other +\
+        table_column_simulation_meta
 
 # table_column_specification_finan +\
 
-float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is not None]
+float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is True]
 spec_list_float_column = []
 for each_column_group in float_columns_nested:
         for each_child in each_column_group:
