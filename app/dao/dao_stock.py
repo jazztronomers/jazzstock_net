@@ -141,10 +141,10 @@ class DataAccessObjectStock:
                 LEFT JOIN jazzdb.T_STOCK_DAY_SMAR K ON (A.STOCKCODE = K.STOCKCODE AND A.DATE = K.DATE)
                 LEFT JOIN (
                 
-                    SELECT STOCKCODE, GROUP_CONCAT(CONTENT separator '*#*') AS TITLE, COUNT(*) AS RC1Y
+                    SELECT STOCKCODE, MAX(RDATE) AS RDATE, GROUP_CONCAT(CONTENT separator '*#*') AS TITLE, COUNT(*) AS RC1Y
                     FROM
                     (
-                        SELECT STOCKCODE, CONCAT_wS(" | ", DATE, CONTENT, AUTHOR) AS CONTENT,
+                        SELECT STOCKCODE, CAST(DATE AS CHAR) AS RDATE, CONCAT_wS(" | ", DATE, CONTENT, AUTHOR) AS CONTENT,
                             ROW_NUMBER() OVER (PARTITION BY STOCKCODE ORDER BY DATE DESC) AS RN
                         FROM jazzdb.T_STOCK_TEXT
                         WHERE DATE > "%s"
