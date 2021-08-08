@@ -441,7 +441,7 @@ class DataAccessObjectStock:
 
                                  SELECT DATE, CNT   
                                   FROM jazzdb.T_DATE_INDEXED
-                                 WHERE CNT BETWEEN 0 AND 259
+                                 WHERE CNT BETWEEN 0 AND 601
 
                                ) DIX 
 
