@@ -22,7 +22,7 @@ def setFeatureGroupOrder():
             session['feature_group_order'] = feature_group_order
             session['feature_group_order_parsed'] = [x.get("name") for x in feature_group_order if x.get("use_yn")]
 
-        return {'result': result}
+        return jsonify({'result': result})
 
 
 
