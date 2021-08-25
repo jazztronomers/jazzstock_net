@@ -71,7 +71,7 @@ class DataAccessObjectUser:
     def login(self, email, pw):
         pw_encoded = sha256(pw.encode('utf-8')).hexdigest()
         response = db.selectpd('''
-                                SELECT USERCODE, EMAIL, USERNAME, CAST(EXPIRATION_DATE AS CHAR) AS EXPIRATION_DATE, TELEGRAM, FEATURE_GROUP_ORDER
+                                SELECT USERCODE, EMAIL, USERNAME, CAST(EXPIRATION_DATE AS CHAR) AS EXPIRATION_DATE, TELEGRAM, CAST(FEATURE_GROUP_ORDER AS CHAR) AS FEATURE_GROUP_ORDER
                                 FROM jazzstockuser.T_USER_INFO
                                 JOIN jazzstockuser.T_USER_DONATION USING (USERCODE)
                                 LEFT JOIN jazzstockuser.T_USER_FEATURE_GROUP_ORDER USING (USERCODE)
