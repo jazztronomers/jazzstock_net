@@ -39,16 +39,20 @@ function getSpecification(){
                 column_spec_list = req.response.column_spec_list
                 feature_group_order = req.response.feature_group_order
 
+
+
                 feature_group_name_list =[]
 
                 grid_feature_ordering = document.getElementById('area_feature_ordering_content')
 
                 feature_group_map = {}
 
-                for (let i = 0; i<feature_group_order.length; i++){
-                    feature_group_name_list.push(feature_group_order[i].name)
-                }
+                if (undefined != feature_group_order){
 
+                    for (let i = 0; i<feature_group_order.length; i++){
+                        feature_group_name_list.push(feature_group_order[i].name)
+                    }
+                }
                 for (let i = 0; i<column_spec_list.length; i++){
                     if (column_spec_list[i].feature_for_default_table == true){
                         if (column_spec_list[i].feature_group in feature_group_map){
@@ -65,10 +69,12 @@ function getSpecification(){
                 for (let feature_group_name in feature_group_map){
 
                     use_yn = true
-                    for (let i=0; i<feature_group_order.length; i++){
-                        if (feature_group_order[i].name == feature_group_name){
-                            use_yn = feature_group_order[i].use_yn
-                            break
+                    if (undefined != feature_group_order){
+                        for (let i=0; i<feature_group_order.length; i++){
+                            if (feature_group_order[i].name == feature_group_name){
+                                use_yn = feature_group_order[i].use_yn
+                                break
+                            }
                         }
                     }
                     // console.log(feature_group_name, feature_group_map[feature_group_name], use_yn)
