@@ -1,36 +1,30 @@
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, session
 from jazzstock_net.app.dao.dao_simulation import DataAccessObjectSimulation
+from jazzstock_net.app.dao.dao_user import DataAccessObjectUser
 from datetime import datetime
 
 
 application_customize = Blueprint('customize', __name__, url_prefix='/')
 
-@application_customize.route('/setCustomFeatureOrder', methods=['POST'])
-def getSimulationResult():
+@application_customize.route('/setFeatureGroupOrder', methods=['POST'])
+def setFeatureGroupOrder():
     '''
     최근거래일 총 데이터건수를 가져오는 함수
     '''
 
     if request.method == 'POST':
 
-        from_date = request.json.get("from_date")
-        to_date = request.json.get("to_date")
+        feature_group_order = request.json.get("feature_group_order")
+        dao = DataAccessObjectUser()
+        result = dao.set_feature_group_order(usercode=session.get('usercode'), feature_group_order=feature_group_order)
 
-        # condition_set = []
-        # for i, row in enumerate(request.json.get("condition_set")):
-        #     condition_set.append(row)
-        # start_time = datetime.now()
-        # dao = DataAccessObjectSimulation()
-        # ret = dao.get_simulation_result_direct(from_date, to_date, condition_set)
-        # elapsed_time = datetime.now() - start_time
-        #
-        #
-        # return jsonify(simulation_result_table_html=ret.get('simulation_result_table_html'),
-        #                simulation_result_table_json=ret.get('simulation_result_table_json'),
-        #                simulation_result_column_list=ret.get('simulation_result_column_list'),
-        #                elapsed_time=elapsed_time.total_seconds())
+        if result:
+            session['feature_group_order'] = feature_group_order
+            session['feature_group_order_parsed'] = [x.get("name") for x in feature_group_order if x.get("use_yn")]
 
-        return {}
+        return {'result': result}
+
+
 
 
 

@@ -29,25 +29,44 @@ def getSimulationResult():
         member = _getMembership()
 
         if member.get("membership") == 'supporter':
-            from_date = request.json.get("from_date")
-            to_date = request.json.get("to_date")
 
+            start_time = datetime.now()
+            dao = DataAccessObjectSimulation()
+
+            finan_only = request.json.get("finan_only")
             condition_set = []
             for i, row in enumerate(request.json.get("condition_set")):
                 condition_set.append(row)
-            start_time = datetime.now()
-            dao = DataAccessObjectSimulation()
-            ret = dao.get_simulation_result_direct(from_date, to_date, condition_set)
-            elapsed_time = datetime.now() - start_time
 
 
-            return jsonify(simulation_result_table_html=ret.get('simulation_result_table_html'),
-                           simulation_result_table_json=ret.get('simulation_result_table_json'),
-                           simulation_result_column_list=ret.get('simulation_result_column_list'),
-                           elapsed_time=elapsed_time.total_seconds())
+
+            if finan_only:
+
+                from_date = request.json.get("from_date")
+                to_date = request.json.get("to_date")
+                ret = dao.get_simuation_finan_only(from_date, to_date, condition_set)
+                elapsed_time = datetime.now() - start_time
+
+                return jsonify(simulation_result_table_html=ret.get('simulation_result_table_html'),
+                               simulation_result_table_json=ret.get('simulation_result_table_json'),
+                               simulation_result_column_list=ret.get('simulation_result_column_list'),
+                               elapsed_time=elapsed_time.total_seconds())
+            else:
+                from_date = request.json.get("from_date")
+                to_date = request.json.get("to_date")
+                ret = dao.get_simulation_result_direct(from_date, to_date, condition_set)
+                elapsed_time = datetime.now() - start_time
+
+
+                return jsonify(simulation_result_table_html=ret.get('simulation_result_table_html'),
+                               simulation_result_table_json=ret.get('simulation_result_table_json'),
+                               simulation_result_column_list=ret.get('simulation_result_column_list'),
+                               elapsed_time=elapsed_time.total_seconds())
 
         else:
             return jsonify({'result': False, "message": alert_message['supporter_only_kr']})
+
+
 
 @application_simulation.route('/saveConditionSetToServer', methods=['POST'])
 def saveConditionSetToServer():

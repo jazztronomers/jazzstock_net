@@ -13,13 +13,46 @@
 
 
 <div id="container">
+    <div id="header">
+        <a href="/"><h2>메인화면으로 돌아가기</h2></a>
+    </div>
+
     <div id="grid_feature_ordering">
         <div id="area_feature_ordering_title">
-            <h4>FEATURE GROUP</h4>
+            <a href="#" onclick="fold('feature_ordering')">
+                <h3>컬럼 선택 및 좌우정렬 커스터마이징</h3>
+            </a>
         </div>
-        <div id="area_feature_ordering_content"></div>
-        <div id="area_feature_ordering_save_button"></div>
+        <div id="area_feature_ordering_description" class="feature_ordering" style="display:none">
+            기본 테이블에 컬럼그룹별 좌우배치를 변경하는 영역입니다. 선호하는 컬럼그룹을 클릭, 드래그하여 옮겨 좌우배치를 변경해보세요!
+        </div>
+        <div id="area_feature_ordering_content" class="feature_ordering" style="display:none">
+        </div>
+        <div id="area_feature_ordering_save_button" class="feature_ordering" style="display:none">
+            <button id="button_save_feature_ordering" onclick="setFeatureGroupOrder()">적용</button>
+            <hr>
+        </div>
+
     </div>
+
+    <div id="grid_edit_favorite">
+        <div id="area_edit_favorite_title">
+            <a href="#" onclick="fold('edit_favorite')">
+                <h3>즐겨찾기 종목편집</h3>
+            </a>
+        </div>
+        <div id="area_edit_favorite_list_description" class="edit_favorite" style="display:none">
+            <u>설계중입니다!</u>
+        </div>
+        <div id="area_edit_favorite_list_content" class="edit_favorite" style="display:none">
+
+        </div>
+        <div id="area_edit_favorite_list_save_button" class="edit_favorite" style="display:none">
+            <button id="button_save_favorite_list" onclick="alert('미구현!')">적용</button>
+            <hr>
+        </div>
+    </div>
+
 </div>
 
 </body>

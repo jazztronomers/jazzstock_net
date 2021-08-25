@@ -779,7 +779,7 @@ function getSpecification(){
         {
             if (req.status == 200){
                 console.log(" * getSpecification...:")
-                column_spec_list = req.response
+                column_spec_list = req.response.column_spec_list
                 select_box = document.getElementById('specification_selectbox')
 
 
@@ -1027,7 +1027,14 @@ function showStock(tabName, elmnt, color) {
 
 
 function getChartData(stockcode, stockname, markdate=null){
-    addStockToQueue(stockcode, stockname, markdate)
+
+    if (!stockQueue.includes(stockcode)){
+        addStockToQueue(stockcode, stockname, markdate)
+    }
+
+    else {
+        alert("Teste!")
+    }
 }
 
 function getColumnDefs(column_list, markdate_yn=null){

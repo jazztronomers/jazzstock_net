@@ -26,6 +26,10 @@ def login():
             session['telegram_chat_id'] =  response['telegram_chat_id']
             session['message'] = response["message"]
             session['expiration_date'] = response["expiration_date"]
+            session['feature_group_order'] = response["feature_group_order"]
+            session['feature_group_order_parsed'] = response["feature_group_order_parsed"]
+
+
 
             return jsonify({'result':True})
 

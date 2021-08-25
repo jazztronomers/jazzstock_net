@@ -97,7 +97,6 @@ select, option {
 
 }
 
-
 #grid_canvas {
 
 
@@ -550,7 +549,6 @@ div#specification_content {
 
 div.simulation_table_container {
     overflow:auto;
-    height: 450px;
 }
 
 .simulation_table_header th thead {
@@ -572,19 +570,41 @@ tfoot.simulation_table {
 }
 
 
-div.simulation_row {
 
+.flex_container {
+    height: 100%;
+  	min-height:100%;
     display: flex;
+    flex-direction: column;
     position: relative;
-    flex-wrap:wrap;
+  	align-items: stretch;
 
 }
 
+
+.simulation_row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap:wrap;
+}
+
+
+#simulation_row_results.simulation_row {
+    flex:3;
+}
+
+#simulation_row_upper.simulation_row {
+    flex:2;
+}
+#simulation_row_lower.simulation_row {
+    flex:1;
+}
+
+
 .simulation_column {
+
     flex: 1;  /* additionally, equal width */
     border: 1px solid green;
-    max-width:50%;
-    height: 450px;
     overflow: scroll;
 
 }

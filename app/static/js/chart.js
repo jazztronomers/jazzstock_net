@@ -349,7 +349,6 @@ function getSummaryData(stockcode){
 
 function renderSummaryChart(stockcode, chart_data_obj, snd_day_data, element_id){
 
-    // console.log("renderSummaryChart", element_id)
 
     function calculateCumSum(data) {
         var result = [];
@@ -366,9 +365,14 @@ function renderSummaryChart(stockcode, chart_data_obj, snd_day_data, element_id)
     element = document.getElementById(element_id)
     element.value=stockcode
 
+
+    console.log(snd_day_data)
     console.log(chart_data_obj)
 
     ohlc_day_data= chart_data_obj.data
+
+    console.log(ohlc_day_data.OPEN.length)
+    console.log(snd_day_data.TUSIN.length)
 
     chart_height = canvas_height * 0.7
     element.style.height =  chart_height + 'px'
@@ -1078,13 +1082,13 @@ function renderSummaryFinanChart(stockcode, finan_data, element_id){
     charts.clear()
     var labelFont = 'bold 12px Sans-serif';
 
-    let dates = finan_data.DATE
+    let dates = finan_data.QUARTER
     let per = finan_data.PER
     let pbr = finan_data.PBR
     let roe = finan_data.ROE
     let npr = finan_data.NPR
     let opr = finan_data.OPR
-    let zero = new Array(finan_data.DATE.length).fill(0);
+    let zero = new Array(finan_data.QUARTER.length).fill(0);
 
     option = {
 

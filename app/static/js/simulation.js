@@ -18,6 +18,14 @@ let simulation_result_html = undefined
 let simulation_result_column_list = undefined
 let simulation_is_running = false
 
+
+let finan_quarter_map = ["2Q21", "1Q21",
+                         "4Q20", "3Q20", "2Q20", "1Q20",
+                         "4Q19", "3Q19", "2Q19", "1Q19",
+                         "4Q18", "3Q18", "2Q18", "1Q18",
+                         "4Q17", "3Q17", "2Q17", "1Q17"]
+
+
 function getAllFeaturesForSimulation(){
     /*
     *     선택할 수 있는 모든 feature를 가져오는 함수, config_table_specification.py를 전적으로 참조한다
@@ -50,7 +58,7 @@ function getAllFeaturesForSimulation(){
 }
 
 
-function renderAllFeatures(){
+function renderAllFeatures(finan_only=false){
     /*
     *     가져온 모든 features를 화면에다 버튼으로 뿌리는 함수
     */
@@ -87,8 +95,11 @@ function renderAllFeatures(){
                 }
 
 
+                if (finan_only==true & feature_type_list[i] != 'FINAN'){
+                    cell_b_content.disabled = true
+                }
+
                 cell_b_content.setAttribute("class", "button_simulation_features")
-                // cell_b_content.setAttribute("onclick","addConditionInputRow(this.textContent, this.getAttribute('feature_name_full'))")
                 cell_b_content.setAttribute("onclick","addConditionInputRow('"+ feature_name +"','" + feature_name_full + "')")
                 cell_b.appendChild(cell_b_content)
             }
@@ -321,6 +332,7 @@ function changeTargetInputArea(target, row_id, preset_target_value=null) {
 }
 
 
+
 function simulationRequest(){
 
     if (simulation_is_running == true){
@@ -358,38 +370,76 @@ function simulationRequest(){
 
                         else {
 
-                            simulation_result_html = req.response.simulation_result_table_html
-                            simulation_result_column_list = req.response.simulation_result_column_list
-                            simulation_result = req.response.simulation_result_table_json
-                            elapsed_time = req.response.elapsed_time
-                            setFeaturesToLocalStorage(JSON.stringify(condition_set), from_date, to_date)
-                            simulation_result_object = parseSimulationResult(simulation_result)
 
-                            if (simulation_result_object == false){
+                            if (finan_only == true) {
 
-                                alert("조건에 부합하는 종목이 없습니다")
+                                simulation_result_html = req.response.simulation_result_table_html
+                                simulation_result_column_list = req.response.simulation_result_column_list
+                                simulation_result = req.response.simulation_result_table_json
 
+                                simulation_result_object = parseSimulationResult(simulation_result, true)
+
+                                if (simulation_result_object == false){
+
+                                    alert("조건에 부합하는 종목이 없습니다")
+
+                                }
+
+                                else {
+
+                                    setSimulationResultsFinanOnly()
+                                    renderSimulationResultTable("RAW_FINAN_ONLY")
+                                    renderSimulationResultScatterPlot()
+
+                                }
                             }
 
                             else {
 
-                                setSimulationResults()
-                                renderSimulationResultTable("RAW")
-                                renderSimulationResultScatterPlot()
+                                simulation_result_html = req.response.simulation_result_table_html
+                                simulation_result_column_list = req.response.simulation_result_column_list
+                                simulation_result = req.response.simulation_result_table_json
+                                setFeaturesToLocalStorage(JSON.stringify(condition_set), from_date, to_date)
+                                simulation_result_object = parseSimulationResult(simulation_result)
 
-                            }
+                                if (simulation_result_object == false){
+
+                                    alert("조건에 부합하는 종목이 없습니다")
+
+                                }
+
+                                else {
+
+                                    setSimulationResults()
+                                    renderSimulationResultTable("RAW")
+                                    renderSimulationResultScatterPlot()
+
+                                }
+
+                            elapsed_time = req.response.elapsed_time
                             console.log('simulationRequest elapsed time: ', elapsed_time)
                         }
                         simulation_is_running = false
                         // renderTable("table_simulation", html, column_list, ratio=0.5, fixedLeft=2)
 
+                        }
                     }
-                }
+            }
+        }
+
+
+            if (document.getElementById('simulation_finan_only').checked){
+                finan_only = true
+            }
+            else if (isFinanOnlyConditons(condition_set)){
+                finan_only = true
             }
 
+            else {
+                finan_only = false
+            }
 
-
-            features = JSON.stringify({"condition_set":condition_set, "from_date":from_date, "to_date":to_date})
+            features = JSON.stringify({"condition_set":condition_set, "from_date":from_date, "to_date":to_date, "finan_only":finan_only})
             req.open('POST', '/getSimulationResult')
             req.setRequestHeader("Content-type", "application/json")
             req.send(features)
@@ -405,17 +455,75 @@ function simulationRequest(){
     }
 }
 
-function parseSimulationResult(simulation_result){
+function isFinanOnlyConditons(condition_set){
+
+    for (let i=0; i<condition_set.length; i++){
+        if (features_map[condition_set[i].feature_name].simulation_feature_type != "FINAN"){
+            return false
+        }
+    }
+
+    return true
+
+}
+
+function parseSimulationResult(simulation_result, finan_only=false){
+
+
+    //grp = df.groupby("QUARTER").agg({"PERIOD_FLUCTUATION":"mean"}).print()
 
     if (simulation_result.length == 0){
 
         return false
     }
 
-    else {
-        let df = new dfd.DataFrame(simulation_result)
+    else if (finan_only==true){
 
+        let df = new dfd.DataFrame(simulation_result)
+        // df = df.astype({column: ("PERIOD_FLUCTUATION"), dtype: "float"})
+        grp = df.groupby(["QUARTER"]).agg({"PERIOD_FLUCTUATION":"mean", "STOCKNAME":"count"})
+
+        qq_columns = grp.column_names
+        qq_data = grp.data
+        grp.print()
+
+
+
+        simulation_result_col_data_grouped = {}
+        for (let i=0; i<grp.QUARTER.data.length; i++){
+
+            key_quarter = grp.QUARTER.data[i]
+            value_coldata = df.query({ "column": "QUARTER", "is": "==", "to": key_quarter }).col_data
+
+            simulation_result_col_data_grouped[key_quarter] = value_coldata
+        }
+
+
+
+        console.log(simulation_result_col_data_grouped)
+
+        return {"simulation_result_raw":simulation_result,
+                "simulation_result_columns":strArrayAllElementsToUpperCase(df.column_names),
+                "simulation_result_row_data":df.data,
+                "simulation_result_col_data":df.col_data,
+                // "simulation_result_col_data":df.col_data, // => 이놈을 GROUP BY 기준으로 MAP 형태로 변경해야 함
+                "simulation_result_col_data_grouped":simulation_result_col_data_grouped,
+                "simulation_result_qq_summary_columns":strArrayAllElementsToUpperCase(qq_columns),
+                "simulation_result_qq_summary_row_data":qq_data
+                }
+
+
+    }
+
+    else if (finan_only==false){
+
+
+
+        let df = new dfd.DataFrame(simulation_result)
         df = df.astype({column: ("YY","MM"), dtype: "string"})
+
+        console.log(simulation_result)
+        console.log(df.column_names)
 
         grp = df.groupby(["YY", "MM"]).agg({"PRO1":"mean","PRO3":"mean", "PRO5":"mean", "PRO10":"mean", "PRH1":"mean","PRH3":"mean", "PRH5":"mean", "PRH10":"mean", "STOCKCODE":"count"})
         mm_columns = grp.column_names
@@ -427,16 +535,27 @@ function parseSimulationResult(simulation_result){
         yy_data = grp.data
         grp.print()
 
+        grp = df.groupby(["YY"]).agg({"BBP":"mean","BBW":"mean", "PMA5":"mean", "VMA5":"mean"})
+        // yy_columns = grp.column_names
+        // yy_data = grp.data
+        grp.print()
+
+        grp = df.groupby(["YY"]).agg({"BBP":"std","BBW":"std", "PMA5":"std", "VMA5":"std"})
+        // yy_columns = grp.column_names
+        // yy_data = grp.data
+        grp.print()
+
+
+
+
         return {"simulation_result_raw":simulation_result,
                 "simulation_result_columns":strArrayAllElementsToUpperCase(df.column_names),
                 "simulation_result_row_data":df.data,
-                "simulation_result_col_data":df.col_data,
+                "simulation_result_col_data":df.col_data, // => 이놈을 GROUP BY 기준으로 MAP 형태로 변경해야 함
                 "simulation_result_mm_summary_columns":strArrayAllElementsToUpperCase(mm_columns),
                 "simulation_result_mm_summary_row_data":mm_data,
-                "simulation_result_mm_summary_col_data":mm_data,
                 "simulation_result_yy_summary_columns":strArrayAllElementsToUpperCase(yy_columns),
                 "simulation_result_yy_summary_row_data":yy_data,
-                "simulation_result_yy_summary_col_data":yy_data
                 }
     }
 }
@@ -474,9 +593,11 @@ function setSimulationResults(){
 
     removeAllChildOfElement(select_box_x)
 
-    for (let each of ['BBW', 'BBP',
+    for (let each of ['BBW', 'BBP', 'ROE', 'PER', 'PBR','ROE',
+                    "EPS_YOY", "EPS_QOQ", "BPS_YOY", "BPS_QOQ",
+                    'IR','FR',
                     'PMA5', 'PMA20', 'PMA60', 'PMA120', 'VMA5', 'VMA20', 'VMA60', 'VMA120',
-                    'I1', 'I5','I20', 'F1', 'F5', 'F20']){
+                    'I1', 'I5','I20', 'F1', 'F5', 'F20',]){
         opt = document.createElement("option")
         opt.value = each
         opt.innerHTML = each
@@ -498,6 +619,50 @@ function setSimulationResults(){
     opt = document.createElement("option")
     opt.value = "PRO5"
     opt.innerHTML = "PRO5"
+    select_box_y.appendChild(opt)
+
+
+
+}
+
+
+
+function setSimulationResultsFinanOnly(){
+
+    // global simulation_result_object
+
+    select_box = document.getElementById("simulation_row_results_table_select")
+    select_box.setAttribute("onchange", "renderSimulationResultTable(this.value)")
+
+    removeAllChildOfElement(select_box)
+
+    opt = document.createElement("option")
+    opt.value = "RAW_FINAN_ONLY"
+    opt.innerHTML = "RAW_FINAN_ONLY"
+    select_box.appendChild(opt)
+
+    select_box_x = document.getElementById("simulation_row_results_scatter_select_x")
+    select_box_x.setAttribute("onchange", "renderSimulationResultScatterPlot()")
+
+    removeAllChildOfElement(select_box_x)
+
+    for (let each of ['PER','PBR','ROE','EPS_YOY','EPS_QOQ','BPS_YOY','BPS_QOQ']){
+        opt = document.createElement("option")
+        opt.value = each
+        opt.innerHTML = each
+        select_box_x.appendChild(opt)
+    }
+
+
+    select_box_y = document.getElementById("simulation_row_results_scatter_select_y")
+    select_box_y.setAttribute("onchange", "renderSimulationResultScatterPlot()")
+
+    removeAllChildOfElement(select_box_y)
+
+
+    opt = document.createElement("option")
+    opt.value = "PERIOD_FLUCTUATION"
+    opt.innerHTML = "PERIOD_FLUCTUATION"
     select_box_y.appendChild(opt)
 
 
@@ -591,6 +756,11 @@ function renderSimulationResultTable(label){
         renderTable("simulation_row_results_table", simulation_result_html, simulation_result_column_list, ratio=0.2, fixedLeft=3, markdate_yn=true)
     }
 
+
+    else if(label=="RAW_FINAN_ONLY"){
+
+        renderTable("simulation_row_results_table", simulation_result_html, simulation_result_column_list, ratio=0.2, fixedLeft=3, markdate_yn=true)
+    }
 //    table = document.getElementById("simulation_row_results_table_table")
 //    if(table.className.includes("dataTable")){
 //        clearTable("simulation_row_results_table_table")
@@ -615,20 +785,48 @@ function renderSimulationResultScatterPlot(){
 
     // global simulation_result_object
 
-    let trace1 = {
-      x: simulation_result_object.simulation_result_col_data[x_idx],
-      y: simulation_result_object.simulation_result_col_data[y_idx],
-      mode: 'markers+text',
-      type: 'scatter',
-      textposition: 'top center',
-      textfont: {
-        family:  'Raleway, sans-serif'
-      },
-      marker: { size: 12 }
-    };
+
+    let data = []
+    if (simulation_result_object.simulation_result_col_data_grouped == undefined){
+
+        let trace1 = {
+          x: simulation_result_object.simulation_result_col_data[x_idx],
+          y: simulation_result_object.simulation_result_col_data[y_idx],
+          mode: 'markers+text',
+          type: 'scatter',
+          textposition: 'top center',
+          textfont: {
+            family:  'Raleway, sans-serif'
+          },
+          marker: { size: 12 }
+        };
 
 
-    let data = [ trace1];
+        data = [ trace1];
+    }
+
+
+    else {
+        for (let quarter in simulation_result_object.simulation_result_col_data_grouped){
+
+            data.push({
+              name: quarter,
+              x: simulation_result_object.simulation_result_col_data_grouped[quarter][x_idx],
+              y: simulation_result_object.simulation_result_col_data_grouped[quarter][y_idx],
+              text: simulation_result_object.simulation_result_col_data_grouped[quarter][1],
+              mode: 'markers',
+              type: 'scatter',
+              textposition: 'top center',
+              textfont: {
+                family:  'Raleway, sans-serif'
+              },
+              marker: { size: 12 }
+            })
+        }
+
+
+    }
+
     let layout = {
         xaxis: {
             range: [ Math.min(simulation_result_object.simulation_result_col_data[x_idx]),
@@ -658,12 +856,47 @@ function renderSimulationResultScatterPlot(){
         },
         // paper_bgcolor: "#B5C4CA", // RED
         plot_bgcolor: "#B5C4CA", // BLUE
-        title: "scatter plot"
+        title: "scatter plot",
+        dragmode: "pan"
     };
 
-    Plotly.newPlot('simulation_row_results_scatter_content', data, layout);
+    Plotly.newPlot('simulation_row_results_scatter_content', data, layout, {scrollZoom: true});
+
+    plot_div = document.getElementById('simulation_row_results_scatter_content')
+    plot_div.on('plotly_selected', function(data_selected) {
+
+
+        console.log(data_selected)
+
+    });
+
+    plot_div.on('plotly_click', function(data_clicked){
+
+        // DATATABLES 과 연동하거나 ECHARTS와 연동
+        console.log(data_clicked)
+
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            annotate_text = 'x = '+data_clicked.points[i].x +
+                          'y = '+data_clicked.points[i].y.toPrecision(4);
+
+            annotation = {
+              text: annotate_text,
+              x: data.points[i].x,
+              y: parseFloat(data.points[i].y.toPrecision(4))
+            }
+
+            annotations = self.layout.annotations || [];
+            annotations.push(annotation);
+            Plotly.relayout('myDiv',{annotations: annotations})
+        }
+
+    });
 
 }
+
+
+
 
 function setFeaturesToLocalStorage(feature_rows, from_date='2020-01-02', to_date='2021-07-23'){
 
@@ -682,10 +915,11 @@ function renderSpecificFeatureStats(feature_name, stats){
 
 
 
-function renderRecentTradingDays(){
+function renderRecentTradingDays(finan_only=false){
 
     select_box_from = document.getElementById("simulation_from_date")
     select_box_to = document.getElementById("simulation_to_date")
+
     while (select_box_from.firstChild){
         select_box_from.removeChild(select_box_from.lastChild)
     }
@@ -695,33 +929,55 @@ function renderRecentTradingDays(){
         select_box_to.removeChild(select_box_to.lastChild)
     }
 
+    removeAllChildOfElement(select_box_from)
+    removeAllChildOfElement(select_box_to)
 
-    for (let i = 0; i < recent_trading_days.length; i++){
-
-        option_from = document.createElement("option")
-        option_from.value = recent_trading_days[i]
-        option_from.innerHTML = recent_trading_days[i]
+    if (finan_only == false){
 
 
-        if(recent_trading_days[i] == localStorage.getItem("jazzstock_from_date_simulation")){
-            option_from.setAttribute("selected", true)
+        for (let i = 0; i < recent_trading_days.length; i++){
+
+            option_from = document.createElement("option")
+            option_from.value = recent_trading_days[i]
+            option_from.innerHTML = recent_trading_days[i]
+
+
+            if(recent_trading_days[i] == localStorage.getItem("jazzstock_from_date_simulation")){
+                option_from.setAttribute("selected", true)
+            }
+            select_box_from.appendChild(option_from)
+
+            option_to = document.createElement("option")
+            option_to.value = recent_trading_days[i]
+            option_to.innerHTML = recent_trading_days[i]
+            select_box_to.appendChild(option_to)
+
+            if(recent_trading_days[i] == localStorage.getItem("jazzstock_to_date_simulation")){
+                option_to.setAttribute("selected", true)
+            }
+            select_box_to.appendChild(option_to)
+
+
         }
-        select_box_from.appendChild(option_from)
-
-        option_to = document.createElement("option")
-        option_to.value = recent_trading_days[i]
-        option_to.innerHTML = recent_trading_days[i]
-        select_box_to.appendChild(option_to)
-
-        if(recent_trading_days[i] == localStorage.getItem("jazzstock_to_date_simulation")){
-            option_to.setAttribute("selected", true)
-        }
-        select_box_to.appendChild(option_to)
-
-
     }
 
+    else {
 
+        for (let i = 0; i < finan_quarter_map.length; i++){
+
+            option_from = document.createElement("option")
+            option_from.value = finan_quarter_map[i]
+            option_from.innerHTML = finan_quarter_map[i]
+            select_box_from.appendChild(option_from)
+
+            option_to = document.createElement("option")
+            option_to.value = finan_quarter_map[i]
+            option_to.innerHTML = finan_quarter_map[i]
+            select_box_to.appendChild(option_to)
+
+
+        }
+    }
 }
 
 
@@ -1008,5 +1264,18 @@ function deleteConditionOnServer(condition_set_id){
     else {
         // DO NOTHING
     }
+
+}
+
+function renderFinanOnly(finan_only=false){
+
+
+    // Disable non finan features click
+    renderAllFeatures(finan_only)
+    // Remove Current non finan featrue rows
+    removeAllChildOfElement(document.getElementById('simulation_condition_generation_tbody'))
+    // toggle select box
+    renderRecentTradingDays(finan_only)
+
 
 }

@@ -1,18 +1,30 @@
-from jazzstock_net.app.routes import user
-from jazzstock_net.app.routes import stock
-from jazzstock_net.app.routes import simulation
+from jazzstock_net.app.routes import user, stock, simulation, customize
 import jazzstock_net.app.config.config as cf
 from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response
+
+import decimal
+import flask.json
+
+class MyJSONEncoder(flask.json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal):
+            # Convert decimal instances to strings.
+            return str(obj)
+        return super(MyJSONEncoder, self).default(obj)
 
 
 application = Flask(__name__, static_folder='static', )
 application.config['SECRET_KEY'] = cf.FLASK_SECRET_KEY
 application.config['JSON_SORT_KEYS'] = False
+application.json_encoder = MyJSONEncoder
+
+
 
 application.register_blueprint(user.application_user)
 application.register_blueprint(stock.application_stock)
 application.register_blueprint(simulation.application_simulation)
-
+application.register_blueprint(customize.application_customize)
 
 @application.route('/')
 def rendering_page_home():

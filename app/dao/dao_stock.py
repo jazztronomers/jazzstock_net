@@ -5,8 +5,12 @@ import pandas as pd
 import pickle
 import os
 from jazzstock_net.app.config.config_table_specification import spec_list_float_column
+from jazzstock_net.app.config.config_table_specification import spec_dict_all_column
 
 pd.options.display.max_rows = 2500
+
+
+quarter = '2106'
 
 class DataAccessObjectStock:
 
@@ -78,6 +82,10 @@ class DataAccessObjectStock:
                 
                 , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS PER
                 , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS PBR
+                , EPS_Y
+                , EPS_Q
+                , BPS_Y
+                , BPS_Q
                 , ROE
                 , M.CIRCRATE AS CCR
                 
@@ -115,12 +123,21 @@ class DataAccessObjectStock:
                 LEFT JOIN jazzdb.T_STOCK_SND_ANALYSIS_LONGTERM D USING (STOCKCODE,DATE)
                 LEFT JOIN jazzdb.T_STOCK_BB_EVENT E ON (A.STOCKCODE = E.STOCKCODE AND A.DATE = E.DATE)
                 #=========================================================================
+                
+                LEFT JOIN (
+
+                            SELECT STOCKCODE, EPSC_YOY AS EPS_Y, EPSC_QOQ AS EPS_Q, BPS_YOY AS BPS_Y, BPS_QOQ AS BPS_Q
+                            FROM jazzdb.T_STOCK_FINAN_XOX
+                            WHERE 1=1
+                            AND QUARTER = '%s'
+
+                )C ON (A.STOCKCODE = C.STOCKCODE)
                 LEFT JOIN (
 
                             SELECT STOCKCODE, EPSC, BPS, ROE
                             FROM jazzdb.T_STOCK_FINAN E
                             WHERE 1=1
-                            AND DATE = '2103'
+                            AND QUARTER = '%s'
                             AND TYPE = 'C'
 
                 )F ON (A.STOCKCODE = F.STOCKCODE)
@@ -158,7 +175,7 @@ class DataAccessObjectStock:
                 
                 LEFT JOIN jazzdb.T_STOCK_SHARES_CIRCRATE M ON (A.STOCKCODE = M.STOCKCODE AND A.DATE = M.DATE)
                 #=========================================================================
-                WHERE 1=1'''%(usercode, date_240)
+                WHERE 1=1'''%(quarter, quarter, usercode, date_240)
 
 
 
@@ -217,7 +234,17 @@ class DataAccessObjectStock:
 
 
     # 수급테이블
-    def sndRankHtml(self, targets=['P','I','F','YG','S'], intervals=[1,5,20,60,120,240], orderby='I1', orderhow='DESC', method='dataframe', limit=50, usercode=0, fav_only=False,  report_only=False, date_idx=0):
+    def sndRankHtml(self, targets=['P','I','F','YG','S'],
+                    intervals=[1,5,20,60,120,240],
+                    orderby='I1',
+                    orderhow='DESC',
+                    method='dataframe',
+                    limit=50,
+                    usercode=0,
+                    fav_only=False,
+                    report_only=False,
+                    date_idx=0,
+                    feature_group_order=None):
         rtdf = self.sndRank(targets, intervals, orderby, orderhow, method=method, limit=limit, usercode=usercode, fav_only=fav_only, date_idx=date_idx, report_only=report_only)
         float_columns = []
 
@@ -231,12 +258,25 @@ class DataAccessObjectStock:
             if column in spec_list_float_column:
                 float_columns.append(column)
 
-        # ALIAS 처리
-
 
         rtdf[float_columns] = rtdf[float_columns] * 100
         rtdf[float_columns] = rtdf[float_columns].round(3)
         rtdf = rtdf.fillna(0)
+
+        column_reorder_ref, column_reorder = [], []
+
+        if feature_group_order:
+            for each_group in feature_group_order:
+                column_reorder_ref = column_reorder_ref + spec_dict_all_column[each_group]
+
+            for col in column_reorder_ref:
+                if col in rtdf.columns:
+                    column_reorder.append(col)
+
+            rtdf = rtdf[column_reorder]
+
+
+
 
 
         if orderhow == 'ASC':
@@ -474,13 +514,13 @@ class DataAccessObjectStock:
 
         query = '''
         
-        SELECT DATE, PER, PBR, ROE, EPSC, BPS, NPR, OPR
+        SELECT QUARTER, PER, PBR, ROE, EPSC, BPS, NPR, OPR
         FROM jazzdb.T_STOCK_FINAN A
         JOIN jazzdb.T_STOCK_CODE_MGMT B USING (STOCKCODE)
         WHERE 1=1
         AND (STOCKCODE = '%s' OR STOCKNAME = '%s')
         AND TYPE = 'C'
-        ORDER BY DATE ASC
+        ORDER BY QUARTER ASC
         
         '''%(code,code)
 

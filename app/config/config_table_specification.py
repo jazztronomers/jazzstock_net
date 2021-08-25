@@ -9,7 +9,7 @@ Conditional formatting 또는 tooltip을 띄울 수 있도록
 table_column_specification = [
         {
                 "column_name":"STOCKNAME",
-                "column_child":["STOCKNAME"],
+                "column_child": None,
                 "column_name_full": None,
                 "column_description":"종목명",
                 "data_type":'str',
@@ -18,6 +18,21 @@ table_column_specification = [
                 "feature_for_default_table":True,
                 "feature_group":"default",
                 "feature_for_manual": True,
+        },{
+                "column_name":"FAV",
+                "column_name_full": None,
+                "column_description":'''
+                즐겨찾기 등록을 위한 체크박스입니다<br>
+                즐겨찾기로 등록하고자 하는 종목 옆 체크박스를 체크후, 아래 <즐겨찾기 업데이트> 버튼을 클릭하시면<br>
+                체크된 종목들이 즐겨찾기 종목으로 등록되며, 향후 모든테이블에서 노란색으로 Highlighting 됩니다<br>
+                추가로 <즐겨찾기> 탭에서 별도로 모아서 조회할 수 있습니다.''',
+                "feature_for_default_table":True,
+                "feature_group":"default",
+                "feature_for_manual": True,
+                "data_type":"checkbox",
+                "column_def": {"width": 20,
+                               "created_cell":"fav"},
+
         },{
                 "column_name":"MC",
                 "column_name_full": None,
@@ -34,21 +49,6 @@ table_column_specification = [
                 "simulation_feature_yn":1,
                 "simulation_feature_type": "FINAN",
                 "origin_table":"T_STOCK_MC",
-
-        },{
-                "column_name":"FAV",
-                "column_name_full": None,
-                "column_description":'''
-                즐겨찾기 등록을 위한 체크박스입니다<br>
-                즐겨찾기로 등록하고자 하는 종목 옆 체크박스를 체크후, 아래 <즐겨찾기 업데이트> 버튼을 클릭하시면<br>
-                체크된 종목들이 즐겨찾기 종목으로 등록되며, 향후 모든테이블에서 노란색으로 Highlighting 됩니다<br>
-                추가로 <즐겨찾기> 탭에서 별도로 모아서 조회할 수 있습니다.''',
-                "feature_for_default_table":True,
-                "feature_group":"default",
-                "feature_for_manual": True,
-                "data_type":"checkbox",
-                "column_def": {"width": 20,
-                               "created_cell":"fav"},
 
         },{
                 "column_name":"CLOSE",
@@ -374,9 +374,7 @@ table_column_specification_finan = [
         "simulation_feature_yn":1,
         "simulation_feature_type": "FINAN",
         "origin_table":"T_STOCK_FINAN",
-        }
-
-        , {
+        }, {
         "column_name": "PBR",
         "column_name_full": None,
         "column_description": "연환산(최근 4분기) PBR값을 의미합니다, 보다 자세한 재무데이터는 종목명을 클릭하여 확인하실 수 있습니다.",
@@ -391,9 +389,7 @@ table_column_specification_finan = [
         "simulation_feature_yn":1,
         "simulation_feature_type": "FINAN",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
-        }
-
-        , {
+        }, {
         "column_name": "ROE",
         "column_name_full": None,
         "column_description": "최근분기의 ROE값 입니다, 보다 자세한 재무데이터는 종목명을 클릭하여 확인하실 수 있습니다.",
@@ -405,6 +401,68 @@ table_column_specification_finan = [
         "feature_for_default_table":True,
         "feature_group":"finan",
         "feature_for_manual": True,
+        "simulation_feature_yn":1,
+        "simulation_feature_type": "FINAN",
+        "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
+        }, {
+        "column_name": "EPS_Y",
+        "column_name_short": "EPS_Y",
+        "column_name_full": "EPSC_YOY",
+        "column_description": "전년동기 연환산대비 EPS 변동비율, eg: (1Q21 + 4Q20 + 3Q20 + 2Q20) - (1Q20 + 4Q19 + 3Q19 + 2Q19) / (1Q20 + 4Q19 + 3Q19 + 2Q19) ",
+        "data_type": 'int',
+        "background_color_map": "profit_map",
+        "column_def": {"width": 40,
+                       'render':2},
+        "feature_for_default_table":True,
+        "feature_group":"finan",
+        "feature_for_manual": True,
+        "percent_yn":True,
+        "simulation_feature_yn":1,
+        "simulation_feature_type": "FINAN",
+        "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
+        }, {
+        "column_name": "EPS_Q",
+        "column_name_short": "EPS_Q",
+        "column_name_full": "EPSC_QOQ",
+        "column_description": "직전분기대비 EPS 변동비율, eg: ( 1Q21 - 4Q20 ) / 4Q20 ",
+        "data_type": 'int',
+        "background_color_map": "profit_map",
+        "column_def": {"width": 40,
+                       'render':2},
+        "feature_for_default_table":True,
+        "feature_group":"finan",
+        "feature_for_manual": True,
+        "percent_yn":True,
+        "simulation_feature_yn":1,
+        "simulation_feature_type": "FINAN",
+        "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
+        }, {
+        "column_name": "BPS_Y",
+        "column_name_full": "BPS_YOY",
+        "column_description": "작년동기대비 BPS 변동비율, eg: ( 1Q21 - 1Q20 ) / 1Q20 ",
+        "data_type": 'int',
+        "background_color_map": "profit_map",
+        "column_def": {"width": 40,
+                       'render':2},
+        "feature_for_default_table":True,
+        "feature_group":"finan",
+        "feature_for_manual": True,
+        "percent_yn":True,
+        "simulation_feature_yn":1,
+        "simulation_feature_type": "FINAN",
+        "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
+        }, {
+        "column_name": "BPS_Q",
+        "column_name_full": "BPS_QOQ",
+        "column_description": "직전분기대비 BPS 변동비율, eg: ( 1Q21 - 4Q20 ) / 4Q20 ",
+        "data_type": 'int',
+        "background_color_map": "profit_map",
+        "column_def": {"width": 40,
+                       'render':2},
+        "feature_for_default_table":True,
+        "feature_group":"finan",
+        "feature_for_manual": True,
+        "percent_yn":True,
         "simulation_feature_yn":1,
         "simulation_feature_type": "FINAN",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
@@ -422,7 +480,7 @@ table_column_specification_finan = [
         "simulation_feature_yn":1,
         "simulation_feature_type": "FINAN",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
-        }
+        },
 
 ]
 
@@ -651,7 +709,19 @@ table_column_specification_other = [
         "feature_for_default_table":False,
         "feature_group": "other",
         "feature_for_manual": False,
+        },
+        {
+        "column_name": "QUARTER",
+        "column_name_full": None,
+        "column_description": "Simulation Date",
+        "data_type": 'int',
+        "column_def": {"width": 40},
+        "feature_for_default_table":False,
+        "feature_group": "other",
+        "feature_for_manual": False,
         }
+
+
 ]
 
 
@@ -784,7 +854,7 @@ table_column_simulation_meta = [
                 "origin_table": None,
                 "feature_for_default_table":False,
                 "feature_for_manual": True,
-                "feature_group":"future",
+                "feature_group":"meta",
 
         },
 
@@ -800,7 +870,7 @@ table_column_simulation_meta = [
                 "origin_table": None,
                 "feature_for_default_table":False,
                 "feature_for_manual": False,
-                "feature_group":"future",
+                "feature_group":"meta",
 
         },
 
@@ -816,10 +886,83 @@ table_column_simulation_meta = [
                 "origin_table": None,
                 "feature_for_default_table":False,
                 "feature_for_manual": False,
-                "feature_group":"future",
+                "feature_group":"meta",
 
-        }
+        },
+
+        {
+                "column_name": "PERIOD_OPEN",
+                "column_childs": None,
+                "column_name_full": None,
+                "data_type": 'int',
+                "column_def": {"width": 80,
+                               'orderSequence': ["desc", "asc"]},
+                "percent_yn":False,
+                "origin_table": None,
+                "feature_for_default_table":False,
+                "feature_for_manual": True,
+                "feature_group":"meta",
+        },
+
+        {
+                "column_name": "PERIOD_HIGH",
+                "column_childs": None,
+                "column_name_full": None,
+                "data_type": 'int',
+                "column_def": {"width": 80,
+                               'orderSequence': ["desc", "asc"]},
+                "percent_yn":False,
+                "origin_table": None,
+                "feature_for_default_table":False,
+                "feature_for_manual": True,
+                "feature_group":"meta",
+        },
+
+        {
+                "column_name": "PERIOD_LOW",
+                "column_childs": None,
+                "column_name_full": None,
+                "data_type": 'int',
+                "column_def": {"width": 80,
+                               'orderSequence': ["desc", "asc"]},
+                "percent_yn":False,
+                "origin_table": None,
+                "feature_for_default_table":False,
+                "feature_for_manual": True,
+                "feature_group":"meta",
+        },
+
+        {
+                "column_name": "PERIOD_CLOSE",
+                "column_childs": None,
+                "column_name_full": None,
+                "data_type": 'int',
+                "column_def": {"width": 80,
+                               'orderSequence': ["desc", "asc"]},
+                "percent_yn":False,
+                "origin_table": None,
+                "feature_for_default_table":False,
+                "feature_for_manual": True,
+                "feature_group":"meta",
+        },{
+                "column_name": "PERIOD_FLUCTUATION",
+                "column_childs": None,
+                "column_name_full": None,
+                "data_type": 'float',
+                "background_color_map": "profit_map",
+                "column_def": {"width": 100,
+                               "render":2,
+                               'orderSequence': ["desc", "asc"]},
+                "percent_yn":True,
+                "origin_table": None,
+                "feature_for_default_table":False,
+                "feature_for_manual": True,
+                "feature_group":"meta",
+        },
 ]
+
+
+
 
 spec  = table_column_specification + \
         table_column_specification_interval + \
@@ -835,7 +978,7 @@ spec  = table_column_specification + \
 
 # table_column_specification_finan +\
 
-float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is True]
+float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is True if col.get('column_childs') is not None]
 spec_list_float_column = []
 for each_column_group in float_columns_nested:
         for each_child in each_column_group:
@@ -843,19 +986,30 @@ for each_column_group in float_columns_nested:
 
 
 
+default_table_column_list = [col for col in spec if col.get("feature_for_default_table")]
+spec_dict_all_column = {}
+for each_column_group in default_table_column_list:
+
+        feature_group = each_column_group.get("feature_group")
+        column_childs = each_column_group.get("column_childs")
+        column_name = each_column_group.get("column_name")
+
+
+        if column_childs is not None:
+                if feature_group not in spec_dict_all_column.keys():
+                        spec_dict_all_column[feature_group] = column_childs
+                else:
+                        spec_dict_all_column[feature_group] = spec_dict_all_column[feature_group] + column_childs
+        else:
+                if feature_group not in spec_dict_all_column.keys():
+                        spec_dict_all_column[feature_group] = [column_name]
+                else:
+                        spec_dict_all_column[feature_group].append(column_name)
+
+
+
+
 if __name__=="__main__":
-
-
         pass
-        ## print(spec)
-        #
-        #
-        # float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is not None]
-        # float_column = []
-        # for each_column_group in float_columns_nested:
-        #         for each_child in each_column_group:
-        #                 float_column.append(each_child)
-        #
-        #
-        #
+
 

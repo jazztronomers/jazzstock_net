@@ -3,6 +3,7 @@ from jazzstock_net.app.config import config_others as co
 from hashlib import sha256
 from datetime import datetime
 from datetime import timedelta
+import json
 
 # Config
 free_period = co.FREE_PERIOD
@@ -70,9 +71,10 @@ class DataAccessObjectUser:
     def login(self, email, pw):
         pw_encoded = sha256(pw.encode('utf-8')).hexdigest()
         response = db.selectpd('''
-                                SELECT USERCODE, EMAIL, USERNAME, CAST(EXPIRATION_DATE AS CHAR) AS EXPIRATION_DATE, TELEGRAM
+                                SELECT USERCODE, EMAIL, USERNAME, CAST(EXPIRATION_DATE AS CHAR) AS EXPIRATION_DATE, TELEGRAM, FEATURE_GROUP_ORDER
                                 FROM jazzstockuser.T_USER_INFO
                                 JOIN jazzstockuser.T_USER_DONATION USING (USERCODE)
+                                LEFT JOIN jazzstockuser.T_USER_FEATURE_GROUP_ORDER USING (USERCODE)
                                 WHERE 1=1
                                 AND EMAIL = "%s" 
                                 AND PASSWORD = "%s"
@@ -80,13 +82,27 @@ class DataAccessObjectUser:
 
 
         if response is not None and len(response) > 0:
+
+            feature_group_order = response.FEATURE_GROUP_ORDER.values[0]
+
+            if feature_group_order:
+                feature_group_order_parsed = []
+                for x in json.loads(feature_group_order):
+                    if x.get("use_yn"):
+                        feature_group_order_parsed.append(x.get("name"))
+            else:
+                feature_group_order_parsed = None
+
             ret = {'result': True,
                    'message':'Welcome, %s'%(response.USERNAME.values[0]),
                    'usercode':str(response.USERCODE.values[0]),
                    'email': response.EMAIL.values[0],
                    'username': response.USERNAME.values[0],
                    'telegram_chat_id': response.TELEGRAM.values[0],
-                   'expiration_date':response.EXPIRATION_DATE.values[0]}
+                   'expiration_date':response.EXPIRATION_DATE.values[0],
+                   'feature_group_order': response.FEATURE_GROUP_ORDER.values[0],
+                   'feature_group_order_parsed': feature_group_order_parsed
+                   }
 
         else:
             ret =  {'result': False,
@@ -311,3 +327,33 @@ class DataAccessObjectUser:
         db.insert(query)
 
         return True
+
+    def set_feature_group_order(self, usercode, feature_group_order):
+
+        try:
+            if isinstance(feature_group_order, dict) or isinstance(feature_group_order, list):
+                feature_group_order = json.dumps(feature_group_order)
+            query = '''
+            INSERT INTO `jazzstockuser`.`T_USER_FEATURE_GROUP_ORDER` (`USERCODE`, `FEATURE_GROUP_ORDER`) VALUES ('%s', '%s')
+            ON DUPLICATE KEY UPDATE USERCODE='%s', FEATURE_GROUP_ORDER='%s' 
+            '''%(usercode, feature_group_order, usercode, feature_group_order)
+
+            db.insert(query)
+            return True
+
+        except Exception as e:
+            print(e)
+            return False
+
+    # def get_feature_group_order(self, usercode):
+    #
+    #     try:
+    #         query = '''
+    #         SELECT FEATURE_GROUP_ORDER FROM jazzstockuser.T_USER_FEATURE_GROUP_ORDER WHERE USERCODE = '6'
+    #         '''%(usercode)
+    #         feature_group = db.selectSingleValue(query)
+    #         return feature_group
+    #
+    #     except Exception as e:
+    #         print(e)
+    #         return False

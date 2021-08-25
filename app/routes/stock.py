@@ -51,7 +51,7 @@ def ajax_getTable():
         limit = limit
         usercode = session.get('usercode')
         htmltable, column_list = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
-                                    method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only, report_only=report_only, date_idx=date_idx)
+                                    method='dataframe', limit=limit, usercode=usercode, fav_only=fav_only, report_only=report_only, date_idx=date_idx, feature_group_order=session.get("feature_group_order_parsed"))
 
 
 
@@ -74,7 +74,7 @@ def ajax_getTable():
                 usercode = -1
 
             htmltable, column_list = dao.sndRankHtml(targets=targets, intervals=intervals, orderby=orderby, orderhow=orderhow,
-                                        method='dataframe', limit=limit, usercode=usercode, report_only=report_only, fav_only=fav_only)
+                                        method='dataframe', limit=limit, usercode=usercode, report_only=report_only, fav_only=fav_only, feature_group_order=session.get("feature_group_order"))
 
             return jsonify(htmltable=htmltable, column_list=column_list)
 
@@ -155,6 +155,8 @@ def getTableFullCsv():
         output_stream = StringIO()
         df = dao.sndRank(targets=['P', 'I', 'F', 'YG', 'S', 'T', 'OC', 'FN'], intervals=[1, 5, 20, 60], orderby='I1+F1',
                          orderhow='DESC', method='dataframe', limit=2500, usercode=0, date_idx=date_idx)
+
+        df = df.drop(columns=['RTITLE', 'RC1Y'])
         df.to_csv(output_stream, encoding='euc-kr', index=False)
 
         response = Response(
@@ -192,7 +194,7 @@ def getSpecification():
     최근거래일 총 데이터건수를 가져오는 함수
     '''
 
-    return jsonify(spec_content)
+    return jsonify({"column_spec_list":spec_content, "feature_group_order":session.get("feature_group_order")})
 
 
 
