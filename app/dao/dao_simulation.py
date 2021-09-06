@@ -85,6 +85,7 @@ class DataAccessObjectSimulation:
                 WHERE 1=1  
                 AND B.QUARTER BETWEEN '%s' AND '%s'
                 AND A.OPEN>0
+                AND TYPE = 'c'
                 {{conditions}}
             ) A 
             WHERE 1=1 
@@ -110,7 +111,7 @@ class DataAccessObjectSimulation:
             where = where + "AND %s %s %s\n" % (feature_name_full, operation, target_value)
 
         base_query = base_query.replace("{{conditions}}", where)
-
+        # print(base_query)
         rtdf = db.selectpd(base_query)
         rtdf['PERIOD_FLUCTUATION'] = (rtdf['PERIOD_FLUCTUATION'].astype('float') * 100).round(2)
 
