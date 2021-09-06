@@ -463,6 +463,7 @@ function isFinanOnlyConditons(condition_set){
         }
     }
 
+    alert("finan 지표만 선택되어 가장최근 분기기준 finan_only 시뮬레이션으로 결과가 생성됩니다. 다른분기도 확인하고 싶으시다면 finan_only체크박스 체크후 기간을 늘려보시기 바랍니다")
     return true
 
 }
@@ -685,7 +686,6 @@ function renderSimulationResultTable(label){
     removeAllChildOfElement(simulation_row_results_table_content)
 
     // console.log(simulation_result_object.simulation_result_raw)
-
     table = document.createElement('table')
     table.setAttribute("id","simulation_row_results_table")
     table.style.width="100%"
@@ -725,7 +725,7 @@ function renderSimulationResultTable(label){
             tbody.appendChild(b_tr)
         }
 
-        renderTable("simulation_row_results_table", null, column_list, ratio=0.4)
+        renderTable("simulation_row_results_table", null, column_list, ratio=0.9)
 
     }
     else if(label=="MONTH"){
@@ -808,7 +808,6 @@ function renderSimulationResultScatterPlot(){
 
     else {
         for (let quarter in simulation_result_object.simulation_result_col_data_grouped){
-
             data.push({
               name: quarter,
               x: simulation_result_object.simulation_result_col_data_grouped[quarter][x_idx],
@@ -838,13 +837,13 @@ function renderSimulationResultScatterPlot(){
                      Math.max(simulation_result_object.simulation_result_col_data[y_idx]) ],
             title: y
         },
-        margin: {
-            l: 40,
-            r: 40,
-            b: 40,
-            t: 40,
-            pad: 4
-        },
+//        margin: {
+//            l: 40,
+//            r: 40,
+//            b: 40,
+//            t: 40,
+//            pad: 4
+//        },
         legend: {
             y: 0.5,
             yref: 'paper',
@@ -854,6 +853,7 @@ function renderSimulationResultScatterPlot(){
               color: 'grey',
             }
         },
+        autosize:true,
         // paper_bgcolor: "#B5C4CA", // RED
         plot_bgcolor: "#B5C4CA", // BLUE
         title: "scatter plot",

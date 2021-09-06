@@ -39,11 +39,11 @@ class DataAccessObjectSimulation:
 
         def quarter_date_conversion(ip):
 
+
             # xqyy
             if ("Q" in ip):
                 xq = ip[:2]
                 yy = ip[2:]
-
                 return yy+cvt[xq]
 
             # yymm
@@ -51,7 +51,7 @@ class DataAccessObjectSimulation:
                 yy = ip[:2]
                 mm = ip[2:]
 
-                return yy+cvt[mm]
+                return '2106'  ## 수정필요
 
 
 
@@ -65,7 +65,8 @@ class DataAccessObjectSimulation:
                      EPSC_QOQ AS EPS_Q,
                      BPS_YOY AS BPS_Y,
                      BPS_QOQ AS BPS_Q,
-                     PERIOD_OPEN, PERIOD_HIGH, PERIOD_LOW, PERIOD_CLOSE,
+                     
+                     # PERIOD_OPEN, PERIOD_HIGH, PERIOD_LOW, PERIOD_CLOSE,
                      ((PERIOD_CLOSE - PERIOD_OPEN) / PERIOD_OPEN) AS PERIOD_FLUCTUATION
             FROM
             (
@@ -143,25 +144,24 @@ class DataAccessObjectSimulation:
         
         FROM jazzdb.T_STOCK_SND_ANALYSIS_RESULT_TEMP A
         JOIN jazzdb.T_STOCK_CODE_MGMT B USING (STOCKCODE)
+        JOIN jazzdb.T_DATE_FINAN C USING (DATE)
         LEFT JOIN jazzdb.T_STOCK_SND_ANALYSIS_LONGTERM D USING (STOCKCODE, DATE)
         LEFT JOIN jazzdb.T_STOCK_BB_EVENT E ON (A.STOCKCODE = E.STOCKCODE AND A.DATE = E.DATE)
         #=========================================================================
         LEFT JOIN (
 
-            SELECT A.STOCKCODE, B.DATE, 
-                   PER, PBR, ROE, 
-                   EPSC_YOY AS EPS_YOY, 
-                   EPSC_QOQ AS EPS_QOQ,
-                   BPS_YOY, 
-                   BPS_QOQ 
+            SELECT A.STOCKCODE, A.QUARTER, 
+            PER, PBR, ROE, 
+            EPSC_YOY AS EPS_YOY, 
+            EPSC_QOQ AS EPS_QOQ,
+            BPS_YOY, 
+            BPS_QOQ 
             FROM jazzdb.T_STOCK_FINAN A
-            JOIN jazzdb.T_DATE_FINAN B ON (A.DATE = B.DATE_FINAN)
-            JOIN jazzdb.T_STOCK_FINAN_XOX C ON (A.STOCKCODE=C.STOCKCODE AND A.DATE = C.DATE)
+            JOIN jazzdb.T_STOCK_FINAN_XOX C USING (STOCKCODE, QUARTER)
             WHERE 1=1
             AND TYPE = 'C'
             
-            
-        )F ON (A.STOCKCODE = F.STOCKCODE AND A.DATE = F.DATE)
+        )F ON (A.STOCKCODE = F.STOCKCODE AND C.QUARTER = F.QUARTER)
         LEFT JOIN jazzdb.T_STOCK_BB I ON (A.STOCKCODE = I.STOCKCODE AND A.DATE = I.DATE)
         LEFT JOIN jazzdb.T_STOCK_MC J ON (A.STOCKCODE = J.STOCKCODE AND A.DATE = J.DATE)
         LEFT JOIN jazzdb.T_STOCK_DAY_SMAR K ON (A.STOCKCODE = K.STOCKCODE AND A.DATE = K.DATE)        
@@ -231,6 +231,7 @@ class DataAccessObjectSimulation:
         base_query = base_query + "        ORDER BY A.DATE ASC"
 
         try:
+            # print(select_query + base_query)
             rtdf = db.selectpd(select_query+base_query)
 
             # # PERCENT COLUMNS 처리

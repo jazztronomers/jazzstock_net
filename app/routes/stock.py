@@ -121,10 +121,12 @@ def getTableForSummary():
     dao = DataAccessObjectStock()
     snd_day_data = dao.sndDay(stockcode)
     finan_data, finan_html_table, column_list = dao.finanTable(stockcode)
+    reports = dao.get_reports(stockcode)
+
 
 
     return jsonify(snd_day_data=snd_day_data, finan_data=finan_data,
-                   finan_html_table=finan_html_table, column_list=column_list)
+                   finan_html_table=finan_html_table, column_list=column_list, reports=reports)
 
 
 
@@ -148,7 +150,7 @@ def getTableFullCsv():
     dao = DataAccessObjectStock()
 
     filename_prefix = 'jazzstock_table_daily_full'
-    the_date = dao.recent_trading_days(limit=10)[date_idx]
+    the_date = dao.recent_trading_days(limit=10).get('recent_trading_days')[date_idx]
     member=_getMembership()
 
     if member.get("membership") == 'supporter':
@@ -180,10 +182,15 @@ def getRecentTradingDays():
     T_DATE_INDEXED에서 TOP 240 DATE를 가져오는 함수
     '''
     dao = DataAccessObjectStock()
-    recent_trading_days_list = dao.recent_trading_days(limit=720, above="2020-01-01")
+    ret = dao.recent_trading_days(limit=720, above="2020-01-01")
 
 
-    return jsonify({'result': True, "content": recent_trading_days_list})
+
+    recent_trading_days_list = ret.get("recent_trading_days")
+    quarter_current = ret.get("quarter_current")
+
+
+    return jsonify({'result': True, "content": recent_trading_days_list, "quarter_current":quarter_current})
 
 
 

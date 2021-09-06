@@ -586,15 +586,16 @@ tfoot.simulation_table {
     display: flex;
     flex-direction: row;
     flex-wrap:wrap;
+    align-items: stretch;
 }
 
 
 #simulation_row_results.simulation_row {
-    flex:3;
+    flex:4;
 }
 
 #simulation_row_upper.simulation_row {
-    flex:2;
+    flex:1;
 }
 #simulation_row_lower.simulation_row {
     flex:1;
@@ -606,6 +607,7 @@ tfoot.simulation_table {
     flex: 1;  /* additionally, equal width */
     border: 1px solid green;
     overflow: scroll;
+
 
 }
 

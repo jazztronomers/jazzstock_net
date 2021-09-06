@@ -21,13 +21,13 @@ function gridRender(){
     if (device_type == "mobile"){
         canvas_height = window.innerHeight * 0.90
         headerAbbreviation()
-        grid_field_table.style.width = Math.min(window.innerWidth, 2000) * 0.98 +'px'
+        grid_field_table.style.width = Math.min(window.innerWidth, 2400) * 0.98 +'px'
         grid_field_table.style.height = canvas_height + 'px'
 
-        grid_field_stock.style.width = Math.min(window.innerWidth, 2000) * 0.98 +'px'
+        grid_field_stock.style.width = Math.min(window.innerWidth, 2400) * 0.98 +'px'
         grid_field_stock.style.height = canvas_height + 'px'
 
-        grid_field_summary.style.width = Math.min(window.innerWidth, 2000) * 0.98 +'px'
+        grid_field_summary.style.width = Math.min(window.innerWidth, 2400) * 0.98 +'px'
         grid_field_summary.style.height = canvas_height + 'px'
 
         grid_element_stocks = document.getElementsByClassName("grid_layer_b")
@@ -50,7 +50,7 @@ function gridRender(){
 
     else {
         canvas_height = window.innerHeight * 0.94
-        grid_field_table.style.width = Math.min(window.innerWidth, 2000) + 'px'
+        grid_field_table.style.width = Math.min(window.innerWidth, 2400) + 'px'
         grid_field_table.style.height = canvas_height + 'px'
 
         grid_field_stock.style.width = window.innerWidth * 0.48 + 'px'
@@ -124,7 +124,7 @@ function toggleTableAndStock(){
             // 확장
             grid_field_table.style.display="inline-block"
             grid_field_stock.style.display="none"
-            grid_field_table.style.width = Math.min(window.innerWidth, 2000) + 'px'
+            grid_field_table.style.width = Math.min(window.innerWidth, 2400) + 'px'
             grid_field_summary.style.display= "none"
         }
 

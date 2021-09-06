@@ -47,7 +47,7 @@ table_column_specification = [
                 "feature_group":"default",
                 "feature_for_manual": True,
                 "simulation_feature_yn":1,
-                "simulation_feature_type": "FINAN",
+                "simulation_feature_type": "FINAN_OTHERS",
                 "origin_table":"T_STOCK_MC",
 
         },{
@@ -478,7 +478,7 @@ table_column_specification_finan = [
         "feature_group":"finan",
         "feature_for_manual": True,
         "simulation_feature_yn":1,
-        "simulation_feature_type": "FINAN",
+        "simulation_feature_type": "FINAN_OTHERS",
         "origin_table":"T_STOCK_SND_ANALYSIS_RESULT_TEMP",
         },
 
@@ -965,10 +965,10 @@ table_column_simulation_meta = [
 
 
 spec  = table_column_specification + \
+        table_column_specification_finan + \
         table_column_specification_interval + \
         table_column_specification_ranking + \
         table_column_specification_moving_average_ratio +\
-        table_column_specification_finan +\
         table_column_specification_report + \
         table_column_specification_bollinger_band + \
         table_column_specification_realtime +\

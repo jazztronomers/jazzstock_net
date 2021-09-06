@@ -157,6 +157,7 @@ tab_initialized['table_rep']=false
 
 let stockcode_favorite = []
 let stockcode_favorite_dirty = false
+let quarter_current = 'YYMM'
 let recent_trading_days = []
 let user_loggedin = false
 let user_expiration_date = '1970-01-01'
@@ -219,10 +220,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     gridRender()
+    getRecentTradingDays()
     getUserInfo()
     getSpecification()
     getFavorite()
-    getRecentTradingDays()
 
     // ===========================================
     // PROD !
@@ -356,6 +357,13 @@ function getRecentTradingDays(){
             {
 
                 recent_trading_days = req.response.content
+                quarter_current = req.response.quarter_current
+
+                //
+                // NAV BAR FILL CONTENTS
+
+                //
+
                 select_box = document.getElementById('select_custom_date')
 
                 for (let i = 0; i<=recent_trading_days.length-1; i++){

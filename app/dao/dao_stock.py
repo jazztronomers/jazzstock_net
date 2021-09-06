@@ -539,7 +539,21 @@ class DataAccessObjectStock:
 
         return df.to_dict("list"), html, column_list
 
+    def get_reports(self, stockcode):
 
+        query = '''
+
+        SELECT CAST(DATE AS CHAR) AS DATE, AUTHOR, CONTENT
+        FROM jazzdb.T_STOCK_TEXT
+        JOIN jazzdb.T_STOCK_CODE_MGMT B USING (STOCKCODE)
+        WHERE 1=1
+        AND (STOCKCODE = '%s' OR STOCKNAME = '%s')
+        ORDER BY DATE DESC
+    
+        ''' % (stockcode, stockcode)
+
+        df = db.selectpd(query)
+        return df.to_dict("list")
 
 
 
@@ -585,12 +599,24 @@ class DataAccessObjectStock:
 
     def recent_trading_days(self, limit=10, above=None):
 
-        recent_trading_days = db.selectSingleColumn('SELECT CAST(DATE AS CHAR) AS DATE FROM jazzdb.T_DATE_INDEXED WHERE CNT < %s ORDER BY CNT ASC'%(limit))
+        query = '''
+        
+        SELECT CAST(DATE AS CHAR) AS DATE, QUARTER
+        FROM jazzdb.T_DATE_INDEXED
+        JOIN jazzdb.T_DATE_FINAN USING(DATE) 
+        WHERE CNT < %s ORDER BY CNT ASC
+        
+        
+        '''%(limit)
 
+
+        df_trading_days = db.selectpd(query)
         if above is not None:
-            recent_trading_days = [x for x in recent_trading_days if x >= above]
+            recent_trading_days = [x for x in df_trading_days.DATE.values.tolist() if x >= above]
 
-        return recent_trading_days
+        quarter = df_trading_days.QUARTER.head(1).values[0]
+
+        return {'recent_trading_days': recent_trading_days, 'quarter_current':quarter}
 
     # ==================================================================================
     # 여 기 서 부 터 실 시 간 테 이 블 용 !

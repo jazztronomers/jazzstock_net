@@ -31,6 +31,8 @@ def rendering_page_home():
     return render_template('home.html',
                            username=session.get('username','Guest'),
                            expiration_date=str(session.get('expiration_date',None)),
+                           recent_trading_days=[],
+                           quarter_current='YYMM',
                            alert_message=session.get('message'))
 
 

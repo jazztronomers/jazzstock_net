@@ -25,9 +25,6 @@ function getOhlcChartData(stockcode, mark_date=null){
 
 
                 ohlc_day_data = req.response.ohlc_day_data.result
-
-                console.log(stockcode, mark_date)
-
                 stockMap[stockcode]= {"data":ohlc_day_data, "mark_date":mark_date}
 
                 if (window.innerWidth < 800){
@@ -331,7 +328,31 @@ function getSummaryData(stockcode){
 
 
                 snd_day_data = req.response.snd_day_data.result
-                finan_data = req.response.finan_data  // html
+                finan_data = req.response.finan_data
+                reports = req.response.reports
+
+                if (finan_data.QUARTER.length>0){
+                    df = new dfd.DataFrame(finan_data)
+                    console.log("\n## FINAN_DATA")
+                    for (let i=0; i<df.data.length; i++){
+                        row = ''
+                        for (let j=0; j< df.data[i].length; j++){
+                            row = row + ' | ' + ('' + df.data[i][j]).padStart(6, ' ')
+                        }
+
+                        console.log(row)
+                    }
+                }
+
+                if (reports.DATE.length > 0) {
+                    console.log("\n## REPORTS_DATA")
+                    df = new dfd.DataFrame(reports)
+                    for (let i=0; i<df.data.length; i++){
+                        console.log(df.data[i])
+                    }
+                }
+
+
                 // finan_table_column_list = req.response.column_list  // html
                 renderSummaryChart(stockcode, stockMap[stockcode], snd_day_data, "grid_summary_chart_price")
                 renderSummaryFinanChart(stockcode, finan_data, "grid_summary_chart_finan")
@@ -370,9 +391,6 @@ function renderSummaryChart(stockcode, chart_data_obj, snd_day_data, element_id)
     console.log(chart_data_obj)
 
     ohlc_day_data= chart_data_obj.data
-
-    console.log(ohlc_day_data.OPEN.length)
-    console.log(snd_day_data.TUSIN.length)
 
     chart_height = canvas_height * 0.7
     element.style.height =  chart_height + 'px'
