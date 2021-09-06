@@ -613,7 +613,8 @@ class DataAccessObjectStock:
         df_trading_days = db.selectpd(query)
         if above is not None:
             recent_trading_days = [x for x in df_trading_days.DATE.values.tolist() if x >= above]
-
+        else:
+            recent_trading_days = [x for x in df_trading_days.DATE.values.tolist()]
         quarter = df_trading_days.QUARTER.head(1).values[0]
 
         return {'recent_trading_days': recent_trading_days, 'quarter_current':quarter}
