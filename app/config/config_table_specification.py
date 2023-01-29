@@ -81,10 +81,13 @@ table_column_specification = [
         },{
                 "column_name":"TV",
                 "column_name_full": None,
-                "column_description":"5분봉 거래대금(억)",
+                "column_description":"",
+                "feature_group":"default",
+                "feature_for_deafult_table":True,
+                "feature_for_manual": True,
                 "data_type":'int',
                 "column_def": {"width": 35,
-                             'render':2,
+                             'render':0,
                              'orderSequence':["desc","asc"]},
         }
 ]

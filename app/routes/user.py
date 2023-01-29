@@ -19,6 +19,7 @@ def login():
         dao_user = DataAccessObjectUser()
         response = dao_user.login(email, pw)
         if response['result']:
+            session.permanent = True
             session['loggedin'] = True
             session['usercode'] = response['usercode']
             session['email'] = response['email']

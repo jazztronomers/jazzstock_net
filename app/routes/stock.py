@@ -155,7 +155,7 @@ def getTableFullCsv():
 
     if member.get("membership") == 'supporter':
         output_stream = StringIO()
-        df = dao.sndRank(targets=['P', 'I', 'F', 'YG', 'S', 'T', 'OC', 'FN'], intervals=[1, 5, 20, 60], orderby='I1+F1',
+        df = dao.sndRank(targets=['P', 'I', 'F', 'PS', 'YG', 'S', 'T', 'OC', 'FN'], intervals=[1, 5, 20, 60], orderby='I1+F1',
                          orderhow='DESC', method='dataframe', limit=2500, usercode=0, date_idx=date_idx)
 
         df = df.drop(columns=['RTITLE', 'RC1Y'])

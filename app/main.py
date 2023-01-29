@@ -1,7 +1,7 @@
 from jazzstock_net.app.routes import user, stock, simulation, customize
 import jazzstock_net.app.config.config as cf
 from flask import Flask, render_template, request, jsonify, send_from_directory, session, redirect, url_for, Response
-
+from datetime import timedelta
 import decimal
 import flask.json
 
@@ -17,6 +17,7 @@ class MyJSONEncoder(flask.json.JSONEncoder):
 application = Flask(__name__, static_folder='static', )
 application.config['SECRET_KEY'] = cf.FLASK_SECRET_KEY
 application.config['JSON_SORT_KEYS'] = False
+application.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=31)
 application.json_encoder = MyJSONEncoder
 
 

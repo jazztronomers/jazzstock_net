@@ -19,7 +19,7 @@ let simulation_result_column_list = undefined
 let simulation_is_running = false
 
 
-let finan_quarter_map = ["2Q21", "1Q21",
+let finan_quarter_map = ["3Q21", "2Q21", "1Q21",
                          "4Q20", "3Q20", "2Q20", "1Q20",
                          "4Q19", "3Q19", "2Q19", "1Q19",
                          "4Q18", "3Q18", "2Q18", "1Q18",

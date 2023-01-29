@@ -53,7 +53,7 @@ class DataAccessObjectStock:
                         , CONCAT(B.STOCKCODE, '_', B.STOCKNAME) AS  STOCKNAME
                         , B.STOCKCODE AS FAV
                         , MC
-                        , CLOSE
+                        , A.CLOSE
                         
                     '''
 
@@ -80,14 +80,15 @@ class DataAccessObjectStock:
                 , BBP
                 , BBW
                 
-                , CASE WHEN EPSC > 0 THEN ROUND(ABS(CLOSE)/EPSC,2) ELSE -1 END AS PER
-                , CASE WHEN BPS > 0 THEN ROUND(ABS(CLOSE)/BPS,2) ELSE -1 END AS PBR
+                , CASE WHEN EPSC > 0 THEN ROUND(ABS(A.CLOSE)/EPSC,2) ELSE -1 END AS PER
+                , CASE WHEN BPS > 0 THEN ROUND(ABS(A.CLOSE)/BPS,2) ELSE -1 END AS PBR
                 , EPS_Y
                 , EPS_Q
                 , BPS_Y
                 , BPS_Q
                 , ROE
                 , M.CIRCRATE AS CCR
+		, ROUND(VALUE/100,0) AS TV
                 
                 , CATEGORY
                 # , TITLE AS RTITLE, RDATE, RC1M, RC2M
@@ -174,6 +175,7 @@ class DataAccessObjectStock:
 
                 
                 LEFT JOIN jazzdb.T_STOCK_SHARES_CIRCRATE M ON (A.STOCKCODE = M.STOCKCODE AND A.DATE = M.DATE)
+		LEFT JOIN jazzdb.T_STOCK_OHLC_DAY N ON (A.STOCKCODE = N.STOCKCODE AND A.DATE = N.DATE)
                 #=========================================================================
                 WHERE 1=1'''%(quarter, quarter, usercode, date_240)
 
@@ -219,7 +221,7 @@ class DataAccessObjectStock:
 
         fullquery = queryhead + querytarget + queryrank + querycont + querytail + queryend
 
-
+        # print(fullquery)
         if debug:
             print(fullquery)
 

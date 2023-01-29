@@ -17,7 +17,8 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.22/sorting/natural.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/danfojs@0.2.7/lib/bundle.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.plot.ly/plotly-2.3.0.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+<!--<script type="text/javascript" charset="utf8" src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>-->
+<script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <!--JAZZSTOCK JS -->
 
 <script type="text/javascript" src="static/js/open.js"></script>
@@ -80,7 +81,7 @@
             <a href="#" id='tab_custom_link' class="tablink only_supporter" onclick="showTableTab('tab_custom', this, 'red'); getTable('table_custom',  ['P','T','F'], [1,5,20,60], ['T1'], 'DESC', 100, false, true, true, false, 0);">커스텀</a>
             <a href="#" id='tab_rep_link' class="tablink only_supporter" onclick="showTableTab('tab_rep', this, 'red'); getTable('table_rep',  ['P','I','F'], [1,5,20,60], ['I1','F1'], 'DESC', 200, false, true, true, true, 0);">레포트</a>
             <a href="#" id='tab_fav_link' class="tablink only_supporter" onclick="showTableTab('tab_fav', this, 'red'); getTable('table_fav',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 100, true, true, true, false, 0);">즐겨찾기</a>
-            <a href="#" id='tab_full_link' class="tablink only_supporter" onclick="showTableTab('tab_full', this, 'red'); getTable('table_full',  ['P','I','F','YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 2500, false, true, true, false, 0);">전종목</a>
+            <a href="#" id='tab_full_link' class="tablink only_supporter" onclick="showTableTab('tab_full', this, 'red'); getTable('table_full',  ['P','I','F','PS', 'YG','S'], [1,5,20,60,120,240], ['I1','F1'], 'DESC', 2500, false, true, true, false, 0);">전종목</a>
             <a href="#" id='tab_simulation_link' class="tablink only_supporter" onclick="showTableTab('tab_simulation', this, 'red'); renderSimulationTab()">시뮬</a>
 
             <!-- <a href="#" id='tab_realtime_link' class="tablink" onclick="openPage('tab_realtime', this, 'red'); getRealtime()">실시간</a> -->

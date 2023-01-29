@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+div.scrollmenu#navbar_table {
+  background-color: #333;
+  overflow: auto;
+  white-space: nowrap;
+}
+
+div.scrollmenu#navbar_stock {
+  background-color: #998;
+  overflow: auto;
+  white-space: nowrap;
+  position: fixed;
+  bottom: 0;
+  
+  width: 100%;
+}
+
+
+
+
+div.scrollmenu a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  text-decoration: none;
+}
+
+div.scrollmenu a:hover {
+  background-color: #777;
+}
+
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+
+
+div.scrollmenu li {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  text-decoration: none;
+}
+
+
+/* Add a black background color to the top navigation */
+.topnav {
+    background-color: #111;
+    overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Add a color to the active/current link */
+.topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* Right-aligned section inside the top navigation */
+.topnav-right {
+  float: right;
+}
+
+#navbar_stock_right {
+	float: right;
+}
+
+
+
+
+
+</style>
+</head>
+<body>
+<script>
+	function addmenu(){
+    	var nav = document.getElementById('navbar_stock')
+       	var content = document.createElement("a")
+        content.setAttribute("href", "#temp");
+        content.innerHTML="temp"
+        nav.appendChild(content)
+    }
+</script>
+
+<div class="topnav">
+  <a class="active" href="#home">Jazzstock</a>
+  <div class="topnav-right">
+  
+    <a href="#search">공지사항</a>
+    <a href="#search">회원가입</a>
+    <a href="#about">로그인</a>
+  </div>
+</div>
+
+<div class="scrollmenu" id="navbar_table">
+  <a href="#news">외인/기관</a>
+  <a href="#contact">연기금/외인</a>
+  <a href="#about">사모펀드/외인</a>
+  <a href="#support">전종목</a>
+  <a href="#support">좌우꽉채우도록</a>
+</div>
+
+<div class="scrollmenu" id="navbar_stock">
+	<div class="topnav-right">
+    	<a href="#AA">후원자기능</a>
+    </div>
+</div>
+
+
+
+
+<div>
+
+<h1>T A B L E</h1>
+<p>Resize the browser window to see the effect.</p>
+<a href="#" onclick="addmenu()">add stock...</a>
+
+
+</body>
+</html>
