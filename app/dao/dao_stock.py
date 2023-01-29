@@ -54,6 +54,7 @@ class DataAccessObjectStock:
                         , B.STOCKCODE AS FAV
                         , MC
                         , A.CLOSE
+                        , ROUND(VALUE/100,0) AS TV
                         
                     '''
 
@@ -88,7 +89,7 @@ class DataAccessObjectStock:
                 , BPS_Q
                 , ROE
                 , M.CIRCRATE AS CCR
-		, ROUND(VALUE/100,0) AS TV
+		        
                 
                 , CATEGORY
                 # , TITLE AS RTITLE, RDATE, RC1M, RC2M
@@ -175,7 +176,7 @@ class DataAccessObjectStock:
 
                 
                 LEFT JOIN jazzdb.T_STOCK_SHARES_CIRCRATE M ON (A.STOCKCODE = M.STOCKCODE AND A.DATE = M.DATE)
-		LEFT JOIN jazzdb.T_STOCK_OHLC_DAY N ON (A.STOCKCODE = N.STOCKCODE AND A.DATE = N.DATE)
+		        LEFT JOIN jazzdb.T_STOCK_OHLC_DAY N ON (A.STOCKCODE = N.STOCKCODE AND A.DATE = N.DATE)
                 #=========================================================================
                 WHERE 1=1'''%(quarter, quarter, usercode, date_240)
 

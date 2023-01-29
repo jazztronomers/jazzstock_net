@@ -83,7 +83,7 @@ table_column_specification = [
                 "column_name_full": None,
                 "column_description":"",
                 "feature_group":"default",
-                "feature_for_deafult_table":True,
+                "feature_for_default_table":True,
                 "feature_for_manual": True,
                 "data_type":'int',
                 "column_def": {"width": 35,
@@ -979,6 +979,8 @@ spec  = table_column_specification + \
         table_column_specification_other +\
         table_column_simulation_meta
 
+
+
 # table_column_specification_finan +\
 
 float_columns_nested = [col.get('column_childs') for col in spec if col.get("percent_yn") is True if col.get('column_childs') is not None]
@@ -1010,7 +1012,7 @@ for each_column_group in default_table_column_list:
                         spec_dict_all_column[feature_group].append(column_name)
 
 
-
+print(spec_dict_all_column)
 
 if __name__=="__main__":
         pass
