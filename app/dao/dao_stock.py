@@ -10,7 +10,7 @@ from jazzstock_net.app.config.config_table_specification import spec_dict_all_co
 pd.options.display.max_rows = 2500
 
 
-quarter = '2106'
+quarter = '2109'
 
 class DataAccessObjectStock:
 
